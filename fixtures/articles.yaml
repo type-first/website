@@ -1,0 +1,297 @@
+- title: "Getting Started with Next.js 15 and App Router"
+  slug: "getting-started-nextjs-15-app-router"
+  description: "Learn how to build modern web applications with Next.js 15's powerful App Router, Server Components, and latest features."
+  status: "published"
+  publishedAt: "2024-01-15T10:00:00Z"
+  tags: ["nextjs", "react", "tutorial", "web-development"]
+  coverImage: "https://images.unsplash.com/photo-1555949963-aa79dcee981c?w=1200&h=630&fit=crop"
+  seoTitle: "Next.js 15 App Router Guide - Modern Web Development"
+  seoDescription: "Complete guide to Next.js 15 App Router with Server Components, routing, and best practices for modern web development."
+  content:
+    - type: text
+      content: |
+        # Getting Started with Next.js 15 and App Router
+
+        Next.js 15 introduces powerful new features that make building modern web applications faster and more efficient than ever. The App Router represents a fundamental shift in how we structure and think about Next.js applications.
+
+        ## What's New in Next.js 15
+
+        The latest version brings several exciting improvements:
+
+        - **Enhanced App Router**: Better performance and developer experience
+        - **Server Components by default**: Improved loading times and SEO
+        - **Streaming and Suspense**: Progressive loading for better UX
+        - **Improved TypeScript support**: Better type inference and error messages
+
+    - type: code
+      language: "bash"
+      filename: "terminal"
+      content: |
+        # Create a new Next.js 15 project
+        npx create-next-app@latest my-app --typescript --tailwind --app
+
+        # Navigate to the project
+        cd my-app
+
+        # Start the development server
+        npm run dev
+
+    - type: text
+      content: |
+        ## Understanding Server Components
+
+        Server Components run on the server and send rendered HTML to the client. This approach offers several benefits:
+
+        - **Better Performance**: Reduced JavaScript bundle size
+        - **Improved SEO**: Content is rendered on the server
+        - **Direct Database Access**: No need for API routes for data fetching
+
+    - type: island
+      component: "Counter"
+      textAlt: "Interactive counter demonstrating client-side interactivity in Server Components"
+      props:
+        initialValue: 0
+        step: 1
+        label: "Try this interactive counter"
+
+    - type: text
+      content: |
+        ## File-based Routing
+
+        The App Router uses a file-based routing system that's intuitive and powerful:
+
+        ```
+        app/
+        ├── page.tsx          # Home page (/)
+        ├── about/
+        │   └── page.tsx      # About page (/about)
+        ├── blog/
+        │   ├── page.tsx      # Blog listing (/blog)
+        │   └── [slug]/
+        │       └── page.tsx  # Blog post (/blog/[slug])
+        └── layout.tsx        # Root layout
+        ```
+
+    - type: quote
+      content: "The App Router is not just an evolution, it's a revolution in how we build React applications with Next.js."
+      author: "Next.js Team"
+      source: "Next.js 15 Release Notes"
+
+- title: "Building Interactive Components with Islands Architecture"
+  slug: "interactive-components-islands-architecture"
+  description: "Explore how islands architecture enables optimal performance by combining server-rendered content with selective client-side hydration."
+  status: "published"
+  publishedAt: "2024-01-20T14:30:00Z"
+  tags: ["islands", "architecture", "performance", "react", "ssr"]
+  coverImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=630&fit=crop"
+  content:
+    - type: text
+      content: |
+        # Building Interactive Components with Islands Architecture
+
+        Islands architecture is a paradigm that allows you to build fast, interactive web applications by strategically hydrating only the parts of your page that need interactivity.
+
+        ## The Core Concept
+
+        Think of your page as mostly static HTML with small "islands" of interactivity. These islands are hydrated on the client, while the rest of the page remains as lightweight server-rendered HTML.
+
+    - type: island
+      component: "InteractiveChart"
+      textAlt: "Interactive data visualization chart showing performance metrics comparison between traditional SPA and islands architecture"
+      props:
+        title: "Performance Comparison"
+        data:
+          - label: "Traditional SPA"
+            value: 45
+          - label: "Islands Architecture"
+            value: 85
+          - label: "Static Site"
+            value: 95
+
+    - type: text
+      content: |
+        ## Benefits of Islands Architecture
+
+        ### Performance
+        - **Reduced JavaScript**: Only interactive components are hydrated
+        - **Faster Initial Load**: Most content is static HTML
+        - **Progressive Enhancement**: Works even with JavaScript disabled
+
+        ### Developer Experience
+        - **Component Isolation**: Each island is self-contained
+        - **Easier Debugging**: Clear separation between static and dynamic content
+        - **Selective Optimization**: Focus performance efforts where needed
+
+    - type: code
+      language: "tsx"
+      filename: "components/islands/MyIsland.tsx"
+      content: |
+        'use client';
+        
+        import { useState } from 'react';
+        
+        export function MyIsland({ initialData }: { initialData: any }) {
+          const [data, setData] = useState(initialData);
+          
+          return (
+            <div className="p-4 border rounded-lg">
+              <h3>Interactive Island</h3>
+              <button 
+                onClick={() => setData({ ...data, count: data.count + 1 })}
+                className="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Count: {data.count}
+              </button>
+            </div>
+          );
+        }
+
+    - type: text
+      content: |
+        ## Implementation Strategies
+
+        1. **Start Static**: Begin with server-rendered HTML
+        2. **Identify Interactions**: Mark components that need client-side behavior
+        3. **Progressive Enhancement**: Add interactivity where needed
+        4. **Optimize Loading**: Use dynamic imports and code splitting
+
+- title: "Advanced TypeScript Patterns for React Applications"
+  slug: "advanced-typescript-patterns-react"
+  description: "Master advanced TypeScript patterns including generic components, conditional types, and type-safe APIs for robust React applications."
+  status: "published"
+  publishedAt: "2024-01-25T09:15:00Z"
+  tags: ["typescript", "react", "patterns", "type-safety", "advanced"]
+  content:
+    - type: text
+      content: |
+        # Advanced TypeScript Patterns for React Applications
+
+        TypeScript provides powerful type system features that can make your React applications more robust, maintainable, and developer-friendly. Let's explore some advanced patterns.
+
+        ## Generic Components
+
+        Generic components allow you to create reusable components that work with different data types while maintaining type safety.
+
+    - type: code
+      language: "tsx"
+      filename: "components/DataTable.tsx"
+      content: |
+        interface DataTableProps<T> {
+          data: T[];
+          columns: Array<{
+            key: keyof T;
+            label: string;
+            render?: (value: T[keyof T], row: T) => React.ReactNode;
+          }>;
+          onRowClick?: (row: T) => void;
+        }
+        
+        export function DataTable<T extends Record<string, any>>({
+          data,
+          columns,
+          onRowClick
+        }: DataTableProps<T>) {
+          return (
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  {columns.map(col => (
+                    <th key={String(col.key)} className="border p-2">
+                      {col.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {data.map((row, index) => (
+                  <tr 
+                    key={index} 
+                    onClick={() => onRowClick?.(row)}
+                    className="hover:bg-gray-50 cursor-pointer"
+                  >
+                    {columns.map(col => (
+                      <td key={String(col.key)} className="border p-2">
+                        {col.render ? col.render(row[col.key], row) : String(row[col.key])}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          );
+        }
+
+    - type: island
+      component: "CodePlayground"
+      textAlt: "Interactive TypeScript playground for testing advanced patterns and type definitions"
+      props:
+        title: "TypeScript Playground"
+        language: "typescript"
+        defaultCode: |
+          // Try advanced TypeScript patterns
+          type User = {
+            id: number;
+            name: string;
+            email: string;
+          };
+          
+          const users: User[] = [
+            { id: 1, name: "Alice", email: "alice@example.com" },
+            { id: 2, name: "Bob", email: "bob@example.com" }
+          ];
+          
+          console.log("Users:", users);
+
+    - type: text
+      content: |
+        ## Conditional Types and Utility Types
+
+        Conditional types allow you to create types that change based on conditions, enabling powerful type transformations.
+
+    - type: code
+      language: "ts"
+      filename: "types/api.ts"
+      content: |
+        // API Response wrapper
+        type ApiResponse<T> = {
+          data: T;
+          success: true;
+          error: null;
+        } | {
+          data: null;
+          success: false;
+          error: string;
+        };
+        
+        // Extract success data type
+        type SuccessData<T> = T extends ApiResponse<infer U> 
+          ? U 
+          : never;
+        
+        // Form field types
+        type FormField<T> = {
+          value: T;
+          error?: string;
+          touched: boolean;
+        };
+        
+        type FormState<T> = {
+          [K in keyof T]: FormField<T[K]>;
+        };
+        
+        // Usage example
+        interface LoginForm {
+          email: string;
+          password: string;
+        }
+        
+        type LoginFormState = FormState<LoginForm>;
+        // Result: {
+        //   email: FormField<string>;
+        //   password: FormField<string>;
+        // }
+
+    - type: quote
+      content: "TypeScript's type system is not just about catching errors—it's about expressing intent and creating self-documenting code."
+      author: "Anders Hejlsberg"
+      source: "TypeScript Creator"
