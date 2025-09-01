@@ -104,13 +104,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Vercel Preview
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-comment: true
+      - name: Trigger Vercel Preview Deploy (Deploy Hook)
+        env:
+          VERCEL_DEPLOY_HOOK_PREVIEW: ${{ secrets.VERCEL_DEPLOY_HOOK_PREVIEW }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK_PREVIEW" ]; then
+            echo "VERCEL_DEPLOY_HOOK_PREVIEW is not set" >&2
+            exit 1
+          fi
+          curl -s -X POST "$VERCEL_DEPLOY_HOOK_PREVIEW" -H 'Content-Type: application/json' -d "{}" \
+            && echo "Preview deploy hook triggered"
 
   deploy-production:
     name: Deploy Production
@@ -122,13 +125,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Deploy to Vercel Production
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--prod'
+      - name: Trigger Vercel Production Deploy (Deploy Hook)
+        env:
+          VERCEL_DEPLOY_HOOK_PROD: ${{ secrets.VERCEL_DEPLOY_HOOK_PROD }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK_PROD" ]; then
+            echo "VERCEL_DEPLOY_HOOK_PROD is not set" >&2
+            exit 1
+          fi
+          curl -s -X POST "$VERCEL_DEPLOY_HOOK_PROD" -H 'Content-Type: application/json' -d "{}" \
+            && echo "Production deploy hook triggered"
 
   lighthouse:
     name: Lighthouse Performance Audit
