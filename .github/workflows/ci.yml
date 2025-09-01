@@ -14,20 +14,6 @@ jobs:
   test:
     name: Test and Build
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
       - name: Checkout code
@@ -66,16 +52,14 @@ jobs:
       - name: Run linting
         run: pnpm run lint
 
-      - name: Setup test database
+      - name: Migrate Neon database
         env:
-          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/test_db
-        run: |
-          # Run database migrations
-          pnpm run db:migrate
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
+        run: pnpm run db:migrate
 
       - name: Build application
         env:
-          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
           NEXT_PUBLIC_BASE_URL: http://localhost:3000
         run: pnpm run build
 
@@ -84,12 +68,12 @@ jobs:
 
       - name: Seed test data
         env:
-          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
         run: pnpm run db:seed
 
       - name: Run Playwright tests
         env:
-          POSTGRES_URL: postgresql://postgres:postgres@localhost:5432/test_db
+          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
           NEXT_PUBLIC_BASE_URL: http://localhost:3000
         run: pnpm run test
 

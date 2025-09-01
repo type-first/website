@@ -33,20 +33,32 @@ export async function executeTransaction<T>(
 // Article CRUD operations
 export async function createArticle(article: Omit<Article, 'id' | 'createdAt' | 'updatedAt'>): Promise<Article> {
   try {
-    const result = await sql`
+    const query = `
       INSERT INTO articles (
         title, slug, description, content, tags, status,
         published_at, author_id, cover_image, seo_title, seo_description, canonical_url
       ) VALUES (
-        ${article.title}, ${article.slug}, ${article.description || null}, 
-        ${JSON.stringify(article.content)}, ${JSON.stringify(article.tags)}, ${article.status},
-        ${article.publishedAt?.toISOString() || null}, ${article.authorId || null}, 
-        ${article.coverImage || null}, ${article.seoTitle || null}, 
-        ${article.seoDescription || null}, ${article.canonicalUrl || null}
-      ) 
-      RETURNING *
+        $1, $2, $3, $4::jsonb, $5::text[], $6,
+        $7, $8, $9, $10, $11, $12
+      ) RETURNING *
     `;
-    
+
+    const values = [
+      article.title,
+      article.slug,
+      article.description || null,
+      JSON.stringify(article.content),
+      article.tags || [],
+      article.status,
+      article.publishedAt?.toISOString() || null,
+      article.authorId || null,
+      article.coverImage || null,
+      article.seoTitle || null,
+      article.seoDescription || null,
+      article.canonicalUrl || null,
+    ];
+
+    const result = await sql.query(query, values);
     return mapRowToArticle(result.rows[0]);
   } catch (error) {
     throw new DatabaseError('Failed to create article', error as Error);
@@ -102,12 +114,12 @@ export async function updateArticle(id: string, updates: Partial<Omit<Article, '
       values.push(updates.description);
     }
     if (updates.content !== undefined) {
-      setParts.push(`content = $${paramIndex++}`);
+      setParts.push(`content = $${paramIndex++}::jsonb`);
       values.push(JSON.stringify(updates.content));
     }
     if (updates.tags !== undefined) {
-      setParts.push(`tags = $${paramIndex++}`);
-      values.push(JSON.stringify(updates.tags));
+      setParts.push(`tags = $${paramIndex++}::text[]`);
+      values.push(updates.tags);
     }
     if (updates.status !== undefined) {
       setParts.push(`status = $${paramIndex++}`);
@@ -181,33 +193,38 @@ export async function listArticles(
 ): Promise<{ articles: ArticleMetadata[]; total: number }> {
   try {
     const { status, limit = 20, offset = 0, tags } = options;
-    
-    // For now, let's use a simple query without complex filtering
-    // We can add filtering later once basic functionality works
-    const articlesResult = await sql`
-      SELECT id, title, slug, excerpt as description, tags, 
-             'published' as status, created_at, updated_at, 
-             published_date as published_at, featured_image as cover_image
-      FROM articles 
-      ORDER BY created_at DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `;
-    
-    const countResult = await sql`
-      SELECT COUNT(*) as count FROM articles
-    `;
 
-    const articles = articlesResult.rows.map(row => ({
+    // Basic listing with optional status filter; tag filtering can be added later
+    const articlesResult = status
+      ? await sql`
+          SELECT id, title, slug, description, tags, status, created_at, updated_at, published_at, cover_image
+          FROM articles
+          WHERE status = ${status}
+          ORDER BY created_at DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `
+      : await sql`
+          SELECT id, title, slug, description, tags, status, created_at, updated_at, published_at, cover_image
+          FROM articles
+          ORDER BY created_at DESC
+          LIMIT ${limit} OFFSET ${offset}
+        `;
+    
+    const countResult = status
+      ? await sql`SELECT COUNT(*) as count FROM articles WHERE status = ${status}`
+      : await sql`SELECT COUNT(*) as count FROM articles`;
+
+    const articles = articlesResult.rows.map((row: any) => ({
       id: row.id,
       title: row.title,
       slug: row.slug,
       description: row.description || '',
       tags: Array.isArray(row.tags) ? row.tags : [],
-      status: 'published' as ArticleStatus,
+      status: row.status as ArticleStatus,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
       publishedAt: row.published_at,
-      coverImage: row.cover_image
+      coverImage: row.cover_image,
     }));
     
     const total = parseInt(countResult.rows[0].count);
@@ -273,7 +290,7 @@ export async function saveSectionEmbeddings(embeddings: SectionEmbedding[]): Pro
         await sql`
           INSERT INTO section_embeddings (article_id, section_index, content, embedding, created_at)
           VALUES (${embedding.articleId}, ${embedding.sectionIndex}, ${embedding.content}, 
-                  ${JSON.stringify(embedding.embedding)}, ${embedding.createdAt.toISOString()})
+                  ${JSON.stringify(embedding.embedding)}::vector, ${embedding.createdAt.toISOString()})
         `;
       }
     });
@@ -299,7 +316,7 @@ export async function searchByVector(
       LIMIT ${limit}
     `;
 
-    return result.rows.map(row => ({
+    return result.rows.map((row: any) => ({
       articleId: row.article_id,
       content: row.content,
       score: parseFloat(row.similarity),
@@ -328,7 +345,7 @@ export async function searchByText(
       LIMIT ${limit}
     `;
 
-    return result.rows.map(row => ({
+    return result.rows.map((row: any) => ({
       articleId: row.article_id,
       snippet: row.snippet,
       score: parseFloat(row.score),
@@ -344,18 +361,18 @@ function mapRowToArticle(row: any): Article {
     id: row.id,
     title: row.title,
     slug: row.slug,
-    description: row.excerpt || '',
-    content: row.content || '',
+    description: row.description || '',
+    content: row.content || [],
     tags: Array.isArray(row.tags) ? row.tags : [],
-    status: 'published' as ArticleStatus,
+    status: row.status as ArticleStatus,
     createdAt: new Date(row.created_at),
     updatedAt: new Date(row.updated_at),
-    publishedAt: row.published_date ? new Date(row.published_date) : undefined,
-    authorId: row.author || 'Admin',
-    coverImage: row.featured_image,
-    seoTitle: row.title,
-    seoDescription: row.excerpt,
-    canonicalUrl: undefined,
+    publishedAt: row.published_at ? new Date(row.published_at) : undefined,
+    authorId: row.author_id || undefined,
+    coverImage: row.cover_image || undefined,
+    seoTitle: row.seo_title || undefined,
+    seoDescription: row.seo_description || undefined,
+    canonicalUrl: row.canonical_url || undefined,
   };
 }
 

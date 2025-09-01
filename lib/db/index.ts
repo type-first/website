@@ -1,4 +1,2 @@
-// lib/db/index.ts - Database client for development and production
-
-// Simply export from @vercel/postgres for now
+// lib/db/index.ts - Always use @vercel/postgres (cloud-hosted Neon)
 export * from '@vercel/postgres';

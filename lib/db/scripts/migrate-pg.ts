@@ -1,22 +1,23 @@
-const { Client } = require('pg');
-const fs = require('fs').promises;
-const path = require('path');
+// moved to lib/db/scripts (TypeScript)
+import { Client } from 'pg';
+import fs from 'fs/promises';
+import path from 'path';
+import dotenv from 'dotenv';
 
-// Load environment variables from .env.local
-require('dotenv').config({ path: path.join(__dirname, '..', '.env.local') });
+// Load environment variables from project root .env.local
+dotenv.config({ path: path.join(__dirname, '../../../.env.local') });
 
-async function runMigrations() {
+export async function runMigrations(): Promise<void> {
   console.log('Starting database migrations...');
-  
+
   const client = new Client({
-    connectionString: process.env.POSTGRES_URL
+    connectionString: process.env.POSTGRES_URL,
   });
 
   try {
     await client.connect();
     console.log('✅ Connected to database');
 
-    // Create migrations table if it doesn't exist
     await client.query(`
       CREATE TABLE IF NOT EXISTS migrations (
         id SERIAL PRIMARY KEY,
@@ -25,18 +26,16 @@ async function runMigrations() {
       )
     `);
 
-    // Get list of executed migrations
-    const executedMigrations = await client.query(`
-      SELECT filename FROM migrations ORDER BY id
-    `);
-    const executedFiles = new Set(executedMigrations.rows.map(row => row.filename));
+    const executedMigrations = await client.query(
+      'SELECT filename FROM migrations ORDER BY id'
+    );
+    const executedFiles = new Set(
+      (executedMigrations.rows as Array<{ filename: string }>).map((row) => row.filename)
+    );
 
-    // Read migration files
     const migrationsDir = path.join(__dirname, '../migrations');
     const files = await fs.readdir(migrationsDir);
-    const migrationFiles = files
-      .filter(file => file.endsWith('.sql'))
-      .sort();
+    const migrationFiles = files.filter((file) => file.endsWith('.sql')).sort();
 
     console.log(`Found ${migrationFiles.length} migration files`);
 
@@ -47,23 +46,13 @@ async function runMigrations() {
       }
 
       console.log(`Executing migration: ${file}`);
-      
       const filePath = path.join(migrationsDir, file);
       const migrationSQL = await fs.readFile(filePath, 'utf-8');
-      
-      // Execute migration in a transaction
+
       await client.query('BEGIN');
       try {
-        // Execute the entire migration file as one statement
-        // This handles PostgreSQL functions and dollar-quoted strings properly
         await client.query(migrationSQL);
-
-        // Record migration as executed
-        await client.query(
-          'INSERT INTO migrations (filename) VALUES ($1)',
-          [file]
-        );
-        
+        await client.query('INSERT INTO migrations (filename) VALUES ($1)', [file]);
         await client.query('COMMIT');
         console.log(`✅ Migration ${file} executed successfully`);
       } catch (error) {
@@ -81,9 +70,8 @@ async function runMigrations() {
   }
 }
 
-// Run migrations if called directly
-if (require.main === module) {
+// Execute when run directly
+const invokedDirectly = process.argv[1]?.endsWith('migrate-pg.ts') || process.argv[1]?.endsWith('migrate-pg.js');
+if (invokedDirectly) {
   runMigrations();
 }
-
-module.exports = { runMigrations };

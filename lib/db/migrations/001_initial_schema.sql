@@ -1,8 +1,11 @@
+-- moved to lib/db/migrations
 -- Migration: 001_initial_schema
 -- Description: Create initial tables for articles, derived content, and section embeddings
 
 -- Enable pgvector extension
 CREATE EXTENSION IF NOT EXISTS vector;
+-- Required for gen_random_uuid()
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 -- Articles table
 CREATE TABLE articles (

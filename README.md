@@ -54,9 +54,10 @@ A state-of-the-art Next.js 15 application showcasing modern web development patt
 │   ├── islands/                 # Island registry system
 │   ├── schemas/                 # Zod schemas
 │   └── utils.ts                 # Utility functions
-├── fixtures/                    # YAML test data
-├── migrations/                  # Database migrations
-├── scripts/                     # Setup scripts
+├── lib/db/                      # DB layer + assets (cloud-only)
+│   ├── migrations/              # SQL migrations
+│   ├── fixtures/                # YAML seed data
+│   └── scripts/                 # TS scripts: migrate/seed/test/reset
 └── tests/                       # Playwright tests
 ```
 
@@ -64,7 +65,7 @@ A state-of-the-art Next.js 15 application showcasing modern web development patt
 
 ### Prerequisites
 - Node.js 18+ and pnpm
-- PostgreSQL database (local or Vercel Postgres)
+- Cloud Postgres (Vercel Postgres / Neon)
 
 ### 1. Clone and Install
 ```bash
@@ -73,13 +74,13 @@ cd my-app
 pnpm install
 ```
 
-### 2. Environment Setup
+### 2. Environment Setup (cloud-only)
 ```bash
 cp .env.example .env.local
-# Edit .env.local with your database connection details
+# Set POSTGRES_URL from your Vercel/Neon database (include sslmode=require)
 ```
 
-### 3. Database Setup
+### 3. Database Setup (TypeScript scripts via tsx)
 ```bash
 # Run migrations
 pnpm run db:migrate
@@ -116,6 +117,11 @@ pnpm run test:ui
 ### Type Checking
 ```bash
 pnpm run type-check
+```
+
+### DB Smoke Tests
+```bash
+pnpm run db:test
 ```
 
 ## 🏗️ Architecture Deep Dive

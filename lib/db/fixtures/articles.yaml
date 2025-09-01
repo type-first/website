@@ -1,3 +1,4 @@
+# moved to lib/db/fixtures
 - title: "Getting Started with Next.js 15 and App Router"
   slug: "getting-started-nextjs-15-app-router"
   description: "Learn how to build modern web applications with Next.js 15's powerful App Router, Server Components, and latest features."
