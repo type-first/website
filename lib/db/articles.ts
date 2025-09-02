@@ -355,6 +355,73 @@ export async function searchByText(
   }
 }
 
+// String contains search prioritizing exact substring matches in title/description first,
+// then body (derived_content.plaintext). Returns HTML snippets with <mark> highlights.
+export async function searchByString(
+  query: string,
+  limit: number = 10
+): Promise<Array<{ articleId: string; snippet: string; score: number }>> {
+  const q = query.trim();
+  if (!q) return [];
+
+  const like = `%${q}%`;
+
+  // Fetch potential matches
+  const titleDesc = await sql`
+    SELECT id as article_id, title, description
+    FROM articles
+    WHERE status = 'published'
+      AND (title ILIKE ${like} OR description ILIKE ${like})
+    LIMIT ${limit}
+  `;
+
+  // Remaining slots for body matches
+  const remaining = Math.max(0, limit - titleDesc.rows.length);
+
+  const body = remaining > 0 ? await sql`
+    SELECT dc.article_id, dc.plaintext
+    FROM derived_content dc
+    JOIN articles a ON a.id = dc.article_id
+    WHERE a.status = 'published'
+      AND dc.plaintext ILIKE ${like}
+    LIMIT ${remaining}
+  ` : { rows: [] as any[] };
+
+  // Helper to escape regex
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp(`(${escapeRegExp(q)})`, 'gi');
+
+  const makeSnippet = (text: string) => {
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(q.toLowerCase());
+    const start = Math.max(0, idx - 60);
+    const end = Math.min(text.length, idx + q.length + 120);
+    const slice = text.slice(start, end);
+    const escaped = slice
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+    return escaped.replace(re, '<mark>$1</mark>');
+  };
+
+  const results: Array<{ articleId: string; snippet: string; score: number }> = [];
+
+  // Title/description matches first
+  for (const row of titleDesc.rows as any[]) {
+    const base = row.title?.includes(q) ? row.title : (row.description || row.title || '');
+    const snippet = makeSnippet(base);
+    results.push({ articleId: row.article_id, snippet, score: 1.0 });
+  }
+
+  // Body matches next
+  for (const row of body.rows as any[]) {
+    const snippet = makeSnippet(row.plaintext || '');
+    results.push({ articleId: row.article_id, snippet, score: 0.8 });
+  }
+
+  return results;
+}
+
 // Helper functions
 function mapRowToArticle(row: any): Article {
   return {

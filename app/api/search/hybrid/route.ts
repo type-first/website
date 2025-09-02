@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchByText, searchByVector, getArticleById } from '@/lib/db/articles';
+import { searchByString, searchByVector, getArticleById } from '@/lib/db/articles';
 import type { SearchResult } from '@/lib/schemas/article';
 
 async function embedQuery(query: string): Promise<number[] | null> {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const textResults = await searchByText(q.trim(), limit);
+    const textResults = await searchByString(q.trim(), limit);
 
     const seen = new Set<string>();
     const combined: SearchResult[] = [];
@@ -101,4 +101,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-
