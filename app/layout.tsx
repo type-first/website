@@ -60,39 +60,66 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased`}>
-        <div className="min-h-screen bg-gray-50">
-          <header className="bg-white shadow-sm border-b border-gray-200">
-            <nav className="max-w-6xl mx-auto px-6 py-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <h1 className="text-xl font-bold text-gray-900">
+        <div className="min-h-screen bg-gray-50 flex">
+          {/* Sidebar (left) for md+ screens */}
+          <aside className="hidden md:flex w-64 flex-none border-r border-gray-200 bg-white">
+            <div className="flex flex-col w-full h-screen sticky top-0">
+              <div className="px-5 py-6 border-b border-gray-200">
+                <h1 className="text-xl font-bold text-gray-900">
+                  <Link href="/" className="hover:text-blue-600 transition-colors">
+                    Our Blog
+                  </Link>
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">Modern Web Development</p>
+              </div>
+              <nav className="flex-1 px-3 py-4">
+                <ul className="space-y-1">
+                  <li>
+                    <Link
+                      href="/"
+                      className="block px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                    >
+                      Home
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/articles"
+                      className="block px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                    >
+                      Articles
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+              <div className="px-5 py-4 border-t border-gray-200 text-xs text-gray-500">
+                <p>&copy; {new Date().getFullYear()} Our Blog</p>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main column */}
+          <div className="flex-1 flex flex-col min-w-0">
+            {/* Top bar for small screens */}
+            <header className="md:hidden bg-white shadow-sm border-b border-gray-200">
+              <nav className="px-4 py-4">
+                <div className="flex items-center justify-between">
+                  <h1 className="text-lg font-semibold text-gray-900">
                     <Link href="/" className="hover:text-blue-600 transition-colors">
                       Our Blog
                     </Link>
                   </h1>
+                  <div className="flex items-center space-x-5">
+                    <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">Home</Link>
+                    <Link href="/articles" className="text-gray-600 hover:text-gray-900 transition-colors">Articles</Link>
+                  </div>
                 </div>
-                
-                <div className="flex items-center space-x-6">
-                  <Link 
-                    href="/" 
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    Home
-                  </Link>
-                  <Link 
-                    href="/articles" 
-                    className="text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    Articles
-                  </Link>
-                </div>
-              </div>
-            </nav>
-          </header>
+              </nav>
+            </header>
 
-          <main className="flex-1">
-            <Suspense fallback={
-              <div className="max-w-4xl mx-auto px-6 py-12">
+            <main className="flex-1">
+              <Suspense fallback={
+              <div className="max-w-6xl mx-auto px-6 py-12">
                 <div className="animate-pulse">
                   <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
                   <div className="h-4 bg-gray-200 rounded w-2/3 mb-8"></div>
@@ -106,10 +133,10 @@ export default function RootLayout({
             }>
               {children}
             </Suspense>
-          </main>
+            </main>
 
-          <footer className="bg-white border-t border-gray-200 mt-20">
-            <div className="max-w-6xl mx-auto px-6 py-12">
+            <footer className="bg-white border-t border-gray-200 mt-20">
+              <div className="max-w-6xl mx-auto px-6 py-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">Our Blog</h3>
@@ -155,8 +182,9 @@ export default function RootLayout({
               <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-500">
                 <p>&copy; 2024 Our Blog. Built with Next.js and Islands Architecture.</p>
               </div>
-            </div>
-          </footer>
+              </div>
+            </footer>
+          </div>
         </div>
       </body>
     </html>
