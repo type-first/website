@@ -1,7 +1,7 @@
 "use client";
 
 export default function AuthPopupButtons() {
-  function openPopup(provider: 'github' | 'google') {
+  function openPopup() {
     const w = 520;
     const h = 650;
     const dualScreenLeft = window.screenLeft !== undefined ? window.screenLeft : window.screenX;
@@ -12,7 +12,9 @@ export default function AuthPopupButtons() {
     const top = dualScreenTop + Math.max(0, (height - h) / 2);
 
     const callbackUrl = new URL('/auth/popup-complete', window.location.origin).toString();
-    const url = new URL(`/api/auth/signin/${provider}`, window.location.origin);
+    // In Auth.js v5, direct provider endpoints require POST.
+    // Open the built-in sign-in page (GET), which will handle provider POST inside the popup.
+    const url = new URL(`/api/auth/signin`, window.location.origin);
     url.searchParams.set('callbackUrl', callbackUrl);
 
     const popup = window.open(
@@ -48,12 +50,8 @@ export default function AuthPopupButtons() {
 
   return (
     <div className="flex items-center gap-3">
-      <button onClick={() => openPopup('github')} className="text-sm text-gray-600 hover:text-gray-900">
+      <button onClick={() => openPopup()} className="text-sm text-gray-600 hover:text-gray-900">
         Sign in with GitHub
-      </button>
-      <span className="text-gray-300">|</span>
-      <button onClick={() => openPopup('google')} className="text-sm text-gray-600 hover:text-gray-900">
-        Sign in with Google
       </button>
     </div>
   );
