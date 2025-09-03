@@ -11,11 +11,8 @@ export default function AuthPopupButtons() {
     const left = dualScreenLeft + Math.max(0, (width - w) / 2);
     const top = dualScreenTop + Math.max(0, (height - h) / 2);
 
-    const callbackUrl = new URL('/auth/popup-complete', window.location.origin).toString();
-    // In Auth.js v5, direct provider endpoints require POST.
-    // Open the built-in sign-in page (GET), which will handle provider POST inside the popup.
-    const url = new URL(`/api/auth/signin`, window.location.origin);
-    url.searchParams.set('callbackUrl', callbackUrl);
+    // Open a static starter page (no app layout) that auto-POSTs with CSRF
+    const url = new URL(`/auth/start-github.html`, window.location.origin);
 
     const popup = window.open(
       url.toString(),

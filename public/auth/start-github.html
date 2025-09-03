@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Redirecting to GitHub…</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; }
+      .wrap { padding: 16px; font-size: 14px; color: #374151; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">Redirecting to GitHub…</div>
+    <script>
+      (async function () {
+        const callbackUrl = new URL('/auth/complete.html', window.location.origin).toString();
+        let token = '';
+        try {
+          const res = await fetch('/api/auth/csrf', { credentials: 'include' });
+          if (res.ok) {
+            const data = await res.json();
+            token = data && (data.csrfToken || data.csrf || data.token) || '';
+          }
+        } catch (e) {}
+
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '/api/auth/signin/github';
+        form.style.display = 'none';
+
+        const cb = document.createElement('input');
+        cb.type = 'hidden';
+        cb.name = 'callbackUrl';
+        cb.value = callbackUrl;
+        form.appendChild(cb);
+
+        if (token) {
+          const csrf = document.createElement('input');
+          csrf.type = 'hidden';
+          csrf.name = 'csrfToken';
+          csrf.value = token;
+          form.appendChild(csrf);
+        }
+
+        document.body.appendChild(form);
+        form.submit();
+      })();
+    </script>
+  </body>
+  </html>
