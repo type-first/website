@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import SearchBarLauncher from '@/components/SearchBarLauncher';
+import AuthMenu from '@/components/AuthMenu';
 import './globals.css';
 import { Suspense } from 'react';
 
@@ -93,8 +94,13 @@ export default function RootLayout({
                   </li>
                 </ul>
               </nav>
-              <div className="px-5 py-4 border-t border-gray-200 text-xs text-gray-500">
-                <p>&copy; {new Date().getFullYear()} Our Blog</p>
+              <div className="px-5 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-xs text-gray-500">&copy; {new Date().getFullYear()} Our Blog</div>
+                  {/* Server component renders user or sign in */}
+                  {/* On sidebar for md+ */}
+                  <AuthMenu />
+                </div>
               </div>
             </div>
           </aside>
@@ -114,6 +120,9 @@ export default function RootLayout({
                     <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">Home</Link>
                     <Link href="/articles" className="text-gray-600 hover:text-gray-900 transition-colors">Articles</Link>
                   </div>
+                </div>
+                <div className="mt-2">
+                  <AuthMenu />
                 </div>
               </nav>
             </header>

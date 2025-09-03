@@ -221,7 +221,27 @@ OPENAI_API_KEY="sk-..."
 
 # Optional: Vercel Auth
 AUTH_SECRET="..."
+GITHUB_ID="..."
+GITHUB_SECRET="..."
+GOOGLE_CLIENT_ID="..."
+GOOGLE_CLIENT_SECRET="..."
 ```
+
+## 🔐 Authentication (Google & GitHub)
+
+This project ships with Auth.js (NextAuth v5) configured for Google and GitHub OAuth.
+
+- Config: `auth.ts` (providers, JWT sessions)
+- API Route: `app/api/auth/[...nextauth]/route.ts`
+- UI: `components/AuthMenu.tsx` (sign-in/out buttons)
+- Layout integration: `app/layout.tsx` (sidebar and mobile header)
+
+Setup steps:
+
+1. Create OAuth apps for GitHub and Google.
+2. Add environment variables: `AUTH_SECRET`, `GITHUB_ID`, `GITHUB_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`.
+3. Deploy on Vercel and set the same env vars in the dashboard.
+4. Visit `/api/auth/signin` or use the header buttons to sign in.
 
 ## 📊 Performance
 
