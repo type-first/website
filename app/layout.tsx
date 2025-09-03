@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import SearchBarLauncher from '@/components/SearchBarLauncher';
 import AuthMenu from '@/components/AuthMenu';
+import ChatSidebar from '@/components/ChatSidebar';
 import './globals.css';
 import { Suspense } from 'react';
 
@@ -199,6 +200,8 @@ export default function RootLayout({
             </footer>
           </div>
         </div>
+        {/* Global chat assistant */}
+        <ChatSidebar />
       </body>
     </html>
   );
