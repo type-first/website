@@ -1,8 +1,10 @@
-import { auth, signIn, signOut } from '@/auth';
+import { auth, signOut } from '@/auth';
+import dynamic from 'next/dynamic';
 
 export default async function AuthMenu() {
   const session = await auth();
   const user = session?.user as { name?: string | null; email?: string | null; image?: string | null } | undefined;
+  const AuthPopupButtons = dynamic(() => import('./AuthPopupButtons'), { ssr: false });
 
   return (
     <div className="flex items-center gap-3">
@@ -22,17 +24,9 @@ export default async function AuthMenu() {
           </form>
         </>
       ) : (
-        <div className="flex items-center gap-3">
-          <form action={async () => { 'use server'; await signIn('github'); }}>
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">Sign in with GitHub</button>
-          </form>
-          <span className="text-gray-300">|</span>
-          <form action={async () => { 'use server'; await signIn('google'); }}>
-            <button type="submit" className="text-sm text-gray-600 hover:text-gray-900">Sign in with Google</button>
-          </form>
-        </div>
+        // Client-side popup buttons
+        <AuthPopupButtons />
       )}
     </div>
   );
 }
-
