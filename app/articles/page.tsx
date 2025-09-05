@@ -102,15 +102,13 @@ function ArticleGrid({ articles }: { articles: ArticleMetadata[] }) {
 function ArticleCard({ article }: { article: ArticleMetadata }) {
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-      {article.coverImage && (
-        <div className="aspect-video bg-gray-100">
-          <img 
-            src={article.coverImage} 
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
+      <div className="aspect-video bg-gray-100">
+        <img 
+          src={article.coverImage || '/images/covers/placeholder.svg'}
+          alt={article.title}
+          className="w-full h-full object-cover"
+        />
+      </div>
       
       <div className="p-6">
         <div className="flex flex-wrap gap-2 mb-3">
