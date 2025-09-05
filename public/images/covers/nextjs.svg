@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Next.js cover">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#1f2937"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g)"/>
+  <g fill="#fff" opacity="0.08">
+    <circle cx="200" cy="140" r="110"/>
+    <circle cx="1000" cy="520" r="130"/>
+    <circle cx="950" cy="130" r="70"/>
+  </g>
+  <g fill="#fff">
+    <text x="80" y="360" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" font-weight="700" font-size="88">Next.js</text>
+    <text x="80" y="450" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" font-size="40" opacity="0.9">App Router • Server Components • Streaming</text>
+  </g>
+</svg>
+

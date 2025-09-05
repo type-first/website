@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-type Msg = { role: 'user' | 'assistant'; content: string };
+type Suggestion = { title: string; slug: string; snippet: string };
+type Msg = { role: 'user' | 'assistant'; content: string; suggestions?: Suggestion[] };
 
 export default function ChatSidebar() {
   const [open, setOpen] = useState(false);
@@ -18,6 +19,16 @@ export default function ChatSidebar() {
     }
   }, [open, messages.length]);
 
+  // Seed intro message on first open
+  useEffect(() => {
+    if (open && messages.length === 0) {
+      setMessages([
+        { role: 'assistant', content: "Hi! What topics are you interested in? I can suggest relevant articles." },
+      ]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
   async function send() {
     const q = input.trim();
     if (!q || loading) return;
@@ -29,12 +40,13 @@ export default function ChatSidebar() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next.map(({ role, content }) => ({ role, content })) }),
       });
       if (!res.ok) throw new Error('Chat API error');
       const data = await res.json();
       const reply = (data?.reply as string) || 'Sorry, I could not respond.';
-      setMessages((m) => [...m, { role: 'assistant', content: reply }]);
+      const suggestions = Array.isArray(data?.suggestions) ? (data.suggestions as Suggestion[]) : [];
+      setMessages((m) => [...m, { role: 'assistant', content: reply, suggestions }]);
     } catch (e) {
       setMessages((m) => [...m, { role: 'assistant', content: 'There was an error talking to the model.' }]);
     } finally {
@@ -79,8 +91,21 @@ export default function ChatSidebar() {
               {messages.map((m, i) => (
                 <div key={i} className={m.role === 'user' ? 'text-right' : 'text-left'}>
                   <div className={`inline-block px-3 py-2 rounded-lg text-sm whitespace-pre-wrap ${m.role === 'user' ? 'bg-blue-600 text-white' : 'bg-white border text-gray-900'}`}>
-                    {m.content}
+                    {renderContent(m)}
                   </div>
+                  {m.role === 'assistant' && m.suggestions && m.suggestions.length > 0 && (
+                    <div className="mt-2 text-left">
+                      <div className="text-xs font-medium text-gray-700 mb-1">Suggested articles</div>
+                      <ul className="space-y-1">
+                        {m.suggestions.map((s, idx) => (
+                          <li key={idx} className="text-sm">
+                            <a href={`/articles/${s.slug}`} className="text-blue-700 underline hover:text-blue-900">{s.title}</a>
+                            <div className="text-gray-600 text-xs line-clamp-2">{s.snippet.replace(/<[^>]+>/g, '')}</div>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               ))}
               {loading && (
@@ -110,6 +135,37 @@ export default function ChatSidebar() {
             </form>
           </aside>
         </div>
+      )}
+    </>
+  );
+}
+
+function renderContent(m: Msg) {
+  // Minimal linkification for /articles/... and http(s) links
+  const text = m.content;
+  const parts: Array<string | { href: string; label: string }> = [];
+  const urlRe = /(https?:\/\/[^\s)]+)|(\/articles\/[a-z0-9-]+)/gi;
+  let lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = urlRe.exec(text)) !== null) {
+    const idx = match.index;
+    if (idx > lastIndex) parts.push(text.slice(lastIndex, idx));
+    const href = match[0];
+    parts.push({ href, label: href });
+    lastIndex = idx + href.length;
+  }
+  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
+
+  return (
+    <>
+      {parts.map((p, i) =>
+        typeof p === 'string' ? (
+          <span key={i}>{p}</span>
+        ) : (
+          <a key={i} href={p.href} className="underline text-blue-700 hover:text-blue-900" target={p.href.startsWith('http') ? '_blank' : undefined} rel={p.href.startsWith('http') ? 'noopener noreferrer' : undefined}>
+            {p.label}
+          </a>
+        )
       )}
     </>
   );

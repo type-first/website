@@ -1,0 +1,165 @@
+# Additional articles focused on TypeScript, RAG, AI-driven UIs, and Next.js
+
+- title: "TypeScript 5.x Features That Matter for Next.js"
+  slug: "typescript-5-features-for-nextjs"
+  description: "A practical tour of TypeScript 5.x features that streamline large Next.js codebases."
+  status: "published"
+  publishedAt: "2024-02-10T09:00:00Z"
+  tags: ["typescript", "nextjs", "tooling", "types", "best-practices"]
+  coverImage: "/images/covers/typescript.svg"
+  seoTitle: "TypeScript 5 for Next.js: Practical Features"
+  seoDescription: "Learn the TS 5 features that reduce boilerplate, improve DX, and scale Next.js apps."
+  content:
+    - type: text
+      content: |
+        # TypeScript 5.x Features That Matter for Next.js
+
+        TypeScript 5 brings improvements that make Next.js development faster and safer. Let’s cover the features you’ll actually use in production.
+
+        ## Satisfies Operator
+        The `satisfies` operator helps ensure object literals conform to expected types without losing inference.
+
+    - type: code
+      language: "ts"
+      filename: "lib/config/routes.ts"
+      content: |
+        type Route = { path: string; title: string };
+        const routes = {
+          home: { path: '/', title: 'Home' },
+          articles: { path: '/articles', title: 'Articles' },
+        } satisfies Record<string, Route>;
+
+    - type: text
+      content: |
+        ## Decorators (stable)
+        Decorators make server utilities and data models more expressive when used with metadata.
+
+- title: "RAG 101: Building a Retrieval Layer with Postgres + pgvector"
+  slug: "rag-101-postgres-pgvector"
+  description: "From plaintext to embeddings: build a pragmatic retrieval layer with Postgres and pgvector."
+  status: "published"
+  publishedAt: "2024-02-18T12:00:00Z"
+  tags: ["rag", "pgvector", "postgres", "embeddings", "search"]
+  coverImage: "/images/covers/rag.svg"
+  content:
+    - type: text
+      content: |
+        # RAG 101: Building a Retrieval Layer with Postgres + pgvector
+
+        Retrieval-augmented generation (RAG) starts with clean content, reliable indexing, and fast retrieval.
+
+        ## Content Derivation
+        Start by deriving plaintext and outlines from your sources. Keep the pipeline deterministic and resumable.
+
+    - type: island
+      component: "InteractiveChart"
+      textAlt: "Bar chart showing improvements in precision/recall after adding pgvector"
+      props:
+        title: "Precision/Recall"
+        data:
+          - label: "Text only"
+            value: 60
+          - label: "Hybrid (text+vector)"
+            value: 84
+
+    - type: text
+      content: |
+        ## Embeddings
+        Store section-level embeddings in `vector(1536)` columns with an IVFFLAT index for fast ANN queries.
+
+- title: "Designing AI-Driven User Interfaces in React"
+  slug: "ai-driven-interfaces-react"
+  description: "Patterns for AI-first UX: suggestions, corrections, and confirmations without overwhelming users."
+  status: "published"
+  publishedAt: "2024-02-24T16:20:00Z"
+  tags: ["ai", "react", "ui", "ux", "patterns"]
+  coverImage: "/images/covers/ai-ui.svg"
+  content:
+    - type: text
+      content: |
+        # Designing AI-Driven User Interfaces in React
+
+        Great AI UX treats the model as a collaborator. Focus on clarity, reversible actions, and graceful failure states.
+
+        - Inline suggestions with accept/edit
+        - Explanations on demand
+        - Optimistic updates with server confirmation
+
+    - type: island
+      component: "Counter"
+      textAlt: "Simple island to demonstrate optimistic UI patterns"
+      props:
+        initialValue: 1
+        step: 2
+        label: "Try optimistic increments"
+
+- title: "Next.js Server Actions for AI: Streaming and Validation"
+  slug: "nextjs-server-actions-ai-streaming-validation"
+  description: "Leverage Server Actions for AI pipelines: validation, moderation, and token-efficient streaming."
+  status: "published"
+  publishedAt: "2024-03-02T11:45:00Z"
+  tags: ["nextjs", "ai", "server-actions", "streaming", "validation"]
+  coverImage: "/images/covers/server-actions.svg"
+  content:
+    - type: text
+      content: |
+        # Next.js Server Actions for AI
+
+        Server Actions simplify request/response control for AI features. Stream partial deltas and validate inputs server-side to reduce client complexity.
+
+    - type: code
+      language: "tsx"
+      filename: "app/actions/generate.ts"
+      content: |
+        'use server';
+        import { generate } from 'ai-sdk';
+        export async function generateSummary(input: string) {
+          if (input.length < 10) throw new Error('Too short');
+          return generate({ prompt: `Summarize: ${input}` });
+        }
+
+- title: "Knowledge Curation: From Sources to Collections"
+  slug: "knowledge-curation-sources-to-collections"
+  description: "A blueprint for curating knowledge: source ingestion, normalization, deduplication, and collection-building."
+  status: "published"
+  publishedAt: "2024-03-10T08:30:00Z"
+  tags: ["curation", "knowledge", "pipelines", "rag", "quality"]
+  coverImage: "/images/covers/curation.svg"
+  content:
+    - type: text
+      content: |
+        # Knowledge Curation: From Sources to Collections
+
+        Quality retrieval starts with quality curation. Build a pipeline that normalizes formats, deduplicates near-duplicates, and groups content into collections.
+
+        ## Signals
+        Use signals like recency, citations, and user feedback to prioritize.
+
+- title: "Personalized Recommendations with Hybrid Retrieval"
+  slug: "personalized-recommendations-hybrid-retrieval"
+  description: "Combine tags, text, and vectors to recommend content that adapts to user interests."
+  status: "published"
+  publishedAt: "2024-03-16T13:10:00Z"
+  tags: ["recommendations", "hybrid", "tags", "vectors", "personalization"]
+  coverImage: "/images/covers/recommendations.svg"
+  content:
+    - type: text
+      content: |
+        # Personalized Recommendations with Hybrid Retrieval
+
+        Start simple: mix tag overlap with text search. Then add vector similarity to capture semantic relatedness.
+
+        Score = `tagBoost * overlap + textScore + 0.5 * vectorScore`.
+
+    - type: island
+      component: "InteractiveChart"
+      textAlt: "Chart comparing CTR of text vs hybrid vs hybrid+personalization"
+      props:
+        title: "CTR Comparison"
+        data:
+          - label: "Text"
+            value: 3
+          - label: "Hybrid"
+            value: 5
+          - label: "Hybrid+Personalization"
+            value: 7

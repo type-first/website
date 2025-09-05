@@ -14,6 +14,7 @@
     "db:reset": "tsx lib/db/scripts/reset-cloud.ts && npm run db:migrate && npm run db:seed",
     "db:test": "tsx lib/db/scripts/test-articles.ts && tsx lib/db/scripts/test-db.ts",
     "embeddings:gen": "tsx lib/db/scripts/generate-embeddings.ts",
+    "db:covers": "tsx lib/db/scripts/backfill-covers.ts",
     "search:test": "tsx lib/db/scripts/test-search.ts",
     "type-check": "tsc --noEmit"
   },

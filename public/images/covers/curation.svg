@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="Knowledge Curation cover">
+  <defs>
+    <linearGradient id="g7" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#065f46"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#g7)"/>
+  <g fill="#fff" opacity="0.12">
+    <circle cx="320" cy="260" r="140"/>
+    <circle cx="860" cy="380" r="100"/>
+  </g>
+  <g fill="#fff">
+    <text x="80" y="360" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" font-weight="700" font-size="88">Curation</text>
+    <text x="80" y="450" font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto" font-size="40" opacity="0.9">Sources • Signals • Collections</text>
+  </g>
+</svg>
+
