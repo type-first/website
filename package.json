@@ -16,11 +16,13 @@
     "embeddings:gen": "tsx lib/db/scripts/generate-embeddings.ts",
     "db:covers": "tsx lib/db/scripts/backfill-covers.ts",
     "search:test": "tsx lib/db/scripts/test-search.ts",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "covers:clean": "tsx lib/db/scripts/clean-local-covers.ts",
+    "covers:gen": "tsx lib/db/scripts/generate-covers.ts"
   },
   "dependencies": {
-    "@vercel/postgres": "^0.10.0",
     "@vercel/blob": "^1.1.1",
+    "@vercel/postgres": "^0.10.0",
     "date-fns": "^4.1.0",
     "dotenv": "^17.2.1",
     "gray-matter": "^4.0.3",
@@ -33,6 +35,7 @@
     "react-dom": "19.1.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
+    "sharp": "^0.34.3",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -46,7 +49,7 @@
     "eslint": "^8",
     "eslint-config-next": "15.5.2",
     "tailwindcss": "^4",
-    "typescript": "^5",
-    "tsx": "^4.15.7"
+    "tsx": "^4.15.7",
+    "typescript": "^5"
   }
 }

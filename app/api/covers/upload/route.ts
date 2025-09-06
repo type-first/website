@@ -28,7 +28,6 @@ export async function POST(req: NextRequest) {
     // Validate article exists
     const article = await getArticleBySlug(slug);
 
-    const bytes = await file.arrayBuffer();
     const contentType = file.type || 'application/octet-stream';
 
     // Store under covers/<slug>/<filename>
@@ -37,7 +36,7 @@ export async function POST(req: NextRequest) {
     const timestamp = Date.now();
     const objectName = `${keyBase}/${timestamp}.${ext}`;
 
-    const blob = await put(objectName, new Uint8Array(bytes), {
+    const blob = await put(objectName, file as File, {
       access: 'public',
       contentType,
       addRandomSuffix: false,
@@ -51,4 +50,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: e?.message || 'Upload failed' }, { status: 500 });
   }
 }
-

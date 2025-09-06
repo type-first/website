@@ -5,7 +5,6 @@
   status: "published"
   publishedAt: "2024-01-15T10:00:00Z"
   tags: ["nextjs", "react", "tutorial", "web-development"]
-  coverImage: "/images/covers/nextjs.svg"
   seoTitle: "Next.js 15 App Router Guide - Modern Web Development"
   seoDescription: "Complete guide to Next.js 15 App Router with Server Components, routing, and best practices for modern web development."
   content:
@@ -84,7 +83,6 @@
   status: "published"
   publishedAt: "2024-01-20T14:30:00Z"
   tags: ["islands", "architecture", "performance", "react", "ssr"]
-  coverImage: "/images/covers/islands.svg"
   content:
     - type: text
       content: |
@@ -162,7 +160,6 @@
   status: "published"
   publishedAt: "2024-01-25T09:15:00Z"
   tags: ["typescript", "react", "patterns", "type-safety", "advanced"]
-  coverImage: "/images/covers/typescript.svg"
   content:
     - type: text
       content: |

@@ -132,13 +132,15 @@ export default async function ArticlePage({ params }: ArticlePageProps) {
             </Link>
           </nav>
 
-          <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-8">
-            <img 
-              src={article.coverImage || '/images/covers/placeholder.svg'}
-              alt={article.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {article.coverImage && (
+            <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-8">
+              <img 
+                src={article.coverImage}
+                alt={article.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
 
           <div className="mb-6">
             <div className="flex flex-wrap gap-2 mb-4">
