@@ -49,11 +49,9 @@ export const metadata: Metadata = {
     creator: '@yourblog',
   },
   icons: {
-    icon: '/favicon.ico',
-    shortcut: '/favicon-16x16.png',
-    apple: '/apple-touch-icon.png',
+    icon: '/icon.svg',
   },
-  manifest: '/site.webmanifest',
+  // Manifest not provided yet
 };
 
 export default function RootLayout({
@@ -86,6 +84,16 @@ export default function RootLayout({
                       {/* Document icon */}
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19.5 14.25v-2.836a2.25 2.25 0 0 0-.659-1.59L13.5 4.5H8.25A2.25 2.25 0 0 0 6 6.75v10.5A2.25 2.25 0 0 0 8.25 19.5H12M19.5 14.25H15M19.5 14.25 12 21.75M9 9h3m-3 3h5.25"/></svg>
                       <span className="text-sm font-medium">Articles</span>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/community"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                    >
+                      {/* Users icon */}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 19.128a9 9 0 1 0-6 0M12 10.5a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Z"/></svg>
+                      <span className="text-sm font-medium">Community</span>
                     </Link>
                   </li>
                   <li>
