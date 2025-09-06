@@ -1,6 +1,7 @@
 import React from 'react';
 import { Section } from '@/lib/schemas/article';
 import { IslandLoader } from '@/lib/islands/registry';
+import { highlightCode } from '@/lib/highlight';
 
 interface ArticleRendererProps {
   sections: Section[];
@@ -22,7 +23,7 @@ interface SectionRendererProps {
   index: number;
 }
 
-function SectionRenderer({ section, index }: SectionRendererProps) {
+async function SectionRenderer({ section, index }: SectionRendererProps) {
   const sectionId = section.id || `section-${index}`;
 
   switch (section.type) {
@@ -46,7 +47,8 @@ function SectionRenderer({ section, index }: SectionRendererProps) {
         </blockquote>
       );
 
-    case 'code':
+    case 'code': {
+      const html = await highlightCode(section.content, section.language, 'light');
       return (
         <div id={sectionId} className="code-section my-6">
           {section.filename && (
@@ -54,13 +56,13 @@ function SectionRenderer({ section, index }: SectionRendererProps) {
               {section.filename}
             </div>
           )}
-          <pre className={`overflow-x-auto ${section.filename ? 'rounded-t-none' : ''} rounded-lg`}>
-            <code className={`language-${section.language} block p-4 bg-gray-900 text-gray-100`}>
-              {section.content}
-            </code>
-          </pre>
+          <div
+            className={`${section.filename ? 'rounded-t-none' : ''} rounded-lg overflow-x-auto`}
+            dangerouslySetInnerHTML={{ __html: html }}
+          />
         </div>
       );
+    }
 
     case 'island':
       return (
