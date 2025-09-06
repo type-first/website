@@ -4,6 +4,7 @@ import Link from 'next/link';
 import SearchBarLauncher from '@/components/SearchBarLauncher';
 import AuthMenu from '@/components/AuthMenu';
 import ChatSidebar from '@/components/ChatSidebar';
+import MobileTopBar from '@/components/MobileTopBar';
 import './globals.css';
 import { Suspense } from 'react';
 
@@ -67,66 +68,49 @@ export default function RootLayout({
           {/* Sidebar (left) for md+ screens */}
           <aside className="hidden md:flex w-64 flex-none border-r border-gray-200 bg-white">
             <div className="flex flex-col w-full h-screen sticky top-0">
-              <div className="px-5 py-6 border-b border-gray-200">
-                <h1 className="text-xl font-bold text-gray-900">
-                  <Link href="/" className="hover:text-blue-600 transition-colors">
-                    Our Blog
-                  </Link>
-                </h1>
-                <p className="text-sm text-gray-500 mt-1">Modern Web Development</p>
+              <div className="h-[60px] px-6 border-b border-gray-200 flex items-center">
+                <Link href="/" className="flex items-center gap-3 group">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-white font-semibold tracking-tight text-[11px] group-hover:ring-2 group-hover:ring-blue-200 transition">
+                    tf
+                  </div>
+                  <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">typefirst</span>
+                </Link>
               </div>
               <nav className="flex-1 px-3 py-4">
                 <ul className="space-y-1">
                   <li>
                     <Link
-                      href="/"
-                      className="block px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                      href="/articles"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                     >
-                      Home
+                      {/* Document icon */}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19.5 14.25v-2.836a2.25 2.25 0 0 0-.659-1.59L13.5 4.5H8.25A2.25 2.25 0 0 0 6 6.75v10.5A2.25 2.25 0 0 0 8.25 19.5H12M19.5 14.25H15M19.5 14.25 12 21.75M9 9h3m-3 3h5.25"/></svg>
+                      <span className="text-sm font-medium">Articles</span>
                     </Link>
                   </li>
                   <li>
                     <Link
-                      href="/articles"
-                      className="block px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
+                      href="/labs"
+                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
                     >
-                      Articles
+                      {/* Beaker icon */}
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 2.25v6.214a2.25 2.25 0 0 1-.659 1.59L4.53 13.864a4.5 4.5 0 0 0 3.182 7.636h8.575a4.5 4.5 0 0 0 3.182-7.636l-3.81-3.81a2.25 2.25 0 0 1-.659-1.59V2.25M7.5 2.25h9M6.75 9.75h10.5"/></svg>
+                      <span className="text-sm font-medium">Labs</span>
                     </Link>
                   </li>
                 </ul>
               </nav>
-              <div className="px-5 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs text-gray-500">&copy; {new Date().getFullYear()} Our Blog</div>
-                  {/* Server component renders user or sign in */}
-                  {/* On sidebar for md+ */}
-                  <AuthMenu />
-                </div>
+              <div className="px-3 py-3 border-t border-gray-200">
+                {/* Compact auth section for sidebar */}
+                <AuthMenu variant="sidebar" />
               </div>
             </div>
           </aside>
 
           {/* Main column */}
           <div className="flex-1 flex flex-col min-w-0">
-            {/* Top bar for small screens */}
-            <header className="md:hidden bg-white shadow-sm border-b border-gray-200">
-              <nav className="px-4 py-4">
-                <div className="flex items-center justify-between">
-                  <h1 className="text-lg font-semibold text-gray-900">
-                    <Link href="/" className="hover:text-blue-600 transition-colors">
-                      Our Blog
-                    </Link>
-                  </h1>
-                  <div className="flex items-center space-x-5">
-                    <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">Home</Link>
-                    <Link href="/articles" className="text-gray-600 hover:text-gray-900 transition-colors">Articles</Link>
-                  </div>
-                </div>
-                <div className="mt-2">
-                  <AuthMenu />
-                </div>
-              </nav>
-            </header>
+            {/* Mobile top bar (md-) */}
+            <MobileTopBar />
 
             {/* Secondary topbar: breadcrumbs + search */}
             <SearchBarLauncher />
