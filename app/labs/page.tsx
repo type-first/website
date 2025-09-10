@@ -26,12 +26,37 @@ function TypeExplorerIcon() {
   );
 }
 
+function SearchTestIcon() {
+  return (
+    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10">
+      <defs>
+        <linearGradient id="search" x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0%" stopColor="#7c3aed"/>
+          <stop offset="100%" stopColor="#06b6d4"/>
+        </linearGradient>
+      </defs>
+      <rect x="6" y="6" width="36" height="36" rx="8" fill="#f8fafc" />
+      <circle cx="20" cy="20" r="8" stroke="url(#search)" strokeWidth="2.5" fill="none"/>
+      <path d="m26 26 6 6" stroke="url(#search)" strokeWidth="2.5" strokeLinecap="round"/>
+      <path d="M16 20h8" stroke="#334155" strokeWidth="1.5" strokeLinecap="round" opacity=".6"/>
+      <path d="M20 16v8" stroke="#334155" strokeWidth="1.5" strokeLinecap="round" opacity=".6"/>
+      <circle cx="32" cy="32" r="2" fill="url(#search)" opacity=".8"/>
+    </svg>
+  );
+}
+
 const labs = [
   {
     slug: 'type-explorer',
     title: 'Type Explorer',
     description: 'TypeScript editor with autocomplete, types and diagnostics.',
     Icon: TypeExplorerIcon,
+  },
+  {
+    slug: 'search-test',
+    title: 'Search Testing',
+    description: 'Test and compare text vs vector search functionality.',
+    Icon: SearchTestIcon,
   },
   // Add more labs here as they land
 ];

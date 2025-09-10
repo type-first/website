@@ -1,62 +1,21 @@
 import Link from 'next/link';
-import { listArticles } from '@/lib/db/articles';
-import { ArticleMetadata } from '@/lib/schemas/article';
-import { format } from 'date-fns';
+import { getAllArticles, ArticleWithSlug } from '@/lib/articles/registry';
+import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants';
 
 export default async function Home() {
-  let articles: ArticleMetadata[] = [];
+  let articles: ArticleWithSlug[] = [];
   
   try {
-    const result = await listArticles({ 
-      status: 'published',
-      limit: 6 
-    });
-    articles = result.articles;
+    // Get the latest 6 articles from the module registry
+    const allArticles = await getAllArticles();
+    articles = allArticles.slice(0, 6);
   } catch (error) {
-    // Database not available, show sample articles for demo
-    console.warn('Database not available on homepage:', 
+    console.warn('Failed to load articles from registry:', 
       error instanceof Error ? error.message : String(error));
-    
-    // Mock articles for demonstration
-    articles = [
-      {
-        id: '1',
-        title: 'Getting Started with Next.js 15',
-        slug: 'getting-started-nextjs-15',
-        description: 'Learn how to build modern web applications with the latest Next.js features including App Router and Server Components.',
-        tags: ['nextjs', 'react', 'tutorial'],
-        status: 'published' as const,
-        createdAt: new Date('2024-01-15'),
-        updatedAt: new Date('2024-01-15'),
-        publishedAt: new Date('2024-01-15'),
-      },
-      {
-        id: '2',
-        title: 'Islands Architecture Explained',
-        slug: 'islands-architecture-explained',
-        description: 'Discover how islands architecture enables selective hydration for optimal performance in modern web applications.',
-        tags: ['architecture', 'performance', 'javascript'],
-        status: 'published' as const,
-        createdAt: new Date('2024-01-20'),
-        updatedAt: new Date('2024-01-20'),
-        publishedAt: new Date('2024-01-20'),
-      },
-      {
-        id: '3',
-        title: 'Building with TypeScript and Zod',
-        slug: 'building-typescript-zod',
-        description: 'How to create type-safe applications using TypeScript and Zod for runtime validation.',
-        tags: ['typescript', 'validation', 'development'],
-        status: 'published' as const,
-        createdAt: new Date('2024-01-25'),
-        updatedAt: new Date('2024-01-25'),
-        publishedAt: new Date('2024-01-25'),
-      }
-    ];
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12">
+    <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
       <header className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Welcome to Our Blog
@@ -78,9 +37,9 @@ export default async function Home() {
         </div>
 
         {articles.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid ${GRID.ARTICLES.FULL} ${SPACING.CARD_GAP}`}>
             {articles.map((article) => (
-              <ArticleCard key={article.id} article={article} />
+              <ArticleCard key={article.slug} article={article} />
             ))}
           </div>
         ) : (
@@ -110,11 +69,11 @@ export default async function Home() {
   );
 }
 
-function ArticleCard({ article }: { article: ArticleMetadata }) {
+function ArticleCard({ article }: { article: ArticleWithSlug }) {
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
       {article.coverImage && (
-        <div className="aspect-video bg-gray-100">
+        <div className={`${COVER_IMAGE.ASPECT_CLASS} bg-gray-100`}>
           <img 
             src={article.coverImage} 
             alt={article.title}
@@ -125,7 +84,7 @@ function ArticleCard({ article }: { article: ArticleMetadata }) {
       
       <div className="p-6">
         <div className="flex flex-wrap gap-2 mb-3">
-          {article.tags.slice(0, 2).map((tag) => (
+          {article.tags.slice(0, 2).map((tag: string) => (
             <span 
               key={tag}
               className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
@@ -151,7 +110,11 @@ function ArticleCard({ article }: { article: ArticleMetadata }) {
         )}
         
         <div className="text-xs text-gray-500">
-          {article.publishedAt && format(article.publishedAt, 'MMM d, yyyy')}
+          {article.publishedAt && article.publishedAt.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })}
         </div>
       </div>
     </article>

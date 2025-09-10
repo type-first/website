@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { listArticles } from '@/lib/db/articles';
-import { ArticleMetadata } from '@/lib/schemas/article';
+import { getAllArticles, getAllTags, getArticlesByTag, ArticleWithSlug } from '@/lib/articles/registry';
+import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants';
 
 interface ArticlesPageProps {
   searchParams: Promise<{ page?: string; tag?: string }>;
@@ -20,25 +20,29 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const selectedTag = params.tag;
   const pageSize = 12;
 
-  let articles: ArticleMetadata[] = [];
-  let total = 0;
-
+  // Get articles and tags from module registry instead of database
+  let allArticles: ArticleWithSlug[] = [];
+  let totalArticles: ArticleWithSlug[] = [];
+  let allTags: string[] = [];
+  
   try {
-    const result = await listArticles({
-      status: 'published',
-      limit: pageSize,
-      offset: (currentPage - 1) * pageSize,
-      tags: selectedTag ? [selectedTag] : undefined,
-    });
-    articles = result.articles;
-    total = result.total;
+    totalArticles = await getAllArticles(); // Always get total for the "All Articles" count
+    if (selectedTag) {
+      allArticles = await getArticlesByTag(selectedTag);
+    } else {
+      allArticles = totalArticles;
+    }
+    allTags = await getAllTags();
   } catch (error) {
-    // Database not available, show empty state
-    console.warn('Database not available on articles page:', 
+    console.warn('Failed to load articles from registry:', 
       error instanceof Error ? error.message : String(error));
   }
 
+  // Implement pagination
+  const total = allArticles.length;
   const totalPages = Math.ceil(total / pageSize);
+  const startIndex = (currentPage - 1) * pageSize;
+  const articles = allArticles.slice(startIndex, startIndex + pageSize);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
@@ -65,6 +69,36 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
         )}
       </header>
 
+      {/* Tags Filter Section */}
+      <div className="mb-8">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Browse by Topic</h2>
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/articles"
+            className={`px-4 py-2 rounded-full text-sm transition-colors ${
+              !selectedTag
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            All Articles ({totalArticles.length})
+          </Link>
+          {allTags.map((tag) => (
+            <Link
+              key={tag}
+              href={`/articles?tag=${encodeURIComponent(tag)}`}
+              className={`px-4 py-2 rounded-full text-sm transition-colors ${
+                selectedTag === tag
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {tag}
+            </Link>
+          ))}
+        </div>
+      </div>
+
       <Suspense fallback={<ArticleGridSkeleton />}>
         <ArticleGrid articles={articles} />
       </Suspense>
@@ -80,7 +114,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   );
 }
 
-function ArticleGrid({ articles }: { articles: ArticleMetadata[] }) {
+function ArticleGrid({ articles }: { articles: ArticleWithSlug[] }) {
   if (articles.length === 0) {
     return (
       <div className="text-center py-12">
@@ -91,19 +125,19 @@ function ArticleGrid({ articles }: { articles: ArticleMetadata[] }) {
   }
 
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
+    <div className={`grid ${GRID.ARTICLES.FULL} ${SPACING.CARD_GAP} mb-12`}>
       {articles.map((article) => (
-        <ArticleCard key={article.id} article={article} />
+        <ArticleCard key={article.slug} article={article} />
       ))}
     </div>
   );
 }
 
-function ArticleCard({ article }: { article: ArticleMetadata }) {
+function ArticleCard({ article }: { article: ArticleWithSlug }) {
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
       {article.coverImage && (
-        <div className="aspect-video bg-gray-100">
+        <div className={`${COVER_IMAGE.ASPECT_CLASS} bg-gray-100`}>
           <img 
             src={article.coverImage}
             alt={article.title}
@@ -213,10 +247,10 @@ function Pagination({
 
 function ArticleGridSkeleton() {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
+    <div className={`grid ${GRID.ARTICLES.FULL} ${SPACING.CARD_GAP} mb-12`}>
       {Array.from({ length: 6 }).map((_, i) => (
         <div key={i} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="aspect-video bg-gray-200 animate-pulse" />
+          <div className={`${COVER_IMAGE.ASPECT_CLASS} bg-gray-200 animate-pulse`} />
           <div className="p-6">
             <div className="flex gap-2 mb-3">
               <div className="h-5 bg-gray-200 rounded-full w-16 animate-pulse" />
