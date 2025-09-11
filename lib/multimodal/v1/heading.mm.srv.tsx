@@ -1,35 +1,36 @@
 import React from 'react';
 import { multimodal } from './multimodal.model';
+import { MarkdownBlock } from './markdown-block.m.srv';
 
 type HeadingProps = {
   level: 1 | 2 | 3 | 4 | 5 | 6;
 };
 
 /**
- * Heading multimodal component - renders semantic headings
- * Standard: Appropriate h1-h6 element with styling
- * Markdown: Markdown heading syntax (# ## ### etc.)
+ * Heading multimodal component - renders headings at different levels
+ * Standard: HTML heading elements with styling
+ * Markdown: Markdown heading syntax with proper spacing via Block
  */
 export const Heading = multimodal<HeadingProps>({
-  markdown: ({ level, children }) => {
-    const hashes = '#'.repeat(level);
-    return `${hashes} ${children}\n\n`;
-  }
+  markdown: ({ level, children }) => (
+    <MarkdownBlock modality="markdown">
+      <><>{'#'.repeat(level)}</> <>{children}</></>
+    </MarkdownBlock>
+  )
 })(({ level, children }) => {
+  const HeadingTag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   const sizeClasses = {
-    1: 'text-4xl font-bold mb-8',
-    2: 'text-3xl font-bold mb-6 mt-12',
-    3: 'text-2xl font-semibold mb-4 mt-8',
-    4: 'text-xl font-semibold mb-3 mt-6',
-    5: 'text-lg font-semibold mb-2 mt-4',
-    6: 'text-base font-semibold mb-2 mt-4'
+    1: 'text-4xl font-bold',
+    2: 'text-3xl font-semibold', 
+    3: 'text-2xl font-semibold',
+    4: 'text-xl font-semibold',
+    5: 'text-lg font-medium',
+    6: 'text-base font-medium'
   };
-
-  const tagName = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   
   return React.createElement(
-    tagName,
-    { className: sizeClasses[level] },
+    HeadingTag,
+    { className: `${sizeClasses[level]} text-gray-900 mb-4` },
     children
   );
 });

@@ -6,10 +6,10 @@ type ArticleProps = {};
 /**
  * Multimodal Article component
  * - Standard mode: Renders as an HTML article element with default styling
- * - Markdown mode: Renders children directly (they handle their own markdown rendering)
+ * - Markdown mode: Renders children in a fragment with spacing
  */
 export const Article = multimodal<ArticleProps>({
-  markdown: ({ children }) => `${children}\n\n`
+  markdown: ({ children }) => children
 })(({ children }) => (
   <article className="max-w-4xl mx-auto px-6 py-12">
     {children}

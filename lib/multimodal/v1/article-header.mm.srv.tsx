@@ -6,10 +6,10 @@ type ArticleHeaderProps = {};
 /**
  * ArticleHeader multimodal component - renders article header content
  * Standard: Section with bottom margin
- * Markdown: Returns children with section hashtag
+ * Markdown: Returns children directly (no special formatting)
  */
 export const ArticleHeader = multimodal<ArticleHeaderProps>({
-  markdown: ({ children }) => `# ${children}\n\n`
+  markdown: ({ children }) => children
 })(({ children }) => (
   <section className="mb-6">
     {children}

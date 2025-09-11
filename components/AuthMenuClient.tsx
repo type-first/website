@@ -6,7 +6,7 @@ import AuthPopupButtons from './AuthPopupButtons';
 
 type Variant = 'inline' | 'sidebar';
 
-export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } = {}) {
+export default function AuthMenuClient({ variant = 'inline' }: { variant?: Variant } = {}) {
   const { data: session, status } = useSession();
   const user = session?.user as { name?: string | null; email?: string | null; image?: string | null } | undefined;
 
@@ -24,7 +24,6 @@ export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } =
       </div>
     );
   }
-  // Client popup buttons are a client component, imported directly
 
   const content = user ? (
     <>
@@ -46,7 +45,6 @@ export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } =
       </button>
     </>
   ) : (
-    // Client-side popup buttons
     <AuthPopupButtons />
   );
 

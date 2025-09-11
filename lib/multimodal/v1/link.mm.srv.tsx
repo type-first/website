@@ -10,10 +10,18 @@ type LinkProps = {
 /**
  * Link multimodal component - renders semantic links
  * Standard: Next.js Link with styling
- * Markdown: Simple markdown link syntax
+ * Markdown: Simple markdown link syntax using fragments
  */
 export const Link = multimodal<LinkProps>({
-  markdown: ({ href, children }) => `[${children}](${href})`
+  markdown: ({ href, children }) => (
+    <>
+      <>[</>
+      <>{children}</>
+      <>](</>
+      <>{href}</>
+      <>)</>
+    </>
+  )
 })(({ href, children, className }) => (
   <NextLink 
     href={href} 

@@ -27,7 +27,7 @@ export type ModalElement<M extends Modality, P extends object> = ReactElement<Mu
 /**
  * Valid modal children - basic types plus modal elements
  */
-export type ModalChild<M extends Modality> = null | string | number | boolean | ModalElement<M, object>;
+export type ModalChild<M extends Modality> = null | undefined | string | number | boolean | ModalElement<M, object>;
 
 /**
  * Modal props with specific modality and typed children
@@ -42,29 +42,35 @@ export type ModalProps<M extends Modality> = MultiModalProps & {
  */
 export type ModalComponent<M extends Modality, P extends object> = (props: ModalProps<M> & P) => ReactNode;
 export type StandardModalComponent<P extends object> = (props: ModalProps<null> & P) => ReactNode;
-export type MarkdownModalComponent<P extends object> = (props: ModalProps<'markdown'> & P) => string;
-
+export type MarkdownModalComponent<P extends object> = (props: ModalProps<'markdown'> & P) => ReactNode;
 /**
  * Multimodal component type with proper overloads
  */
 export type MultiModalComponent<P extends object> = {
   (props: ModalProps<null> & P): ReactNode;
-  (props: ModalProps<'markdown'> & P): string;
-  (props: ModalProps<Modality> & P): ReactNode | string;
+  (props: ModalProps<'markdown'> & P): ReactNode;
+  (props: ModalProps<Modality> & P): ReactNode;
 };
 
 /**
  * Multimodal component factory function
+ * If markdown is not provided, the standard component will be used for both modes
  */
 export const multimodal = <P extends object>(
-    { markdown }: { markdown: MarkdownModalComponent<P> }
+    { markdown }: { markdown?: MarkdownModalComponent<P> } = {}
 ) => 
 (standard: StandardModalComponent<P>): MultiModalComponent<P> => {
   const component = (props: ModalProps<Modality> & P) => {
     const { modality } = props;
     switch (modality) {
         case null: return standard(props as ModalProps<null> & P);
-        case 'markdown': return markdown(props as ModalProps<'markdown'> & P);
+        case 'markdown': 
+          if (markdown) {
+            return markdown(props as ModalProps<'markdown'> & P);
+          } else {
+            // Use standard component but with markdown modality passed down
+            return standard({ ...props, modality: 'markdown' } as ModalProps<null> & P);
+          }
         default: throw new Error('invalid modality: ' + modality);
     }
   };

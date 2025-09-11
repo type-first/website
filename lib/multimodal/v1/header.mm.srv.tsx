@@ -9,7 +9,7 @@ type HeaderProps = {};
  * - Markdown mode: Renders children directly (they handle their own markdown rendering)
  */
 export const Header = multimodal<HeaderProps>({
-  markdown: ({ children }) => `${children}\n\n`
+  markdown: ({ children }) => children
 })(({ children }) => (
   <header className="mb-12">
     {children}

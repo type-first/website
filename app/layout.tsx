@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import SearchBarLauncher from '@/components/SearchBarLauncher';
-import AuthMenu from '@/components/AuthMenu';
+import AuthWrapper from '@/components/AuthWrapper';
 import ChatSidebar from '@/components/ChatSidebar';
 import MobileTopBar from '@/components/MobileTopBar';
 import './globals.css';
@@ -110,7 +110,7 @@ export default function RootLayout({
               </nav>
               <div className="px-3 py-3 border-t border-gray-200">
                 {/* Compact auth section for sidebar */}
-                <AuthMenu variant="sidebar" />
+                <AuthWrapper variant="sidebar" />
               </div>
             </div>
           </aside>

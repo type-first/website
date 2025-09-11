@@ -2,6 +2,7 @@ import React from 'react';
 import NextLink from 'next/link';
 import type { StandardModalComponent, MarkdownModalComponent } from './multimodal.model';
 import { multimodal } from './multimodal.model';
+import { MarkdownBlock } from './markdown-block.m.srv';
 
 type TagsProps = {
   tags: string[];
@@ -10,11 +11,21 @@ type TagsProps = {
 /**
  * Tags multimodal component - renders article tags
  * Standard: Styled tag pills with links
- * Markdown: Simple comma-separated list of tags
+ * Markdown: Simple comma-separated list of tags using MarkdownBlock
  */
 export const Tags = multimodal<TagsProps>({
-  markdown: ({ tags }) => 
-    `**Tags:** ${tags.map(tag => `[${tag}](/articles?tag=${encodeURIComponent(tag)})`).join(', ')}`
+  markdown: ({ tags }) => {
+    const tagLinks = tags.map(tag => 
+      `[${tag}](/articles?tag=${encodeURIComponent(tag)})`
+    ).join(', ');
+    
+    return (
+      <MarkdownBlock modality="markdown">
+        <>**Tags:** </>
+        <>{tagLinks}</>
+      </MarkdownBlock>
+    );
+  }
 })(({ tags }) => (
   <div className="flex flex-wrap gap-2 mb-4">
     {tags.map((tag: string) => (

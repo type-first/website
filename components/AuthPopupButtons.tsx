@@ -1,6 +1,19 @@
 "use client";
 
 export default function AuthPopupButtons() {
+  // Check if we're in development and auth isn't configured
+  const isDev = process.env.NODE_ENV === 'development';
+  const hasGitHubAuth = process.env.NEXT_PUBLIC_GITHUB_AUTH_CONFIGURED === 'true';
+
+  if (isDev && !hasGitHubAuth) {
+    return (
+      <div className="text-sm text-gray-500 text-center">
+        <p>Auth not configured</p>
+        <p className="text-xs">(Dev mode)</p>
+      </div>
+    );
+  }
+
   function openPopup() {
     const w = 520;
     const h = 650;
