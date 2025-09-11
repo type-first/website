@@ -48,11 +48,22 @@ export function useSessionSafe() {
   // Try to use real NextAuth session first
   try {
     const { useSession } = require('next-auth/react');
-    return useSession();
+    const session = useSession();
+    // Ensure we always return a valid object
+    if (session && typeof session === 'object') {
+      return session;
+    }
   } catch {
     // Fall back to mock session if NextAuth fails
-    return useContext(MockSessionContext);
   }
+  
+  // Always fall back to mock context if anything fails
+  const mockSession = useContext(MockSessionContext);
+  return mockSession || {
+    data: null,
+    status: 'unauthenticated' as const,
+    signOut: () => {},
+  };
 }
 
 type AuthProviderProps = {

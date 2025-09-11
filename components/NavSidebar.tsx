@@ -234,7 +234,18 @@ function UserNavRow({
   return (
     <button
       type="button"
-      onClick={() => { try { signOut(); } catch {} }}
+      onClick={() => { 
+        try { 
+          // Try to use NextAuth signOut if available
+          if (typeof signOut === 'function') {
+            signOut(); 
+          } else {
+            console.log('SignOut not available');
+          }
+        } catch (e) {
+          console.log('SignOut failed:', e);
+        }
+      }}
       className={BUTTON_ROW}
       aria-label="Sign out"
       title="Sign out"
