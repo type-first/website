@@ -48,7 +48,7 @@ async function SectionRenderer({ section, index }: SectionRendererProps) {
       );
 
     case 'code': {
-      const html = await highlightCode(section.content, section.language, 'light');
+      const html = await highlightCode(section.content, section.language);
       return (
         <div id={sectionId} className="code-section my-6">
           {section.filename && (
@@ -65,6 +65,15 @@ async function SectionRenderer({ section, index }: SectionRendererProps) {
     }
 
     case 'island':
+      if (!section.component) {
+        return (
+          <div id={sectionId} className="island-section my-8">
+            <div className="border-2 border-dashed border-red-300 p-8 rounded-lg">
+              <p className="text-red-600">Error: Island component not specified</p>
+            </div>
+          </div>
+        );
+      }
       return (
         <div id={sectionId} className="island-section my-8">
           <IslandLoader 

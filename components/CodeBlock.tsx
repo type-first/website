@@ -15,7 +15,7 @@ export function CodeBlock({ code, language, filename }: CodeBlockProps) {
   useEffect(() => {
     const highlight = async () => {
       try {
-        const html = await highlightCode(code, language, 'light');
+        const html = await highlightCode(code, language);
         setHighlightedCode(html);
       } catch (error) {
         console.error('Failed to highlight code:', error);

@@ -11,6 +11,7 @@ export interface Section {
   textAlt?: string;
   source?: string;
   filename?: string;
+  props?: any;
 }
 
 export interface DerivedContent {

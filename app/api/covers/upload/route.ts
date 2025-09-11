@@ -27,6 +27,10 @@ export async function POST(req: NextRequest) {
   try {
     // Validate article exists
     const article = await getArticleBySlug(slug);
+    
+    if (!article) {
+      return NextResponse.json({ error: 'Article not found' }, { status: 404 });
+    }
 
     const contentType = file.type || 'application/octet-stream';
 
