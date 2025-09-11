@@ -4,6 +4,7 @@
  */
 
 import React from 'react';
+import { Braces, Microscope } from 'lucide-react';
 
 export interface LabRegistryEntry {
   slug: string;
@@ -17,41 +18,21 @@ export interface LabRegistryEntry {
 
 function TypeExplorerIcon() {
   return (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10">
-      <defs>
-        <linearGradient id="tx" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#1d4ed8"/>
-          <stop offset="100%" stopColor="#0ea5a4"/>
-        </linearGradient>
-      </defs>
-      <rect x="6" y="6" width="36" height="36" rx="8" fill="#f1f5f9" />
-      <path d="M17 16h14" stroke="url(#tx)" strokeWidth="2.2" strokeLinecap="round"/>
-      <path d="M17 24h14" stroke="#334155" strokeWidth="2" strokeLinecap="round" opacity=".6"/>
-      <path d="M17 32h9" stroke="#334155" strokeWidth="2" strokeLinecap="round" opacity=".4"/>
-      <path d="M10 18c0-3 2-5 5-5" stroke="#94a3b8" strokeWidth="2" fill="none" strokeLinecap="round"/>
-      <path d="M38 30c0 3-2 5-5 5" stroke="#94a3b8" strokeWidth="2" fill="none" strokeLinecap="round"/>
-      <text x="24" y="28" textAnchor="middle" fontFamily="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace" fontSize="9" fontWeight="700" fill="url(#tx)">TS</text>
-      <path d="M20 22h8" stroke="url(#tx)" strokeWidth="2.2" strokeLinecap="round"/>
-    </svg>
+    <Braces
+      className="h-10 w-10 text-gray-700 group-hover:text-blue-700 transition-colors"
+      strokeWidth={1.8}
+      aria-hidden="true"
+    />
   );
 }
 
 function SearchTestIcon() {
   return (
-    <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" className="h-10 w-10">
-      <defs>
-        <linearGradient id="search" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0%" stopColor="#7c3aed"/>
-          <stop offset="100%" stopColor="#06b6d4"/>
-        </linearGradient>
-      </defs>
-      <rect x="6" y="6" width="36" height="36" rx="8" fill="#f8fafc" />
-      <circle cx="20" cy="20" r="8" stroke="url(#search)" strokeWidth="2.5" fill="none"/>
-      <path d="m26 26 6 6" stroke="url(#search)" strokeWidth="2.5" strokeLinecap="round"/>
-      <path d="M16 20h8" stroke="#334155" strokeWidth="1.5" strokeLinecap="round" opacity=".6"/>
-      <path d="M20 16v8" stroke="#334155" strokeWidth="1.5" strokeLinecap="round" opacity=".6"/>
-      <circle cx="32" cy="32" r="2" fill="url(#search)" opacity=".8"/>
-    </svg>
+    <Microscope
+      className="h-10 w-10 text-gray-700 group-hover:text-blue-700 transition-colors"
+      strokeWidth={1.8}
+      aria-hidden="true"
+    />
   );
 }
 
@@ -115,4 +96,3 @@ export function listLabs(options: ListLabsOptions = {}) {
 export function getLabBySlug(slug: string) {
   return labsRegistry.find((l) => l.slug === slug);
 }
-
