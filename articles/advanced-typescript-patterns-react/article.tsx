@@ -14,6 +14,7 @@ import {
   ArticleMetadata,
   Heading,
   Paragraph,
+  CodeExplore,
   Footer,
   Container,
   TagsList,
@@ -97,6 +98,13 @@ export const AdvancedTypescriptPatternsReactArticle: MultiModalComponent<Article
         TypeScript patterns that will elevate your React applications to new levels of type 
         safety and maintainability.
       </Paragraph>
+
+      <CodeExplore 
+        modality={modality}
+        slug="starter"
+        name="the Multi-file Starter"
+        description="A minimal set of TypeScript files demonstrating basic functionality to start exploring with our editor."
+      />
 
       <SectionGenericComponents modality={modality} />
       <SectionConditionalTypes modality={modality} />

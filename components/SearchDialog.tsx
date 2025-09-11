@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import { Search } from 'lucide-react';
 
 type Result = {
   article: {
@@ -66,9 +67,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
       <div className="absolute inset-0 bg-black/30" onClick={onClose} />
       <div className="absolute inset-x-0 top-20 mx-auto max-w-2xl rounded-lg border border-gray-200 bg-white shadow-xl">
         <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-200">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-gray-500">
-            <path fillRule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 4.245 12.03l4.237 4.236a.75.75 0 1 0 1.06-1.06l-4.236-4.237A6.75 6.75 0 0 0 10.5 3.75Zm-5.25 6.75a5.25 5.25 0 1 1 10.5 0 5.25 5.25 0 0 1-10.5 0Z" clipRule="evenodd" />
-          </svg>
+          <Search className="w-5 h-5 text-gray-500" strokeWidth={1.8} />
           <input
             ref={inputRef}
             value={query}
@@ -104,4 +103,3 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
     </div>
   );
 }
-

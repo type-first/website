@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function TypeExplorerPage() {
-  redirect('/labs/type-explorer/scenarios/starter');
+  redirect('/labs/type-explorer/starter');
 }

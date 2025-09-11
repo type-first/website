@@ -1,41 +1,60 @@
 import Link from 'next/link';
-import { getAllArticles, ArticleWithSlug } from '@/lib/articles/registry';
+import { listArticles, type ArticleRegistryEntry } from '@/registry.articles';
+import { listLabs, type LabRegistryEntry } from '@/registry.labs';
 import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants';
+import { ArrowUpRight } from 'lucide-react';
 
 export default async function Home() {
-  let articles: ArticleWithSlug[] = [];
-  
+  let articles: ArticleRegistryEntry[] = [];
+  let labs: LabRegistryEntry[] = [];
+
   try {
-    // Get the latest 6 articles from the module registry
-    const allArticles = await getAllArticles();
-    articles = allArticles.slice(0, 6);
+    const { articles: latest } = listArticles({ status: 'published', limit: 6 });
+    articles = latest;
   } catch (error) {
-    console.warn('Failed to load articles from registry:', 
-      error instanceof Error ? error.message : String(error));
+    console.warn(
+      'Failed to load articles from registry:',
+      error instanceof Error ? error.message : String(error)
+    );
+  }
+
+  try {
+    labs = listLabs({ limit: 3 }).labs;
+  } catch (error) {
+    console.warn(
+      'Failed to load labs from registry:',
+      error instanceof Error ? error.message : String(error)
+    );
   }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
-      <header className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome to Our Blog
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Discover insights, tutorials, and interactive content built with modern web technologies.
-        </p>
-      </header>
 
       <section className="mb-12">
-        <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900">Latest Articles</h2>
+        {labs.length > 0 ? (
+          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${SPACING.CARD_GAP}`}>
+            {labs.map((lab) => (
+              <LabCard key={lab.slug} lab={lab} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-500 text-lg">No labs available yet.</p>
+            <p className="text-gray-400 mt-2">New experiments land here.</p>
+          </div>
+        )}
+        
+        <div className="flex justify-between items-center py-4 px-2 mb-8">
           <Link 
-            href="/articles"
+            href="/labs"
             className="text-blue-600 hover:text-blue-800 font-medium"
           >
-            View all articles →
+            View all apps →
           </Link>
         </div>
+      </section>
 
+      <section className="mb-12">
         {articles.length > 0 ? (
           <div className={`grid ${GRID.ARTICLES.FULL} ${SPACING.CARD_GAP}`}>
             {articles.map((article) => (
@@ -48,6 +67,15 @@ export default async function Home() {
             <p className="text-gray-400 mt-2">Check back soon for new content!</p>
           </div>
         )}
+        
+        <div className="flex justify-between items-center py-4 px-2 mb-8">
+          <Link 
+            href="/articles"
+            className="text-blue-600 hover:text-blue-800 font-medium"
+          >
+            View all articles →
+          </Link>
+        </div>
       </section>
 
       <section className="bg-gray-50 rounded-lg p-8 text-center">
@@ -69,7 +97,7 @@ export default async function Home() {
   );
 }
 
-function ArticleCard({ article }: { article: ArticleWithSlug }) {
+function ArticleCard({ article }: { article: ArticleRegistryEntry }) {
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
       {article.coverImage && (
@@ -96,7 +124,7 @@ function ArticleCard({ article }: { article: ArticleWithSlug }) {
         
         <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
           <Link 
-            href={`/articles/${article.slug}`}
+            href={`/article/${article.slug}`}
             className="hover:text-blue-600 transition-colors"
           >
             {article.title}
@@ -110,7 +138,7 @@ function ArticleCard({ article }: { article: ArticleWithSlug }) {
         )}
         
         <div className="text-xs text-gray-500">
-          {article.publishedAt && article.publishedAt.toLocaleDateString('en-US', {
+          {article.publishedAt && new Date(article.publishedAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',
@@ -118,5 +146,29 @@ function ArticleCard({ article }: { article: ArticleWithSlug }) {
         </div>
       </div>
     </article>
+  );
+}
+
+function LabCard({ lab }: { lab: LabRegistryEntry }) {
+  const Icon = lab.Icon;
+  return (
+    <Link
+      href={`/labs/${lab.slug}`}
+      className="group rounded-xl border border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm transition-colors p-5 flex items-start gap-4"
+    >
+      <div className="shrink-0 rounded-lg ring-1 ring-gray-200 bg-gray-50 group-hover:ring-blue-300 transition">
+        {Icon ? <Icon /> : null}
+      </div>
+      <div>
+        <h3 className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
+          {lab.title}
+        </h3>
+        <p className="text-sm text-gray-600 mt-1">{lab.description}</p>
+        <span className="inline-flex items-center gap-1 text-sm text-blue-700 mt-3">
+          Open
+          <ArrowUpRight className="w-4 h-4" strokeWidth={1.8} />
+        </span>
+      </div>
+    </Link>
   );
 }

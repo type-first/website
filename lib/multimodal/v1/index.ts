@@ -12,6 +12,7 @@ export { MarkdownBlock } from './markdown-block.m.srv';
 export { Paragraph } from './paragraph.mm.srv';
 export { Section } from './section.mm.srv';
 export { Code } from './code.mm.srv';
+export { CodeExplore } from './code-explore.mm.srv';
 export { Footer } from './footer.mm.srv';
 export { Container } from './container.mm.srv';
 export { Text } from './text.mm.srv';

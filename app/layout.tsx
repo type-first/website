@@ -2,11 +2,11 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import SearchBarLauncher from '@/components/SearchBarLauncher';
-import AuthWrapper from '@/components/AuthWrapper';
 import ChatSidebar from '@/components/ChatSidebar';
 import MobileTopBar from '@/components/MobileTopBar';
 import './globals.css';
 import { Suspense } from 'react';
+import NavSidebar from '@/components/NavSidebar';
 
 // Initialize island registry
 import '@/lib/islands/setup';
@@ -64,76 +64,7 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <div className="min-h-screen bg-gray-50 flex">
           {/* Sidebar (left) for md+ screens */}
-          <aside className="hidden md:flex w-64 flex-none border-r border-gray-200 bg-white">
-            <div className="flex flex-col w-full h-screen sticky top-0">
-              <div className="h-[60px] px-6 border-b border-gray-200 flex items-center">
-                <Link href="/" className="flex items-center gap-3 group">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-md bg-blue-600 text-white font-semibold tracking-tight text-[11px] group-hover:ring-2 group-hover:ring-blue-200 transition">
-                    tf
-                  </div>
-                  <span className="text-sm font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">typefirst</span>
-                </Link>
-              </div>
-              <nav className="flex-1 px-3 py-4">
-                <ul className="space-y-1">
-                  <li>
-                    <Link
-                      href="/articles"
-                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                    >
-                      {/* Document icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19.5 14.25v-2.836a2.25 2.25 0 0 0-.659-1.59L13.5 4.5H8.25A2.25 2.25 0 0 0 6 6.75v10.5A2.25 2.25 0 0 0 8.25 19.5H12M19.5 14.25H15M19.5 14.25 12 21.75M9 9h3m-3 3h5.25"/></svg>
-                      <span className="text-sm font-medium">Articles</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/articles"
-                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                    >
-                      {/* Document icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M19.5 14.25v-2.836a2.25 2.25 0 0 0-.659-1.59L13.5 4.5H8.25A2.25 2.25 0 0 0 6 6.75v10.5A2.25 2.25 0 0 0 8.25 19.5H12M19.5 14.25H15M19.5 14.25 12 21.75M9 9h3m-3 3h5.25"/></svg>
-                      <span className="text-sm font-medium">Libraries</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/labs"
-                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                    >
-                      {/* Beaker icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 2.25v6.214a2.25 2.25 0 0 1-.659 1.59L4.53 13.864a4.5 4.5 0 0 0 3.182 7.636h8.575a4.5 4.5 0 0 0 3.182-7.636l-3.81-3.81a2.25 2.25 0 0 1-.659-1.59V2.25M7.5 2.25h9M6.75 9.75h10.5"/></svg>
-                      <span className="text-sm font-medium">Apps</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/community"
-                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                    >
-                      {/* Users icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 19.128a9 9 0 1 0-6 0M12 10.5a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Z"/></svg>
-                      <span className="text-sm font-medium">Contributors</span>
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      href="/community"
-                      className="flex items-center gap-3 px-3 py-2 rounded-md text-gray-700 hover:text-blue-700 hover:bg-blue-50 transition-colors"
-                    >
-                      {/* Users icon */}
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="h-6 w-6"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 19.128a9 9 0 1 0-6 0M12 10.5a2.25 2.25 0 1 1 0-4.5 2.25 2.25 0 0 1 0 4.5Z"/></svg>
-                      <span className="text-sm font-medium">Community</span>
-                    </Link>
-                  </li>
-                </ul>
-              </nav>
-              <div className="px-3 py-3 border-t border-gray-200">
-                {/* Compact auth section for sidebar */}
-                <AuthWrapper variant="sidebar" />
-              </div>
-            </div>
-          </aside>
+          <NavSidebar />
 
           {/* Main column */}
           <div className="flex-1 flex flex-col min-w-0">

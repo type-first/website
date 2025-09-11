@@ -4,7 +4,7 @@ import { useSessionSafe } from './AuthProvider';
 import { signOut } from 'next-auth/react';
 import AuthPopupButtons from './AuthPopupButtons';
 
-type Variant = 'inline' | 'sidebar';
+type Variant = 'inline' | 'sidebar' | 'avatar';
 
 export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } = {}) {
   const { data: session, status } = useSessionSafe();
@@ -12,6 +12,13 @@ export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } =
 
   // Show loading state during hydration to prevent mismatch
   if (status === 'loading') {
+    if (variant === 'avatar') {
+      return (
+        <div className="flex items-center justify-center w-full">
+          <div className="w-8 h-8 rounded-full bg-gray-200 animate-pulse" />
+        </div>
+      );
+    }
     return (
       <div className={variant === 'sidebar' 
         ? "flex w-full items-center justify-between gap-3 rounded-md border border-gray-200 bg-gray-50 px-2.5 py-2" 
@@ -49,6 +56,20 @@ export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } =
     // Client-side popup buttons
     <AuthPopupButtons />
   );
+
+  if (variant === 'avatar') {
+    // Avatar-only compact view for collapsed sidebar
+    return (
+      <div className="flex items-center justify-center w-full">
+        {user?.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={user.image} alt={user.name || 'User'} className="w-8 h-8 rounded-full" />
+        ) : (
+          <div className="w-8 h-8 rounded-full bg-gray-200" />
+        )}
+      </div>
+    );
+  }
 
   if (variant === 'sidebar') {
     return (

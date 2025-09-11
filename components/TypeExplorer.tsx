@@ -4,6 +4,7 @@ import React from "react";
 import Editor, { loader, OnMount, BeforeMount } from "@monaco-editor/react";
 import type * as MonacoNS from "monaco-editor";
 import { getMonacoTheme } from "@/lib/codeTheme";
+import { Pencil, Trash } from 'lucide-react';
 
 loader.config({
   paths: {
@@ -16,15 +17,15 @@ export type ExplorerFile = { path: string; content: string };
 // Default multi-file sample (used if no initialFiles provided)
 const DEFAULT_MULTI_FILES: ExplorerFile[] = [
   {
-    path: "file:///index.ts",
+    path: "file:///src/index.ts",
     content: `// Welcome to Type Explorer 🧪\n//\n// Now supports multiple files like real modules.\n// - Create files in the sidebar\n// - Import with relative paths (e.g. './utils/math')\n// - See diagnostics across all files\n// - Hover or select to see types\n\nimport { toTitleCase } from './utils/strings';\nimport { sum } from './utils/math';\n\nexport type User = {\n  id: string;\n  name: string;\n  email?: string;\n};\n\nexport function greet(user: User) {\n  const who = user.name ?? 'friend';\n  const greeting = 'Hello, ' + toTitleCase(who) + '!';\n  const s = sum(20, 22);\n  return greeting + ' (sum=' + s + ')';\n}\n\nconst u: User = { id: '42', name: 'sarah' };\nconsole.log(greet(u));\n`,
   },
   {
-    path: "file:///utils/math.ts",
+    path: "file:///src/utils/math.ts",
     content: `export function sum(a: number, b: number) {\n  return a + b;\n}\n`,
   },
   {
-    path: "file:///utils/strings.ts",
+    path: "file:///src/utils/strings.ts",
     content: `export function toTitleCase(input: string) {\n  return input\n    .split(/\\s+/)\n    .map(p => p.charAt(0).toUpperCase() + p.slice(1))\n    .join(' ');\n}\n`,
   },
 ];
@@ -48,6 +49,7 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
     null
   );
   const monacoRef = React.useRef<typeof MonacoNS | null>(null);
+  const hoverProviderRef = React.useRef<{ dispose: () => void } | null>(null);
 
   // Multi-file state
   const [files, setFiles] = React.useState<ExplorerFile[]>(
@@ -63,10 +65,27 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
     documentation?: string;
     range?: MonacoNS.IRange;
   }>({});
+  const [hoverTip, setHoverTip] = React.useState<{
+    visible: boolean;
+    message: string;
+    code?: string | number;
+    x: number;
+    y: number;
+    key?: string; // marker identity
+  }>({ visible: false, message: '', x: 0, y: 0, key: undefined });
 
   const quickInfoTimer = React.useRef<number | null>(null);
+  const recomputeTimer = React.useRef<number | null>(null);
+  const hoverHideTimer = React.useRef<number | null>(null);
+  const [editorHeight, setEditorHeight] = React.useState<number>(420);
   // Static theme (light) for simplicity
   const mode: 'light' | 'dark' = 'light';
+
+  // Inline rename state for sidepane
+  const [renaming, setRenaming] = React.useState<{
+    oldPath: string;
+    value: string; // relative to /src
+  } | null>(null);
 
   const beforeMount: BeforeMount = (monaco) => {
     // Configure TS before any model is created or the editor mounts
@@ -78,15 +97,16 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
       noEmit: true,
       allowNonTsExtensions: true,
       lib: ["es2020", "dom"],
-      baseUrl: "file:///",
-      rootDir: "file:///",
+      baseUrl: "file:///src",
+      rootDir: "file:///src",
     });
     if (typeof (monaco.languages.typescript.typescriptDefaults as any).setEagerModelSync === 'function') {
       (monaco.languages.typescript.typescriptDefaults as any).setEagerModelSync(true);
     }
+    // We'll manage diagnostics manually to ensure dependent files update immediately
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-      noSemanticValidation: false,
-      noSyntaxValidation: false,
+      noSemanticValidation: true,
+      noSyntaxValidation: true,
     });
 
     // Create models for all initial files so the worker sees them up front
@@ -107,6 +127,19 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
     const monacoTheme = getMonacoTheme(mode);
     monaco.editor.setTheme(monacoTheme);
 
+    // Auto-resize editor height to fit content and avoid internal scroll
+    const resizeToContent = () => {
+      try {
+        const h = Math.max(180, editor.getContentHeight());
+        setEditorHeight(h);
+        editor.layout({ width: editor.getLayoutInfo().width, height: h });
+      } catch {}
+    };
+
+    resizeToContent();
+    editor.onDidContentSizeChange(() => resizeToContent());
+    editor.onDidChangeModel(() => resizeToContent());
+
     // Ensure the active model is loaded in the editor
     const activeModel = monaco.editor.getModel(monaco.Uri.parse(activePath));
     if (activeModel) {
@@ -114,7 +147,8 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
     }
 
     // Prime diagnostics across all current models
-    const initialMarkers = monaco.editor.getModelMarkers({ owner: "typescript" }) as any[];
+    await kickDiagnostics();
+    const initialMarkers = monaco.editor.getModelMarkers({ owner: 'ts-project' }) as any[];
     setMarkers(
       initialMarkers.map((m) => ({ ...m, resource: (m.resource as any)?.toString?.() ?? "" }))
     );
@@ -128,23 +162,132 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
 
     // Listen for marker changes across all models
     monaco.editor.onDidChangeMarkers(() => {
-      const all = monaco.editor.getModelMarkers({ owner: "typescript" }) as any[];
+      const all = monaco.editor.getModelMarkers({ owner: 'ts-project' }) as any[];
       setMarkers(all.map((m) => ({ ...m, resource: (m.resource as any)?.toString?.() ?? "" })));
     });
 
-    // Kick the TS worker to recompute diagnostics after models are created
-    try {
-      const getter = await (monaco.languages as any).typescript.getTypeScriptWorker();
-      const tsModels = monaco.editor
-        .getModels()
-        .filter((m) => m.getLanguageId() === "typescript");
-      for (const m of tsModels) {
-        const worker = await getter(m.uri);
-        // Trigger semantic analysis; ignore results
-        await worker.getSemanticDiagnostics(m.uri.toString());
+    // Attach change listeners to all current and future TS models to recompute diagnostics
+    const scheduleKick = () => {
+      if (recomputeTimer.current) window.clearTimeout(recomputeTimer.current);
+      recomputeTimer.current = window.setTimeout(() => void kickDiagnostics(), 150);
+    };
+
+    const attachToModel = (m: MonacoNS.editor.ITextModel) => {
+      try {
+        if (m.getLanguageId() !== 'typescript') return;
+        m.onDidChangeContent(() => scheduleKick());
+      } catch {}
+    };
+
+    monaco.editor.getModels().forEach(attachToModel);
+    monaco.editor.onDidCreateModel((m) => attachToModel(m));
+
+    // Show a lightweight custom tooltip when hovering markers (fallback if provider is ignored)
+    editor.onMouseMove((e) => {
+      const pos = e.target.position;
+      if (!pos) return;
+      const model = editor.getModel();
+      if (!model) return;
+      const all = monaco.editor.getModelMarkers({ resource: model.uri });
+      const hit = all.find((mk) => (
+        pos.lineNumber > mk.startLineNumber && pos.lineNumber < mk.endLineNumber
+      ) || (
+        pos.lineNumber === mk.startLineNumber && pos.column >= mk.startColumn &&
+        (pos.lineNumber < mk.endLineNumber || pos.column <= mk.endColumn)
+      ) || (
+        pos.lineNumber === mk.endLineNumber && pos.column <= mk.endColumn &&
+        (pos.lineNumber > mk.startLineNumber || pos.column >= mk.startColumn)
+      ));
+      if (hit) {
+        if (hoverHideTimer.current) {
+          window.clearTimeout(hoverHideTimer.current);
+          hoverHideTimer.current = null;
+        }
+        const newKey = `${hit.startLineNumber}:${hit.startColumn}-${hit.endLineNumber}:${hit.endColumn}`;
+        // Only reposition when first showing or when hovering a different marker
+        if (!hoverTip.visible || hoverTip.key !== newKey) {
+          // Anchor tooltip to the start of the marker range inside the editor
+          const anchorPos = new (monaco as any).Position(hit.startLineNumber, hit.startColumn);
+          const svp = (editor as any).getScrolledVisiblePosition(anchorPos);
+          const dom = editor.getDomNode();
+          const rect = dom?.getBoundingClientRect();
+          const pageX = (rect?.left ?? 0) + window.scrollX + (svp?.left ?? 0) + 12;
+          const pageY = (rect?.top ?? 0) + window.scrollY + ((svp?.top ?? 0) + (svp?.height ?? 0) + 8);
+          setHoverTip({
+            visible: true,
+            message: hit.message,
+            code: typeof hit.code === 'object' ? (hit.code as any).value : (hit.code as any),
+            x: pageX,
+            y: pageY,
+            key: newKey,
+          });
+        }
+      } else {
+        if (hoverHideTimer.current) window.clearTimeout(hoverHideTimer.current);
+        // Hide after a brief delay to feel natural
+        hoverHideTimer.current = window.setTimeout(() => {
+          setHoverTip((h) => ({ ...h, visible: false }));
+          hoverHideTimer.current = null;
+        }, 200);
       }
+    });
+
+    editor.onMouseLeave(() => {
+      if (hoverHideTimer.current) window.clearTimeout(hoverHideTimer.current);
+      hoverHideTimer.current = window.setTimeout(() => {
+        setHoverTip((h) => ({ ...h, visible: false }));
+        hoverHideTimer.current = null;
+      }, 600);
+    });
+
+    // Register a hover provider that shows our marker messages on hover
+    try {
+      // Clean up any previous provider
+      hoverProviderRef.current?.dispose?.();
+      const register = (lang: string) => monaco.languages.registerHoverProvider(lang, {
+        provideHover(model, position) {
+          // Look up any markers at this position (any owner)
+          const all = monaco.editor.getModelMarkers({ resource: model.uri });
+          const hit = all.find((mk) => (
+            position.lineNumber > mk.startLineNumber && position.lineNumber < mk.endLineNumber
+          ) || (
+            position.lineNumber === mk.startLineNumber && position.column >= mk.startColumn &&
+            (position.lineNumber < mk.endLineNumber || position.column <= mk.endColumn)
+          ) || (
+            position.lineNumber === mk.endLineNumber && position.column <= mk.endColumn &&
+            (position.lineNumber > mk.startLineNumber || position.column >= mk.startColumn)
+          ));
+          if (!hit) return undefined as any;
+          const code = (typeof hit.code === 'object' ? (hit.code as any).value : hit.code) as string | undefined;
+          const contents: any[] = [];
+          contents.push({ value: hit.message || 'Error' });
+          if (code) contents.push({ value: `Code: ${code}` });
+          return {
+            contents,
+            range: {
+              startLineNumber: hit.startLineNumber,
+              startColumn: hit.startColumn,
+              endLineNumber: hit.endLineNumber,
+              endColumn: hit.endColumn,
+            },
+          } as any;
+        },
+      });
+      // Register for both TS and TSX
+      const d1 = register('typescript');
+      const d2 = register('tsx');
+      hoverProviderRef.current = { dispose: () => { try { d1.dispose(); } catch {}; try { d2.dispose(); } catch {}; } };
     } catch {}
+
+    // Final refresh to ensure markers after mount
+    await kickDiagnostics();
   };
+
+  React.useEffect(() => {
+    return () => {
+      try { hoverProviderRef.current?.dispose?.(); } catch {}
+    };
+  }, []);
 
   // No dynamic theme changes
 
@@ -230,33 +373,134 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
     setActivePath(path);
   };
 
-  const addFile = (template?: "ts" | "dts") => {
-    const monaco = monacoRef.current as typeof MonacoNS | null;
-    const base = template === "dts" ? "new-lib.d.ts" : "new-file.ts";
-    const dir = "file:///";
-    let name = base;
+  const toRel = (p: string) => p.replace(/^file:\/\/\/src\/?/, '');
+  const toAbs = (rel: string) => {
+    const cleaned = rel.replace(/^\/?/, '');
+    return `file:///src/${cleaned}`;
+  };
+
+  const uniqueRel = (baseRel: string) => {
+    const base = baseRel.trim() || 'new-file.ts';
+    const hasExt = /\.[a-zA-Z]+$/.test(base);
+    const stem = hasExt ? base.replace(/\.[^.]+$/, '') : base;
+    const ext = hasExt ? base.slice(base.lastIndexOf('.')) : '.ts';
     let i = 1;
-    const exists = (p: string) => files.some((f) => f.path === p);
-    while (exists(dir + name)) {
-      const parts = base.split(".");
-      const ext = parts.pop();
-      const stem = parts.join(".");
-      name = `${stem}-${i++}.${ext}`;
+    let rel = `${stem}${ext}`;
+    const existing = new Set(files.map((f) => toRel(f.path)));
+    while (existing.has(rel)) rel = `${stem}-${i++}${ext}`;
+    return rel;
+  };
+
+  const PROJECT_OWNER = 'ts-project';
+  const flattenMessage = (msg: any): string => {
+    if (!msg) return '';
+    if (typeof msg === 'string') return msg;
+    const parts: string[] = [];
+    let cur: any = msg;
+    while (cur) {
+      parts.push(String(cur.messageText ?? ''));
+      cur = cur.next && cur.next[0];
     }
-    const newPath = dir + name;
-    const newContent = template === "dts" ? "declare module 'my-lib' {}\n" : "export {};\n";
-    setFiles((prev) => [...prev, { path: newPath, content: newContent }]);
+    return parts.filter(Boolean).join('\n');
+  };
+
+  const kickDiagnostics = async () => {
+    const monaco = monacoRef.current as typeof MonacoNS | null;
+    if (!monaco) return;
+    try {
+      const getter = await (monaco.languages as any).typescript.getTypeScriptWorker();
+      const tsModels = monaco.editor
+        .getModels()
+        .filter((m) => m.getLanguageId() === 'typescript');
+      const byUri = new Map<string, MonacoNS.editor.IMarkerData[]>();
+      for (const m of tsModels) {
+        const worker = await getter(m.uri);
+        const file = m.uri.toString();
+        const [syn, sem] = await Promise.all([
+          worker.getSyntacticDiagnostics(file),
+          worker.getSemanticDiagnostics(file),
+        ]);
+        const diags = [...(syn || []), ...(sem || [])];
+        const markers: MonacoNS.editor.IMarkerData[] = diags.map((d: any) => {
+          const start = Math.max(0, d.start ?? 0);
+          const len = Math.max(0, d.length ?? 0);
+          const startPos = m.getPositionAt(start);
+          const endPos = m.getPositionAt(start + len);
+          const severity = d.category === 1
+            ? monaco.MarkerSeverity.Error
+            : d.category === 0
+            ? monaco.MarkerSeverity.Warning
+            : monaco.MarkerSeverity.Info;
+          const code = d.code ? { value: String(d.code) } : undefined;
+          return {
+            startLineNumber: startPos.lineNumber,
+            startColumn: startPos.column,
+            endLineNumber: endPos.lineNumber,
+            endColumn: endPos.column,
+            message: flattenMessage(d.messageText ?? d.message ?? ''),
+            severity,
+            code,
+          };
+        });
+        byUri.set(file, markers);
+      }
+      for (const m of tsModels) {
+        const list = byUri.get(m.uri.toString()) || [];
+        monaco.editor.setModelMarkers(m, PROJECT_OWNER, list);
+      }
+    } catch {}
+  };
+
+  const addNewFile = () => {
+    const monaco = monacoRef.current as typeof MonacoNS | null;
+    const rel = uniqueRel('new-file.ts');
+    const path = toAbs(rel);
+    const content = 'export {}\n';
+    setFiles((prev) => [...prev, { path, content }]);
     if (monaco) {
-      const uri = monaco.Uri.parse(newPath);
-      const model = monaco.editor.createModel(newContent, "typescript", uri);
+      const uri = monaco.Uri.parse(path);
+      const model = monaco.editor.createModel(content, 'typescript', uri);
       if (editorRef.current) editorRef.current.setModel(model);
-      setActivePath(newPath);
+      setActivePath(path);
+      setRenaming({ oldPath: path, value: rel });
+      void kickDiagnostics();
     }
   };
 
-  const removeFile = (path: string) => {
+  const renameFile = async (oldPath: string, nextRelInput: string) => {
     const monaco = monacoRef.current as typeof MonacoNS | null;
-    if (files.length <= 1) return; // keep at least one
+    if (!monaco) return;
+    const cleanedRel = nextRelInput.trim().replace(/^\/?/, '');
+    if (!cleanedRel) return setRenaming(null);
+    let targetRel = cleanedRel.endsWith('.ts') || cleanedRel.endsWith('.tsx') ? cleanedRel : `${cleanedRel}.ts`;
+    const existingRel = new Set(files.map((f) => toRel(f.path)).filter((r) => toAbs(r) !== oldPath));
+    if (existingRel.has(targetRel)) targetRel = uniqueRel(targetRel);
+    const newPath = toAbs(targetRel);
+
+    const oldUri = monaco.Uri.parse(oldPath);
+    const oldModel = monaco.editor.getModel(oldUri);
+    const content = oldModel?.getValue() ?? files.find((f) => f.path === oldPath)?.content ?? '';
+
+    // create new model
+    const newUri = monaco.Uri.parse(newPath);
+    const newModel = monaco.editor.createModel(content, 'typescript', newUri);
+
+    // dispose old model
+    if (oldModel) oldModel.dispose();
+
+    // update state
+    setFiles((prev) => prev.map((f) => (f.path === oldPath ? { path: newPath, content } : f)));
+    if (activePath === oldPath) {
+      setActivePath(newPath);
+      if (editorRef.current) editorRef.current.setModel(newModel);
+    }
+    setRenaming(null);
+    await kickDiagnostics();
+  };
+
+  const deleteFile = (path: string) => {
+    const monaco = monacoRef.current as typeof MonacoNS | null;
+    if (files.length <= 1) return;
     setFiles((prev) => prev.filter((f) => f.path !== path));
     if (monaco) {
       const uri = monaco.Uri.parse(path);
@@ -268,8 +512,11 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
         const nextModel = monaco.editor.getModel(monaco.Uri.parse(next.path));
         if (nextModel && editorRef.current) editorRef.current.setModel(nextModel);
       }
+      void kickDiagnostics();
     }
   };
+
+  // (old add/remove helpers removed in favor of addNewFile/deleteFile)
 
   const switchTo = (path: string) => {
     const monaco = monacoRef.current as typeof MonacoNS | null;
@@ -280,57 +527,85 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div className="lg:col-span-2 min-h-[520px] rounded-lg overflow-hidden border border-gray-200">
-        <div className="flex border-b border-gray-200 bg-gray-50 items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-2 overflow-x-auto">
-            {files.map((f) => {
-              const isActive = (editorRef.current?.getModel()?.uri.toString() ?? activePath) === f.path;
-              const filename = f.path.split("/").pop() ?? f.path;
-              return (
-                <button
-                  key={f.path}
-                  onClick={() => switchTo(f.path)}
-                  title={f.path}
-                  className={`px-3 py-1.5 rounded text-sm border ${
-                    isActive ? "bg-white text-gray-900 border-gray-300" : "bg-gray-100 text-gray-700 border-transparent hover:bg-gray-200"
-                  }`}
-                >
-                  {filename}
-                </button>
-              );
-            })}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => addFile("ts")}
-              className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
-              title="Add .ts file"
-            >
-              + TS
-            </button>
-            <button
-              onClick={() => addFile("dts")}
-              className="px-2 py-1 text-xs rounded bg-indigo-600 text-white hover:bg-indigo-700"
-              title="Add .d.ts declaration"
-            >
-              + d.ts
-            </button>
-            {files.length > 1 && (
-              <button
-                onClick={() => removeFile(editorRef.current?.getModel()?.uri.toString() ?? activePath)}
-                className="px-2 py-1 text-xs rounded bg-gray-200 text-gray-700 hover:bg-gray-300"
-                title="Close current file"
-              >
-                Close
-              </button>
-            )}
-          </div>
+    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      {/* Sidepane: files */}
+      <aside className="rounded-lg overflow-hidden border border-gray-200 bg-white">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-gray-50">
+          <div className="text-sm font-medium text-gray-900">Files</div>
+          <button
+            onClick={addNewFile}
+            title="Create new file"
+            className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
+          >
+            +
+          </button>
         </div>
+        <ul className="max-h-[70vh] overflow-auto divide-y divide-gray-100">
+          {files.map((f) => {
+            const isActive = (editorRef.current?.getModel()?.uri.toString() ?? activePath) === f.path;
+            const rel = toRel(f.path);
+            const fileMarkers = markers.filter((m) => m.resource === f.path);
+            const hasError = fileMarkers.some((m) => m.severity >= 8);
+            const hasAny = fileMarkers.length > 0;
+            return (
+              <li key={f.path} className={`group flex items-center gap-2 px-3 py-2 ${isActive ? 'bg-blue-50' : 'hover:bg-gray-50'}`}>
+                {/* Error dot */}
+                <span
+                  className={`inline-block h-2 w-2 rounded-full ${hasError ? 'bg-red-500' : hasAny ? 'bg-amber-500' : 'bg-transparent border border-transparent'}`}
+                />
+                {/* Name or input */}
+                {renaming && renaming.oldPath === f.path ? (
+                  <input
+                    autoFocus
+                    className="flex-1 text-sm border border-blue-300 rounded px-1 py-0.5 outline-none"
+                    value={renaming.value}
+                    onChange={(e) => setRenaming({ oldPath: renaming.oldPath, value: e.target.value })}
+                    onBlur={() => renameFile(renaming.oldPath, renaming.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') renameFile(renaming.oldPath, renaming.value);
+                      if (e.key === 'Escape') setRenaming(null);
+                    }}
+                  />
+                ) : (
+                  <button
+                    onClick={() => switchTo(f.path)}
+                    className={`flex-1 text-left text-sm ${isActive ? 'text-blue-700' : 'text-gray-900'}`}
+                    title={rel}
+                  >
+                    {rel}
+                  </button>
+                )}
+                {/* Actions */}
+                {!renaming || renaming.oldPath !== f.path ? (
+                  <>
+                    <button
+                      className="opacity-70 hover:opacity-100"
+                      title="Rename"
+                      onClick={() => setRenaming({ oldPath: f.path, value: rel })}
+                    >
+                      <Pencil className="w-4 h-4 text-gray-600" strokeWidth={2} />
+                    </button>
+                    <button
+                      className="opacity-70 hover:opacity-100"
+                      title="Delete"
+                      onClick={() => deleteFile(f.path)}
+                      disabled={files.length <= 1}
+                    >
+                      <Trash className="w-4 h-4 text-gray-600" strokeWidth={2} />
+                    </button>
+                  </>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      </aside>
+
+      {/* Editor */}
+      <div className="lg:col-span-2 min-h-[520px] rounded-lg overflow-hidden border border-gray-200">
         <Editor
-          height="70vh"
+          height={editorHeight}
           defaultLanguage="typescript"
-          // We manage models ourselves; still pass a path for initial mount
           path={activePath}
           beforeMount={beforeMount}
           theme={getMonacoTheme(mode)}
@@ -338,15 +613,32 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
             minimap: { enabled: false },
             fontSize: 14,
             scrollBeyondLastLine: false,
+            // Let the page handle scrolling; no internal vertical scroll
+            scrollbar: { vertical: 'hidden', horizontal: 'auto', handleMouseWheel: false, alwaysConsumeMouseWheel: false },
             automaticLayout: true,
             tabSize: 2,
+            hover: { enabled: true, delay: 200, sticky: true },
+            renderValidationDecorations: 'on',
           }}
           onChange={onChangeContent}
           onMount={onMount}
           onValidate={handleValidate}
         />
+        {/* Hover tooltip (fallback) */}
+        {hoverTip.visible && (
+          <div
+            className="pointer-events-none fixed z-50 rounded border border-gray-300 bg-white shadow px-2 py-1 text-xs text-gray-900 max-w-[360px]"
+            style={{ left: hoverTip.x, top: hoverTip.y }}
+          >
+            <div className="whitespace-pre-wrap break-words">{hoverTip.message}</div>
+            {hoverTip.code ? (
+              <div className="text-gray-600 mt-1">Code: {String(hoverTip.code)}</div>
+            ) : null}
+          </div>
+        )}
       </div>
 
+      {/* Right panel: type + errors */}
       <div className="space-y-6">
         <section className="border border-gray-200 rounded-lg p-4">
           <h2 className="font-medium text-gray-900 mb-2">Type</h2>
