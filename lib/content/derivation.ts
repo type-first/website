@@ -33,10 +33,12 @@ export class ContentDerivationPipeline {
       markdown,
       plaintext,
       outline,
+      wordCount: plaintext.split(' ').length,
+      readingTime: `${Math.ceil(plaintext.split(' ').length / 200)} min read`,
       updatedAt: new Date(),
     };
 
-    await saveDerivedContent(derivedContent);
+    await saveDerivedContent(article.id, derivedContent);
 
     // Generate embeddings if requested
     if (generateEmbeddings && embeddingService) {
@@ -116,7 +118,7 @@ export class ContentDerivationPipeline {
         // Extract headings from text content
         const headingMatches = section.content.match(/^(#{1,6})\s+(.+)$/gm);
         if (headingMatches) {
-          headingMatches.forEach(match => {
+          headingMatches.forEach((match: string) => {
             const level = match.match(/^#+/)?.[0].length || 1;
             const title = match.replace(/^#+\s+/, '').trim();
             const id = section.id || `section-${index}`;
@@ -170,7 +172,7 @@ export class ContentDerivationPipeline {
     }));
 
     // Save to database
-    await saveSectionEmbeddings(sectionEmbeddings);
+    await saveSectionEmbeddings(article.id, sectionEmbeddings);
   }
 
   async processArticleHtml(markdown: string): Promise<string> {

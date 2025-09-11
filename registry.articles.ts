@@ -16,6 +16,8 @@ export interface ArticleRegistryEntry {
   readingTime: string;
   coverImage?: string;
   status: 'published' | 'draft';
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 // Registry of all articles

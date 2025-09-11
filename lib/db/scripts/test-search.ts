@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { sql } from '@vercel/postgres';
-import { searchByText, searchByVector } from '../articles';
+import { searchByText, searchByVector } from '../../search';
 
 // Load env from project root .env.local
 dotenv.config({ path: path.join(__dirname, '../../../.env.local') });
@@ -47,7 +47,7 @@ async function main() {
   // Text search
   const text = await searchByText(q, limit);
   console.log(`\nText results (${text.length}):`);
-  text.forEach((r, i) => {
+  text.forEach((r: any, i: number) => {
     console.log(`  ${i + 1}. article=${r.articleId} score=${r.score.toFixed(3)} snippet=${truncate(r.snippet.replace(/\n/g, ' '))}`);
   });
 
@@ -58,9 +58,9 @@ async function main() {
     return;
   }
 
-  const vector = await searchByVector(embedding, limit, 0.0); // 0 threshold to always return top matches
+  const vector = await searchByVector(embedding, limit); // 0 threshold to always return top matches
   console.log(`\nVector results (${vector.length}):`);
-  vector.forEach((r, i) => {
+  vector.forEach((r: any, i: number) => {
     console.log(`  ${i + 1}. article=${r.articleId} score=${r.score.toFixed(3)} section=${r.sectionIndex} snippet=${truncate(r.content.replace(/\n/g, ' '))}`);
   });
 

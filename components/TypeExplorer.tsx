@@ -431,7 +431,7 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
             : d.category === 0
             ? monaco.MarkerSeverity.Warning
             : monaco.MarkerSeverity.Info;
-          const code = d.code ? { value: String(d.code) } : undefined;
+          const code = d.code ? String(d.code) : undefined;
           return {
             startLineNumber: startPos.lineNumber,
             startColumn: startPos.column,

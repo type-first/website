@@ -22,13 +22,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Get all published articles
-    const { articles } = await listArticles({ 
+    const articles = await listArticles({ 
       status: 'published',
       limit: 10000 // Get all articles
     });
 
     // Article routes
-    const articleRoutes: MetadataRoute.Sitemap = articles.map((article) => ({
+    const articleRoutes: MetadataRoute.Sitemap = articles.map((article: any) => ({
       url: `${baseUrl}/articles/${article.slug}`,
       lastModified: article.updatedAt,
       changeFrequency: 'weekly' as const,
