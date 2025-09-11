@@ -1,14 +1,14 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+import AuthProvider from './AuthProvider';
 import AuthMenu from './AuthMenu';
 
 type Variant = 'inline' | 'sidebar';
 
 export default function AuthWrapper({ variant = 'inline' }: { variant?: Variant } = {}) {
   return (
-    <SessionProvider>
+    <AuthProvider>
       <AuthMenu variant={variant} />
-    </SessionProvider>
+    </AuthProvider>
   );
 }

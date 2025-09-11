@@ -12,8 +12,11 @@ const ghSecret = process.env.GITHUB_SECRET || process.env.AUTH_GITHUB_SECRET;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
-    // Only add GitHub provider if credentials are available
-    ...(ghId && ghSecret ? [GitHub({ clientId: ghId, clientSecret: ghSecret })] : []),
+    // Add GitHub provider with the credentials from .env.local
+    GitHub({ 
+      clientId: ghId!, 
+      clientSecret: ghSecret! 
+    }),
   ],
   session: { strategy: 'jwt' },
   trustHost: true,

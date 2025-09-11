@@ -9,6 +9,7 @@ import {
   Paragraph,
   List,
   ListItem,
+  Strong,
   type MultiModalComponent,
   multimodal
 } from "@/lib/multimodal/v1";
@@ -17,25 +18,25 @@ type SectionProps = {
   // No additional props beyond modality
 };
 
-export const SectionBestPractices: MultiModalComponent<SectionProps> = multimodal<SectionProps>()(({ modality }) => (
+export const SectionBestPractices: MultiModalComponent<SectionProps> = multimodal<SectionProps>()(({ modality:m }) => (
   <>
-    <Section modality={modality}>
-      <Heading level={2} modality={modality}>Best Practices</Heading>
-      <List modality={modality}>
-        <ListItem modality={modality}>
-          <strong>Use strict TypeScript configuration</strong> - Enable all strict type checking options
+    <Section modality={m}>
+      <Heading level={2} modality={m}>Best Practices</Heading>
+      <List modality={m}>
+        <ListItem modality={m}>
+          <Paragraph modality={null}>Use strict TypeScript configuration</Paragraph> - Enable all strict type checking options
         </ListItem>
-        <ListItem modality={modality}>
-          <strong>Leverage type inference</strong> - Let TypeScript infer types when possible
+        <ListItem modality={m}>
+          <Strong modality={m}>Leverage type inference</Strong> - Let TypeScript infer types when possible
         </ListItem>
-        <ListItem modality={modality}>
-          <strong>Create reusable type utilities</strong> - Build a library of common type patterns
+        <ListItem modality={m}>
+          <Strong modality={m}>Create reusable type utilities</Strong> - Build a library of common type patterns
         </ListItem>
-        <ListItem modality={modality}>
-          <strong>Use branded types</strong> - Create distinct types for similar data structures
+        <ListItem modality={m}>
+          <Strong modality={m}>Use branded types</Strong> - Create distinct types for similar data structures
         </ListItem>
-        <ListItem modality={modality}>
-          <strong>Implement proper error boundaries</strong> - Handle errors at the type level
+        <ListItem modality={m}>
+          <Strong modality={m}>Implement proper error boundaries</Strong> - Handle errors at the type level
         </ListItem>
       </List>
     </Section>

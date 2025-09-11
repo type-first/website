@@ -2,12 +2,10 @@
  * Article metadata for Advanced TypeScript Patterns for React Applications
  */
 
-import { ARTICLE_TAGS } from "@/lib/article-compiler/tags";
-
 export const articleMetadata = {
   title: "Advanced TypeScript Patterns for React Applications",
   description: "Master advanced TypeScript patterns including generic components, conditional types, and type-safe APIs for robust React applications.",
-  tags: [ARTICLE_TAGS.TYPESCRIPT, ARTICLE_TAGS.REACT, "patterns", "type-safety", "advanced"] as string[],
+  tags: ["patterns", "type-safety", "advanced"] as string[],
   publishedAt: new Date("2024-12-15"),
   updatedAt: new Date("2024-12-15"),
   author: "Type-First Team",

@@ -1,13 +1,13 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useSessionSafe } from './AuthProvider';
 import { signOut } from 'next-auth/react';
 import AuthPopupButtons from './AuthPopupButtons';
 
 type Variant = 'inline' | 'sidebar';
 
 export default function AuthMenu({ variant = 'inline' }: { variant?: Variant } = {}) {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSessionSafe();
   const user = session?.user as { name?: string | null; email?: string | null; image?: string | null } | undefined;
 
   // Show loading state during hydration to prevent mismatch

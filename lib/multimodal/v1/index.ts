@@ -15,6 +15,7 @@ export { Code } from './code.mm.srv';
 export { Footer } from './footer.mm.srv';
 export { Container } from './container.mm.srv';
 export { Text } from './text.mm.srv';
+export { Strong } from './strong.mm.srv';
 export { List, OrderedList, ListItem } from './list.mm.srv';
 export { JsonLd, JsonLdComponents } from './json-dl.mm.srv';
 export { renderMode, renderStandard, renderMarkdown, type MultiModalComponentProps } from './render';

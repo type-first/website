@@ -3,7 +3,7 @@
  * This file contains the shared types and interfaces for multimodal components
  */
 
-import React, { ReactElement, ReactNode } from 'react';
+import React, { JSX, ReactElement, ReactNode } from 'react';
 
 /**
  * Modality type - defines the rendering mode for multimodal components
@@ -22,17 +22,28 @@ export type MultiModalProps = {
 /**
  * A modal element - a React element with multimodal props and additional props
  */
-export type ModalElement<M extends Modality, P extends object> = ReactElement<MultiModalProps & P>;
+/**
+ * A modal element - a React element with multimodal props and additional props
+ */
+export type ModalElement<M extends Modality, P extends object> = ReactElement<ModalProps<M> & P>;
 
 /**
- * Valid modal children - basic types plus modal elements
+ * Valid modal children - allows multimodal components and basic types
+ * Uses never type to exclude elements that don't have required modality prop structure
  */
-export type ModalChild<M extends Modality> = null | undefined | string | number | boolean | ModalElement<M, object>;
+export type ModalChild<M extends Modality> = Exclude<
+  | null 
+  | undefined 
+  | string 
+  | number 
+  | boolean 
+  | ModalElement<M, object>
+  | (ReactElement<any> & { props: { modality: M } }), JSX.IntrinsicElements>
 
 /**
  * Modal props with specific modality and typed children
  */
-export type ModalProps<M extends Modality> = MultiModalProps & {
+export type ModalProps<M extends Modality> = {
   modality: M;
   children?: ModalChild<M> | Array<ModalChild<M>>;
 };
@@ -43,14 +54,12 @@ export type ModalProps<M extends Modality> = MultiModalProps & {
 export type ModalComponent<M extends Modality, P extends object> = (props: ModalProps<M> & P) => ReactNode;
 export type StandardModalComponent<P extends object> = (props: ModalProps<null> & P) => ReactNode;
 export type MarkdownModalComponent<P extends object> = (props: ModalProps<'markdown'> & P) => ReactNode;
+
 /**
- * Multimodal component type with proper overloads
+ * Multimodal component type - accepts any valid modality
+ * This preserves the generic nature of the modality parameter
  */
-export type MultiModalComponent<P extends object> = {
-  (props: ModalProps<null> & P): ReactNode;
-  (props: ModalProps<'markdown'> & P): ReactNode;
-  (props: ModalProps<Modality> & P): ReactNode;
-};
+export type MultiModalComponent<P extends object> = <M extends Modality>(props: ModalProps<M> & P) => ReactNode;
 
 /**
  * Multimodal component factory function
@@ -59,22 +68,32 @@ export type MultiModalComponent<P extends object> = {
 export const multimodal = <P extends object>(
     { markdown }: { markdown?: MarkdownModalComponent<P> } = {}
 ) => 
-(standard: StandardModalComponent<P>): MultiModalComponent<P> => {
-  const component = (props: ModalProps<Modality> & P) => {
+<M extends Modality>(standard: (props: ModalProps<M> & P) => ReactNode): MultiModalComponent<P> => {
+  const component = <TM extends Modality>(props: ModalProps<TM> & P) => {
     const { modality } = props;
     switch (modality) {
-        case null: return standard(props as ModalProps<null> & P);
+        case null: 
+          return standard(props as any);
         case 'markdown': 
           if (markdown) {
             return markdown(props as ModalProps<'markdown'> & P);
           } else {
-            // Use standard component but with markdown modality passed down
-            return standard({ ...props, modality: 'markdown' } as ModalProps<null> & P);
+            return standard(props as any);
           }
-        default: throw new Error('invalid modality: ' + modality);
+        default: 
+          throw new Error('invalid modality: ' + modality);
     }
   };
-  return component as MultiModalComponent<P>;
+  return component;
+};
+
+/**
+ * Helper function to create modal elements
+ */
+export const createModalElement = <M extends Modality, P extends object>(
+  element: ReactElement<ModalProps<M> & P>
+): ModalElement<M, P> => {
+  return element as ModalElement<M, P>;
 };
 
 /**
