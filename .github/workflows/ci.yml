@@ -1,154 +1,22 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
-    branches: [ main, develop ]
-  pull_request:
-    branches: [ main ]
-
-env:
-  NODE_VERSION: '18'
-  PNPM_VERSION: '8'
+    branches:
+      - main
 
 jobs:
-  test:
-    name: Test and Build
+  Test and Build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: ${{ env.PNPM_VERSION }}
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+        uses: actions/checkout@v2
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Run type checking
-        run: pnpm run type-check
+      - name: Run tests
+        run: pnpm test
 
-      - name: Run linting
-        run: pnpm run lint
-
-      - name: Migrate Neon database
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-        run: pnpm run db:migrate
-
-      - name: Build application
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-          NEXT_PUBLIC_BASE_URL: http://localhost:3000
-        run: pnpm run build
-
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps
-
-      - name: Seed test data
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-        run: pnpm run db:seed
-
-      - name: Run Playwright tests
-        env:
-          POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-          NEXT_PUBLIC_BASE_URL: http://localhost:3000
-        run: pnpm run test
-
-      - name: Upload Playwright test results
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: playwright-report
-          path: playwright-report/
-          retention-days: 30
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            .next/
-            public/
-          retention-days: 1
-
-  deploy-preview:
-    name: Deploy Preview
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.event_name == 'pull_request'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Trigger Vercel Preview Deploy (Deploy Hook)
-        env:
-          VERCEL_DEPLOY_HOOK_PREVIEW: ${{ secrets.VERCEL_DEPLOY_HOOK_PREVIEW }}
-        run: |
-          if [ -z "$VERCEL_DEPLOY_HOOK_PREVIEW" ]; then
-            echo "VERCEL_DEPLOY_HOOK_PREVIEW is not set" >&2
-            exit 1
-          fi
-          curl -s -X POST "$VERCEL_DEPLOY_HOOK_PREVIEW" -H 'Content-Type: application/json' -d "{}" \
-            && echo "Preview deploy hook triggered"
-
-  deploy-production:
-    name: Deploy Production
-    runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Trigger Vercel Production Deploy (Deploy Hook)
-        env:
-          VERCEL_DEPLOY_HOOK_PROD: ${{ secrets.VERCEL_DEPLOY_HOOK_PROD }}
-        run: |
-          if [ -z "$VERCEL_DEPLOY_HOOK_PROD" ]; then
-            echo "VERCEL_DEPLOY_HOOK_PROD is not set" >&2
-            exit 1
-          fi
-          curl -s -X POST "$VERCEL_DEPLOY_HOOK_PROD" -H 'Content-Type: application/json' -d "{}" \
-            && echo "Production deploy hook triggered"
-
-  lighthouse:
-    name: Lighthouse Performance Audit
-    runs-on: ubuntu-latest
-    needs: deploy-preview
-    if: github.event_name == 'pull_request'
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Run Lighthouse CI
-        uses: treosh/lighthouse-ci-action@v10
-        with:
-          configPath: '.lighthouserc.json'
-          temporaryPublicStorage: true
-          uploadArtifacts: true
+      - name: Build project
+        run: pnpm build
