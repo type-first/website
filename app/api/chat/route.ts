@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         for (const r of text) {
           try {
             const a = await getArticleById(r.articleId);
-            if (!seen.has(a.id)) {
+            if (a && !seen.has(a.id)) {
               seen.add(a.id);
               suggestionList.push({ id: a.id, title: a.title, slug: a.slug, snippet: r.snippet });
             }
@@ -61,9 +61,11 @@ export async function POST(req: NextRequest) {
                 try {
                   if (seen.has(r.articleId)) continue;
                   const a = await getArticleById(r.articleId);
-                  seen.add(a.id);
-                  const snippet = r.content.length > 200 ? `${r.content.slice(0, 200)}...` : r.content;
-                  suggestionList.push({ id: a.id, title: a.title, slug: a.slug, snippet });
+                  if (a) {
+                    seen.add(a.id);
+                    const snippet = r.content.length > 200 ? `${r.content.slice(0, 200)}...` : r.content;
+                    suggestionList.push({ id: a.id, title: a.title, slug: a.slug, snippet });
+                  }
                 } catch {}
               }
             }
