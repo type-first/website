@@ -9,14 +9,22 @@ import React, { JSX, ReactElement, ReactNode } from 'react';
  * Modality type - defines the rendering mode for multimodal components
  * - null: Standard rendering mode (default)
  * - 'markdown': Markdown rendering mode
+ * - 'yml': YML serializable object rendering mode
  */
-export type Modality = null | 'markdown';
+export type Modality = null | 'markdown' | 'yml';
 
 /**
  * Base multimodal props interface
  */
 export type MultiModalProps = {
   modality: Modality;
+};
+
+/**
+ * YML-specific props for tracking indentation
+ */
+export type YMLProps = {
+  indentLevel?: number;
 };
 
 /**
@@ -46,7 +54,7 @@ export type ModalChild<M extends Modality> = Exclude<
 export type ModalProps<M extends Modality> = {
   modality: M;
   children?: ModalChild<M> | Array<ModalChild<M>>;
-};
+} & (M extends 'yml' ? YMLProps : {});
 
 /**
  * Strict modal component types for specific modalities
@@ -54,6 +62,7 @@ export type ModalProps<M extends Modality> = {
 export type ModalComponent<M extends Modality, P extends object> = (props: ModalProps<M> & P) => ReactNode;
 export type StandardModalComponent<P extends object> = (props: ModalProps<null> & P) => ReactNode;
 export type MarkdownModalComponent<P extends object> = (props: ModalProps<'markdown'> & P) => ReactNode;
+export type YMLModalComponent<P extends object> = (props: ModalProps<'yml'> & P) => string;
 
 /**
  * Multimodal component type - accepts any valid modality
@@ -63,10 +72,10 @@ export type MultiModalComponent<P extends object> = <M extends Modality>(props: 
 
 /**
  * Multimodal component factory function
- * If markdown is not provided, the standard component will be used for both modes
+ * If markdown or yml are not provided, the standard component will be used for those modes
  */
 export const multimodal = <P extends object>(
-    { markdown }: { markdown?: MarkdownModalComponent<P> } = {}
+    { markdown, yml }: { markdown?: MarkdownModalComponent<P>; yml?: YMLModalComponent<P> } = {}
 ) => 
 <M extends Modality>(standard: (props: ModalProps<M> & P) => ReactNode): MultiModalComponent<P> => {
   const component = <TM extends Modality>(props: ModalProps<TM> & P) => {
@@ -77,6 +86,12 @@ export const multimodal = <P extends object>(
         case 'markdown': 
           if (markdown) {
             return markdown(props as ModalProps<'markdown'> & P);
+          } else {
+            return standard(props as any);
+          }
+        case 'yml':
+          if (yml) {
+            return yml(props as ModalProps<'yml'> & P);
           } else {
             return standard(props as any);
           }
@@ -117,8 +132,15 @@ export function isStandardMode(modality: Modality): boolean {
 }
 
 /**
+ * Utility function to check if we're in YML mode
+ */
+export function isYMLMode(modality: Modality): boolean {
+  return modality === 'yml';
+}
+
+/**
  * Type guard for modality
  */
 export function isValidModality(value: any): value is Modality {
-  return value === null || value === 'markdown';
+  return value === null || value === 'markdown' || value === 'yml';
 }

@@ -22,9 +22,9 @@ export function renderMode<
   Component: MMC,
   modality: M,
   props: P
-): M extends 'markdown' ? string : React.ReactNode {
+): M extends 'markdown' ? string : M extends 'yml' ? string : React.ReactNode {
   const componentProps = { ...props, modality } as Parameters<MMC>[0];
-  return Component(componentProps) as M extends 'markdown' ? string : React.ReactNode;
+  return Component(componentProps) as M extends 'markdown' ? string : M extends 'yml' ? string : React.ReactNode;
 }
 
 /**
@@ -51,6 +51,19 @@ export function renderMarkdown<
   props: P
 ): string {
   return renderMode(Component, 'markdown', props);
+}
+
+/**
+ * Render a multimodal component in YML mode
+ */
+export function renderYML<
+  MMC extends MultiModalComponent<any>,
+  P extends Parameters<MMC>[0] extends { modality: any } ? Omit<Parameters<MMC>[0], 'modality'> : never
+>(
+  Component: MMC,
+  props: P & { indentLevel?: number }
+): string {
+  return renderMode(Component, 'yml', props);
 }
 
 /**

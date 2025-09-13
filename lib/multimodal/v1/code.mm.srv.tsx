@@ -3,6 +3,7 @@ import { codeToTokens, type BundledLanguage } from 'shiki';
 import { getShikiTheme, type ColorMode } from '@/lib/code-theme/v0/code-theme';
 import { multimodal } from './multimodal-model';
 import { MarkdownBlock } from './markdown-block.m.srv';
+import { createIndent, escapeYMLString } from './yml-primitives';
 
 type CodeProps = {
   language: string;
@@ -110,6 +111,7 @@ async function HighlightedCode({
  * Code multimodal component - renders code blocks with syntax highlighting
  * Standard: Server-side syntax highlighted code block using Shiki
  * Markdown: Fenced code block with language using MarkdownBlock
+ * YML: Renders as a code object with language and content
  */
 export const Code = multimodal<CodeProps>({
   markdown: ({ language, children }) => (
@@ -120,7 +122,24 @@ export const Code = multimodal<CodeProps>({
       <>{'\n'}</>
       <>```</>
     </MarkdownBlock>
-  )
+  ),
+  yml: ({ language, filename, children, indentLevel = 0 }) => {
+    const indent = createIndent(indentLevel);
+    const childIndent = createIndent(indentLevel + 1);
+    const codeString = typeof children === 'string' ? children : String(children);
+    
+    let result = `${indent}code:
+${childIndent}language: ${escapeYMLString(language)}`;
+    
+    if (filename) {
+      result += `\n${childIndent}filename: ${escapeYMLString(filename)}`;
+    }
+    
+    result += `\n${childIndent}content: |
+${codeString.split('\n').map(line => `${createIndent(indentLevel + 2)}${line}`).join('\n')}`;
+    
+    return result;
+  }
 })(async ({ language, filename, children }) => {
   const codeString = typeof children === 'string' ? children : String(children);
 

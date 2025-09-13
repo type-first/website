@@ -1,6 +1,7 @@
 import React from 'react';
 import { multimodal } from './multimodal-model';
 import { MarkdownBlock } from './markdown-block.m.srv';
+import { createIndent, escapeYMLString } from './yml-primitives';
 
 type HeadingProps = {
   level: 1 | 2 | 3 | 4 | 5 | 6;
@@ -10,13 +11,21 @@ type HeadingProps = {
  * Heading multimodal component - renders headings at different levels
  * Standard: HTML heading elements with styling
  * Markdown: Markdown heading syntax with proper spacing via Block
+ * YML: Renders as a heading object with level and text
  */
 export const Heading = multimodal<HeadingProps>({
   markdown: ({ level, children }) => (
     <MarkdownBlock modality="markdown">
       <><>{'#'.repeat(level)}</> <>{children}</></>
     </MarkdownBlock>
-  )
+  ),
+  yml: ({ level, children, indentLevel = 0 }) => {
+    const indent = createIndent(indentLevel);
+    const childIndent = createIndent(indentLevel + 1);
+    return `${indent}heading:
+${childIndent}level: ${level}
+${childIndent}text: ${escapeYMLString(String(children || ''))}`;
+  }
 })(({ level, children }) => {
   const HeadingTag = `h${level}` as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
   const sizeClasses = {

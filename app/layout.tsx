@@ -9,7 +9,7 @@ import { Suspense } from 'react';
 import NavSidebar from '@/components/NavSidebar';
 
 // Initialize island registry
-import '@/lib/islands/setup';
+import '@/lib/islands/v0/setup';
 
 const inter = Inter({ subsets: ['latin'] });
 
