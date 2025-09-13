@@ -1,7 +1,7 @@
 import React, { cache } from 'react';
 import { codeToTokens, type BundledLanguage } from 'shiki';
-import { getShikiTheme, type ColorMode } from '@/lib/codeTheme';
-import { multimodal } from './multimodal.model';
+import { getShikiTheme, type ColorMode } from '@/lib/code-theme/v0/code-theme';
+import { multimodal } from './multimodal-model';
 import { MarkdownBlock } from './markdown-block.m.srv';
 
 type CodeProps = {

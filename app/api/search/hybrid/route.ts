@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchHybrid } from '@/lib/search';
+import { searchHybrid } from '@/lib/search/v0/search';
 
 export async function GET(request: NextRequest) {
   try {

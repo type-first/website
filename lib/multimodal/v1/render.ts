@@ -3,7 +3,7 @@
  * This module provides functions to render multimodal components with specific modalities
  */
 
-import type { Modality, MultiModalComponent } from './multimodal.model';
+import type { Modality, MultiModalComponent } from './multimodal-model';
 
 /**
  * Render a multimodal component with a specific modality

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MarkdownModalComponent } from './multimodal.model';
+import { MarkdownModalComponent } from './multimodal-model';
 
 type MarkdownBlockProps = {
   spacing?: 'none' | 'tight' | 'normal' | 'loose';

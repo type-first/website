@@ -4,7 +4,8 @@
  */
 
 import React from "react";
-import { Code, type MultiModalComponent, multimodal } from "@/lib/multimodal/v1";
+import { Code } from "@/lib/multimodal/v1/code.mm.srv";
+import { type MultiModalComponent, multimodal } from "@/lib/multimodal/v1/multimodal-model";
 
 // Raw snippet string for reuse
 export const genericListSnippet = `interface ListProps<T> {

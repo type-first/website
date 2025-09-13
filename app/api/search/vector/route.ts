@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchByVector } from '@/lib/search';
+import { searchByVector } from '@/lib/search/v0/search';
 
 export async function POST(request: NextRequest) {
   try {

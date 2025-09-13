@@ -1,5 +1,5 @@
-import { sql } from './db';
-import { getAllArticles, ArticleWithSlug } from './articles/registry';
+import { sql } from '@vercel/postgres';
+import { getAllArticles, ArticleWithSlug } from '@/lib/articles/v0/registry';
 
 export interface SearchResult {
   slug: string;

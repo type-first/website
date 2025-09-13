@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { multimodal } from './multimodal.model';
+import { multimodal } from './multimodal-model';
 import { MarkdownBlock } from './markdown-block.m.srv';
 import { Rocket, ArrowUpRight } from 'lucide-react';
 

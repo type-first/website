@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { listArticles, type ArticleRegistryEntry } from '@/registry.articles';
 import { listLabs, type LabRegistryEntry } from '@/registry.labs';
-import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants';
+import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants/v0/design-constants';
 import { ArrowUpRight } from 'lucide-react';
 
 export default async function Home() {

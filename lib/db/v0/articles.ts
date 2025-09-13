@@ -1,6 +1,6 @@
 // Database functions for articles
 import { sql } from '@vercel/postgres';
-import { Article } from '@/lib/schemas/article';
+import { Article } from '@/lib/schemas/v0/article';
 
 export async function getArticleById(id: string): Promise<Article | null> {
   try {

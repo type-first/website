@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
-import { createCommunityPost } from '@/lib/db/community';
+import { createCommunityPost } from '@/lib/db/v0/community';
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { auth } from '@/auth';
-import { listCommunityPosts } from '@/lib/db/community';
+import { listCommunityPosts } from '@/lib/db/v0/community';
 import RequireAuthButton from '@/components/RequireAuthButton';
 import { Plus, ChevronUp, ChevronDown } from 'lucide-react';
 

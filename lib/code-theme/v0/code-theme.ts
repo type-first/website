@@ -1,6 +1,6 @@
 export type ColorMode = 'light' | 'dark';
 
-import typefirstLight from './themes/shiki-typefirst-light.json';
+import typefirstLight from '@/lib/themes/v0/shiki-typefirst-light.json';
 
 export const CodeThemes = {
   shiki: {

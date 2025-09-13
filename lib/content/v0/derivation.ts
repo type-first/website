@@ -1,7 +1,7 @@
 import { remark } from 'remark';
 import remarkHtml from 'remark-html';
-import { Article, Section, DerivedContent, SectionEmbedding } from '../schemas/article';
-import { saveDerivedContent, saveSectionEmbeddings } from '../db/articles';
+import { Article, Section, DerivedContent, SectionEmbedding } from '@/lib/schemas/v0/article';
+import { saveDerivedContent, saveSectionEmbeddings } from '@/lib/db/v0/articles';
 
 export interface DerivationOptions {
   generateEmbeddings?: boolean;

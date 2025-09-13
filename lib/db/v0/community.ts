@@ -1,5 +1,5 @@
-import { sql } from './index';
-import { posts as demoPosts } from '../community/data';
+import { sql } from '@vercel/postgres';
+import { posts as demoPosts } from '@/lib/community/v0/data';
 
 function canUseDb() {
   return !!process.env.POSTGRES_URL;

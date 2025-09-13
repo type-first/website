@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { sql } from '@vercel/postgres';
-import { searchByText, searchByVector } from '../../search';
+import { searchByText, searchByVector } from '@/lib/search/v0/search';
 
 // Load env from project root .env.local
 dotenv.config({ path: path.join(__dirname, '../../../.env.local') });

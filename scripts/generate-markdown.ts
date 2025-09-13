@@ -8,7 +8,7 @@ import React from 'react';
 import { promises as fs } from 'fs';
 import * as path from 'path';
 import clipboardy from 'clipboardy';
-import { renderToMarkdown } from '../lib/multimodal/v1';
+import { renderToMarkdown } from '../lib/multimodal/v1/markdown-utils';
 
 // Import available articles
 import { AdvancedTypescriptPatternsReactArticle, articleMetadata as advancedTsMetadata } from '../articles/advanced-typescript-patterns-react/article';

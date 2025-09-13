@@ -1,7 +1,7 @@
 import React from 'react';
-import { Section } from '@/lib/schemas/article';
-import { IslandLoader } from '@/lib/islands/registry';
-import { highlightCode } from '@/lib/highlight';
+import { Section } from '@/lib/schemas/v0/article';
+import { IslandLoader } from '@/lib/islands/v0/registry';
+import { highlightCode } from '@/lib/highlight/v0/highlight';
 
 interface ArticleRendererProps {
   sections: Section[];

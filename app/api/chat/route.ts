@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchByString, searchByVector, getArticleById } from '@/lib/db/articles';
+import { searchByString, searchByVector, getArticleById } from '@/lib/db/v0/articles';
 
 export async function POST(req: NextRequest) {
   const apiKey = process.env.OPENAI_API_KEY;

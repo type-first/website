@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import { sql } from '@vercel/postgres';
-import { Article, ArticleStatus } from '@/lib/schemas/article';
-import { ContentDerivationPipeline, MockEmbeddingService, EmbeddingService } from '@/lib/content/derivation';
+import { Article, ArticleStatus } from '@/lib/schemas/v0/article';
+import { ContentDerivationPipeline, MockEmbeddingService, EmbeddingService } from '@/lib/content/v0/derivation';
 
 // Load env from project root .env.local
 dotenv.config({ path: path.join(__dirname, '../../../.env.local') });

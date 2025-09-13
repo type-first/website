@@ -1,4 +1,4 @@
-import { getAllArticles } from '@/lib/articles/registry';
+import { getAllArticles } from '@/lib/articles/v0/registry';
 import Link from 'next/link';
 
 export default async function SEOTestPage() {

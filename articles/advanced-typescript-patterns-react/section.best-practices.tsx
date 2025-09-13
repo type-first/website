@@ -3,16 +3,12 @@
  */
 
 import React from "react";
-import { 
-  Section,
-  Heading,
-  Paragraph,
-  List,
-  ListItem,
-  Strong,
-  type MultiModalComponent,
-  multimodal
-} from "@/lib/multimodal/v1";
+import { Section } from "@/lib/multimodal/v1/section.mm.srv";
+import { Heading } from "@/lib/multimodal/v1/heading.mm.srv";
+import { Paragraph } from "@/lib/multimodal/v1/paragraph.mm.srv";
+import { List, ListItem } from "@/lib/multimodal/v1/list.mm.srv";
+import { Strong } from "@/lib/multimodal/v1/strong.mm.srv";
+import { type MultiModalComponent, multimodal } from "@/lib/multimodal/v1/multimodal-model";
 
 type SectionProps = {
   // No additional props beyond modality

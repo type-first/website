@@ -1,5 +1,5 @@
-import { getAllArticles } from '@/lib/articles/registry';
-import { COVER_IMAGE } from '@/lib/design-constants';
+import { getAllArticles } from '@/lib/articles/v0/registry';
+import { COVER_IMAGE } from '@/lib/design-constants/v0/design-constants';
 
 export default async function MetadataInspectorPage({
   searchParams,

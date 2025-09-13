@@ -1,6 +1,6 @@
 import React from 'react';
 import NextLink from 'next/link';
-import { multimodal } from './multimodal.model';
+import { multimodal } from './multimodal-model';
 
 type LinkProps = {
   href: string;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { multimodal } from './multimodal.model';
+import { multimodal } from './multimodal-model';
 import { Link } from './link.mm.srv';
 import { MarkdownBlock } from './markdown-block.m.srv';
 

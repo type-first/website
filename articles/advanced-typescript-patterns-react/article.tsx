@@ -4,24 +4,21 @@
  */
 
 import React from "react";
-import { 
-  Article,
-  Header,
-  Navigation,
-  Link as SemanticLink,
-  CoverImage,
-  ArticleHeader,
-  ArticleMetadata,
-  Heading,
-  Paragraph,
-  CodeExplore,
-  Footer,
-  Container,
-  TagsList,
-  JsonLd,
-  type MultiModalComponent,
-  multimodal
-} from "@/lib/multimodal/v1";
+import { Article } from "@/lib/multimodal/v1/article.mm.srv";
+import { Header } from "@/lib/multimodal/v1/header.mm.srv";
+import { Navigation } from "@/lib/multimodal/v1/navigation.mm.srv";
+import { Link as SemanticLink } from "@/lib/multimodal/v1/link.mm.srv";
+import { CoverImage } from "@/lib/multimodal/v1/cover-image.mm.srv";
+import { ArticleHeader } from "@/lib/multimodal/v1/article-header.mm.srv";
+import { ArticleMetadata } from "@/lib/multimodal/v1/article-metadata.mm.srv";
+import { Heading } from "@/lib/multimodal/v1/heading.mm.srv";
+import { Paragraph } from "@/lib/multimodal/v1/paragraph.mm.srv";
+import { CodeExplore } from "@/lib/multimodal/v1/code-explore.mm.srv";
+import { Footer } from "@/lib/multimodal/v1/footer.mm.srv";
+import { Container } from "@/lib/multimodal/v1/container.mm.srv";
+import { TagsList } from "@/lib/multimodal/v1/tags-list.mm.srv";
+import { JsonLd } from "@/lib/multimodal/v1/json-dl.mm.srv";
+import { type MultiModalComponent, multimodal } from "@/lib/multimodal/v1/multimodal-model";
 
 import { articleMetadata } from "./meta";
 import { SectionGenericComponents } from "./section.generic-components";

@@ -1,6 +1,6 @@
 import React from 'react';
 import { AdvancedTypescriptPatternsReactArticle } from './articles/advanced-typescript-patterns-react';
-import { renderToMarkdown } from './lib/multimodal/v1';
+import { renderToMarkdown } from './lib/multimodal/v1/markdown-utils';
 
 const markdownComponent = <AdvancedTypescriptPatternsReactArticle modality="markdown" />;
 const cleanMarkdown = renderToMarkdown(markdownComponent);

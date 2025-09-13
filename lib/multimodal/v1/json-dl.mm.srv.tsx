@@ -7,8 +7,8 @@ import {
   createBreadcrumbJsonLd, 
   createOrganizationJsonLd, 
   createWebSiteJsonLd 
-} from '@/lib/json-dl/v1/model';
-import { Modality, multimodal } from './multimodal.model';
+} from '@/lib/json-dl/v0/model';
+import { Modality, multimodal } from './multimodal-model';
 
 type JsonLdProps = { data: Thing };
 

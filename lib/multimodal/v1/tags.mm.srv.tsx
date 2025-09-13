@@ -1,7 +1,7 @@
 import React from 'react';
 import NextLink from 'next/link';
-import type { StandardModalComponent, MarkdownModalComponent } from './multimodal.model';
-import { multimodal } from './multimodal.model';
+import type { StandardModalComponent, MarkdownModalComponent } from './multimodal-model';
+import { multimodal } from './multimodal-model';
 import { MarkdownBlock } from './markdown-block.m.srv';
 
 type TagsProps = {

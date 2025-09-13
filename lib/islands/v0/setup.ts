@@ -1,7 +1,7 @@
 import { registerIsland } from './registry';
-import { Counter } from '../../components/islands/Counter';
-import { InteractiveChart } from '../../components/islands/InteractiveChart';
-import { CodePlayground } from '../../components/islands/CodePlayground';
+import { Counter } from '@/components/islands/Counter';
+import { InteractiveChart } from '@/components/islands/InteractiveChart';
+import { CodePlayground } from '@/components/islands/CodePlayground';
 
 // Register all available islands
 export function setupIslands() {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { multimodal } from './multimodal.model';
+import { multimodal } from './multimodal-model';
 import { MarkdownBlock } from './markdown-block.m.srv';
 
 type ParagraphProps = {};

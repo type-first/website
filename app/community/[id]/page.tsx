@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { auth } from '@/auth';
-import { getCommunityPostBySlug } from '@/lib/db/community';
+import { getCommunityPostBySlug } from '@/lib/db/v0/community';
 import RequireAuthButton from '@/components/RequireAuthButton';
 import CommentForm from '@/components/community/CommentForm';
 

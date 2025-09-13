@@ -3,7 +3,7 @@
 import React from "react";
 import Editor, { loader, OnMount, BeforeMount } from "@monaco-editor/react";
 import type * as MonacoNS from "monaco-editor";
-import { getMonacoTheme } from "@/lib/codeTheme";
+import { getMonacoTheme } from "@/lib/code-theme/v0/code-theme";
 import { Pencil, Trash } from 'lucide-react';
 
 loader.config({

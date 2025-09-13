@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
 import { auth } from '@/auth';
-import { getArticleBySlug, updateArticle } from '@/lib/db/articles';
+import { getArticleBySlug, updateArticle } from '@/lib/db/v0/articles';
 
 export async function POST(req: NextRequest) {
   const session = await auth();
