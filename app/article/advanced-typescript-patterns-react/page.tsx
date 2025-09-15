@@ -3,7 +3,12 @@ import { AdvancedTypescriptPatternsReactArticle, articleMetadata } from "@/conte
 import { generateTypeFirstArticleMetadata } from "@/modules/articles/metadata.logic";
 
 export async function generateMetadata() {
-  return generateTypeFirstArticleMetadata(articleMetadata);
+  return generateTypeFirstArticleMetadata({
+    ...articleMetadata,
+    tags: [...articleMetadata.tags],
+    publishedAt: new Date(articleMetadata.publishedAt),
+    updatedAt: new Date(articleMetadata.updatedAt),
+  });
 }
 
 export default function AdvancedTypescriptPatternsReactPage() {

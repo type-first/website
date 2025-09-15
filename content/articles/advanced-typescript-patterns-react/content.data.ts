@@ -81,7 +81,8 @@ const users = [
       codeSnippet: {
         language: "typescript",
         filename: "components/ConditionalButton.tsx",
-        code: `type ButtonVariant = 'button' | 'link' | 'submit';
+        code: /* tsx */`
+type ButtonVariant = 'button' | 'link' | 'submit';
 
 type ButtonProps<T extends ButtonVariant> = {
   children: React.ReactNode;
@@ -110,7 +111,7 @@ type ButtonProps<T extends ButtonVariant> = {
 );
 
 function Button<T extends ButtonVariant>(props: ButtonProps<T>) {
-  const baseClasses = \`btn \${props.className || ''}\`;
+  const baseClasses = 'btn' + props.className || '';
   
   if (props.variant === 'link') {
     return (

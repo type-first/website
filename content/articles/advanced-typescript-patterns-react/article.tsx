@@ -20,7 +20,6 @@ import { JsonLd } from "@/modules/articles/ui/json-ld.cmp.iso";
 import { Section } from "@/modules/articles/ui/section.cmp.iso";
 import { Code } from "@/modules/articles/ui/code.cmp.iso";
 
-import { articleMetadata } from "./meta";
 import { articleContentData } from "./content.data";
 
 type ArticleProps = {};
@@ -35,14 +34,14 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
     <JsonLd 
       data={{
         '@type': 'Article',
-        headline: articleMetadata.title,
-        description: articleMetadata.description,
-        image: articleMetadata.coverImage,
-        datePublished: articleMetadata.publishedAt.toISOString(),
-        dateModified: articleMetadata.updatedAt.toISOString(),
+        headline: articleContentData.metadata.title,
+        description: articleContentData.metadata.description,
+        image: articleContentData.metadata.coverImage,
+        datePublished: new Date(articleContentData.metadata.publishedAt).toISOString(),
+        dateModified: new Date(articleContentData.metadata.updatedAt).toISOString(),
         author: {
           '@type': 'Person',
-          name: articleMetadata.author,
+          name: articleContentData.metadata.author,
         },
         publisher: {
           '@type': 'Organization',
@@ -52,7 +51,7 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
             url: 'https://type-first.com/logo.png',
           },
         },
-        keywords: articleMetadata.tags.join(', '),
+        keywords: articleContentData.metadata.tags.join(', '),
       }}
     />
 
@@ -66,8 +65,8 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
 
         {/* Cover Image */}
         <CoverImage 
-          src={articleMetadata.coverImage}
-          alt={articleMetadata.title}
+          src={articleContentData.metadata.coverImage}
+          alt={articleContentData.metadata.title}
         />
       </Container>
     </Header>
@@ -75,7 +74,7 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
     <Container>
       <ArticleHeader>
         <Heading level={1}>{articleContentData.metadata.title}</Heading>
-        <ArticleMetadata publishedAt={articleMetadata.publishedAt} />
+        <ArticleMetadata publishedAt={new Date(articleContentData.metadata.publishedAt)} />
       </ArticleHeader>
 
       <Paragraph>
@@ -148,7 +147,7 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
       <Footer>
         <TagsList 
           label="Tags"
-          tags={articleMetadata.tags} 
+          tags={[...articleContentData.metadata.tags]} 
         />
       </Footer>
     </Container>
@@ -156,4 +155,4 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
 );
 
 // Re-export metadata for compatibility
-export { articleMetadata };
+export const articleMetadata = articleContentData.metadata;

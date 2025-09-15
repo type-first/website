@@ -3,7 +3,7 @@
  * Central registry for all articles in the application
  */
 
-import { articleMetadata as advancedTypescriptPatternsReactMeta } from '@/content/articles/advanced-typescript-patterns-react/meta';
+import { articleMetadata as advancedTypescriptPatternsReactMeta } from '@/content/articles/advanced-typescript-patterns-react/article';
 
 export interface ArticleRegistryEntry {
   slug: string;
@@ -26,9 +26,9 @@ export const articlesRegistry: ArticleRegistryEntry[] = [
     slug: 'advanced-typescript-patterns-react',
     title: advancedTypescriptPatternsReactMeta.title,
     description: advancedTypescriptPatternsReactMeta.description,
-    tags: advancedTypescriptPatternsReactMeta.tags,
-    publishedAt: advancedTypescriptPatternsReactMeta.publishedAt,
-    updatedAt: advancedTypescriptPatternsReactMeta.updatedAt,
+    tags: [...advancedTypescriptPatternsReactMeta.tags],
+    publishedAt: new Date(advancedTypescriptPatternsReactMeta.publishedAt),
+    updatedAt: new Date(advancedTypescriptPatternsReactMeta.updatedAt),
     author: advancedTypescriptPatternsReactMeta.author,
     readingTime: advancedTypescriptPatternsReactMeta.readingTime,
     coverImage: advancedTypescriptPatternsReactMeta.coverImage,
