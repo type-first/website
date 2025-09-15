@@ -103,7 +103,7 @@ export default function ChatSidebar() {
                       <ul className="space-y-1">
                         {m.suggestions.map((s, idx) => (
                           <li key={idx} className="text-sm">
-                            <a href={`/articles/${s.slug}`} className="text-blue-700 underline hover:text-blue-900">{s.title}</a>
+                            <a href={`/article/${s.slug}`} className="text-blue-700 underline hover:text-blue-900">{s.title}</a>
                             <div className="text-gray-600 text-xs line-clamp-2">{s.snippet.replace(/<[^>]+>/g, '')}</div>
                           </li>
                         ))}
@@ -145,7 +145,7 @@ export default function ChatSidebar() {
 }
 
 function renderContent(m: Msg) {
-  // Minimal linkification for /articles/... and http(s) links
+  // Minimal linkification for /article/... and http(s) links
   const text = m.content;
   const parts: Array<string | { href: string; label: string }> = [];
   const urlRe = /(https?:\/\/[^\s)]+)|(\/articles\/[a-z0-9-]+)/gi;

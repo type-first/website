@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import AuthProvider, { useSessionSafe } from '@/components/AuthProvider';
+import AuthProvider, { useSessionSafe } from '@/lib/auth/components/auth-provider';
 import { signOut } from 'next-auth/react';
 import { ChevronLeft, FlaskConical, Newspaper, BookOpen, Users, MessageCircle } from 'lucide-react';
 

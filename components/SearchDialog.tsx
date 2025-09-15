@@ -85,7 +85,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
             <div className="px-4 py-3 text-sm text-gray-500">No results</div>
           )}
           {results.map((r, idx) => (
-            <Link key={`${r.article.id}-${idx}`} href={`/articles/${r.article.slug}`} onClick={onClose} className="block px-4 py-3 hover:bg-gray-50">
+            <Link key={`${r.article.id}-${idx}`} href={`/article/${r.article.slug}`} onClick={onClose} className="block px-4 py-3 hover:bg-gray-50">
               <div className="flex items-center justify-between gap-4">
                 <h4 className="text-sm font-medium text-gray-900 line-clamp-1">{r.article.title}</h4>
                 <span className={`text-[10px] uppercase tracking-wide ${r.matchType === 'text' ? 'text-green-700 bg-green-100' : 'text-purple-700 bg-purple-100'} px-2 py-0.5 rounded`}>{r.matchType}</span>

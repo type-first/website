@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
     // Build a short context block listing suggestions with internal links
     const cleaned = (s: string) => s.replace(/\n/g, ' ').replace(/<[^>]+>/g, '');
     const available = suggestionList.slice(0, 5)
-      .map((s, i) => `- ${s.title} | slug: ${s.slug} | link: /articles/${s.slug} | blurb: ${cleaned(s.snippet)}`)
+      .map((s, i) => `- ${s.title} | slug: ${s.slug} | link: /article/${s.slug} | blurb: ${cleaned(s.snippet)}`)
       .join('\n');
     const suggestionsContext = suggestionList.length > 0
       ? `AvailableArticles (choose from these only):\n${available}`
@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
             'You are a concise, friendly assistant for a Next.js/React/TypeScript blog. '
             + 'If user intent is unclear, first ask a short clarifying question. '
             + 'When recommending articles, you MUST ONLY choose from the list under "AvailableArticles". '
-            + 'Suggest at most 3 items and format links exactly as /articles/slug. '
+            + 'Suggest at most 3 items and format links exactly as /article/slug. '
             + 'Do NOT invent or reference articles that are not in AvailableArticles. '
             + 'Be brief and actionable. If AvailableArticles is (none), ask a clarifying question.',
         },

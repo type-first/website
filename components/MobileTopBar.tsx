@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import MobileTopBarClient from '@/components/MobileTopBarClient';
-import AuthMenu from '@/components/AuthMenu';
+import AuthMenu from '@/lib/auth/components/auth-menu';
 import { Newspaper, FlaskConical } from 'lucide-react';
 
 export default function MobileTopBar() {

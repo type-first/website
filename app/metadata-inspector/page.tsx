@@ -131,7 +131,7 @@ export default async function MetadataInspectorPage({
 <meta property="og:description" content="${articleData.description}" />
 <meta property="og:type" content="article" />
 <meta property="og:image" content="${articleData.coverImage}" />
-<meta property="og:url" content="http://localhost:3000/articles/${articleData.slug}" />
+<meta property="og:url" content="http://localhost:3000/article/${articleData.slug}" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="${articleData.title}" />
 <meta name="twitter:description" content="${articleData.description}" />
@@ -147,28 +147,28 @@ ${articleData.tags.map(tag => `<meta property="article:tag" content="${tag}" />`
                 <h3 className="font-semibold mb-3">🚀 Testing Tools</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <a
-                    href={`/articles/${selectedSlug}`}
+                    href={`/article/${selectedSlug}`}
                     target="_blank"
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm text-center"
                   >
                     📄 View Article
                   </a>
                   <a
-                    href={`view-source:http://localhost:3000/articles/${selectedSlug}`}
+                    href={`view-source:http://localhost:3000/article/${selectedSlug}`}
                     target="_blank"
                     className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm text-center"
                   >
                     🔍 View Source
                   </a>
                   <a
-                    href={`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(`http://localhost:3000/articles/${selectedSlug}`)}`}
+                    href={`https://developers.facebook.com/tools/debug/?q=${encodeURIComponent(`http://localhost:3000/article/${selectedSlug}`)}`}
                     target="_blank"
                     className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm text-center"
                   >
                     📘 Test Facebook
                   </a>
                   <a
-                    href={`https://www.opengraph.xyz/?url=${encodeURIComponent(`http://localhost:3000/articles/${selectedSlug}`)}`}
+                    href={`https://www.opengraph.xyz/?url=${encodeURIComponent(`http://localhost:3000/article/${selectedSlug}`)}`}
                     target="_blank"
                     className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm text-center"
                   >

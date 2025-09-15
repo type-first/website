@@ -1,4 +1,4 @@
-import { t_ } from '@typefirst/typist/v0'
+import { t_ } from './operators'
 
 ; /* md */ `
 ## typist.patterns

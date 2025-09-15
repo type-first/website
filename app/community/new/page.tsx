@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { auth } from '@/auth';
-import RequireAuthButton from '@/components/RequireAuthButton';
+import { auth } from '@/lib/auth/config';
+import RequireAuthButton from '@/lib/auth/components/require-auth-button';
 import NewPostForm from '@/components/community/NewPostForm';
 
 export const metadata = {

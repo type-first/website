@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Island Components', () => {
   test('should render and interact with Counter island', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Wait for the counter island to load
     const counter = page.getByText('Try this interactive counter').locator('..');
@@ -27,7 +27,7 @@ test.describe('Island Components', () => {
   });
 
   test('should render and interact with InteractiveChart island', async ({ page }) => {
-    await page.goto('/articles/interactive-components-islands-architecture');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Wait for the chart island to load
     const chart = page.getByText('Performance Comparison').locator('..');
@@ -55,7 +55,7 @@ test.describe('Island Components', () => {
   });
 
   test('should render and interact with CodePlayground island', async ({ page }) => {
-    await page.goto('/articles/advanced-typescript-patterns-react');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Wait for the code playground island to load
     const playground = page.getByText('TypeScript Playground').locator('..');
@@ -81,7 +81,7 @@ test.describe('Island Components', () => {
 
   test('should handle island loading states', async ({ page }) => {
     // Test island fallback/loading states
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Islands should eventually load (not show fallback)
     await page.waitForTimeout(1000); // Give time for hydration
@@ -108,7 +108,7 @@ test.describe('Island Components', () => {
 
 test.describe('Article Renderer Components', () => {
   test('should render different section types correctly', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check text sections
     const textSections = page.locator('.text-section');
@@ -128,7 +128,7 @@ test.describe('Article Renderer Components', () => {
   });
 
   test('should render quote sections correctly', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check blockquote
     const quote = page.locator('blockquote.quote-section');
@@ -140,7 +140,7 @@ test.describe('Article Renderer Components', () => {
   });
 
   test('should generate proper heading anchors', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check that headings have IDs for anchor links
     const headings = page.locator('h1, h2, h3, h4, h5, h6');
@@ -153,7 +153,7 @@ test.describe('Article Renderer Components', () => {
   });
 
   test('should handle formatted text correctly', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check for formatted text elements (if any exist in content)
     const strongElements = page.locator('strong');

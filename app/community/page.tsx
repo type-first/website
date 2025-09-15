@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { auth } from '@/auth';
+import { auth } from '@/lib/auth/config';
 import { listCommunityPosts } from '@/lib/db/v0/community';
-import RequireAuthButton from '@/components/RequireAuthButton';
+import RequireAuthButton from '@/lib/auth/components/require-auth-button';
 import { Plus, ChevronUp, ChevronDown } from 'lucide-react';
 
 export const metadata = {

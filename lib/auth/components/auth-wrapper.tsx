@@ -1,7 +1,7 @@
 'use client';
 
-import AuthProvider from './AuthProvider';
-import AuthMenu from './AuthMenu';
+import AuthProvider from './auth-provider';
+import AuthMenu from './auth-menu';
 
 type Variant = 'inline' | 'sidebar' | 'avatar';
 

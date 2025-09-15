@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { put } from '@vercel/blob';
-import { auth } from '@/auth';
+import { auth } from '@/lib/auth/config';
 import { getArticleBySlug, updateArticle } from '@/lib/db/v0/articles';
 
 export async function POST(req: NextRequest) {

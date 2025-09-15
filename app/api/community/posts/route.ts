@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/auth';
+import { auth } from '@/lib/auth/config';
 import { createCommunityPost } from '@/lib/db/v0/community';
 
 export async function POST(req: NextRequest) {

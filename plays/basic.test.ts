@@ -89,7 +89,7 @@ test.describe('Articles Page', () => {
 test.describe('Individual Article Page', () => {
   test('should load article content', async ({ page }) => {
     // Navigate to a specific article (using known slug from fixtures)
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check article title
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
@@ -106,7 +106,7 @@ test.describe('Individual Article Page', () => {
   });
 
   test('should display article metadata', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check publication date
     await expect(page.locator('time')).toBeVisible();
@@ -116,7 +116,7 @@ test.describe('Individual Article Page', () => {
   });
 
   test('should have proper SEO elements', async ({ page }) => {
-    await page.goto('/articles/getting-started-nextjs-15-app-router');
+    await page.goto('/article/advanced-typescript-patterns-react');
     
     // Check page title
     await expect(page).toHaveTitle(/getting started/i);

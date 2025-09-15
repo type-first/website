@@ -1,8 +1,8 @@
 'use client';
 
-import { useSessionSafe } from './AuthProvider';
+import { useSessionSafe } from './auth-provider';
 import { signOut } from 'next-auth/react';
-import AuthPopupButtons from './AuthPopupButtons';
+import AuthPopupButtons from './auth-popup-buttons';
 
 type Variant = 'inline' | 'sidebar' | 'avatar';
 
