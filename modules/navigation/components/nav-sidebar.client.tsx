@@ -6,7 +6,7 @@ import AuthProvider, { useSessionSafe } from '@/modules/auth/components/auth-pro
 import { signOut } from 'next-auth/react';
 import { ChevronLeft, FlaskConical, Newspaper, BookOpen, Users, MessageCircle } from 'lucide-react';
 
-const AUTO_COLLAPSE_MS = 5_000; // 30 seconds
+const AUTO_COLLAPSE_MS = 5_000; // 5 seconds
 
 export default function NavSidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -21,38 +21,43 @@ export default function NavSidebar() {
         window.clearTimeout(idleTimerRef.current);
       }
       idleTimerRef.current = window.setTimeout(() => {
-        // Only collapse if not hovered
         setCollapsed(true);
+        setShowCollapseButton(false);
       }, AUTO_COLLAPSE_MS);
     };
   }, []);
 
-  // On mount, schedule initial collapse
+  // Clear timer when hovered, expand if collapsed
   useEffect(() => {
-    scheduleCollapse();
+    if (hovered) {
+      // Clear any pending collapse timer
+      if (idleTimerRef.current) {
+        window.clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
+      }
+      
+      // If collapsed, expand the sidebar
+      if (collapsed) {
+        setCollapsed(false);
+        // Delay showing collapse button until transition completes
+        setTimeout(() => setShowCollapseButton(true), 300);
+      }
+    }
+  }, [hovered, collapsed]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
     return () => {
       if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
     };
-  }, [scheduleCollapse]);
-
-  // Reset timer whenever hover state changes
-  useEffect(() => {
-    if (hovered && collapsed) {
-      // Expand and reset timer while hovered
-      setCollapsed(false);
-      // Delay showing collapse button until transition completes
-      setTimeout(() => setShowCollapseButton(true), 300);
-      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
-    } else {
-      // Hide collapse button immediately when starting to collapse
-      if (collapsed) setShowCollapseButton(false);
-      // Not hovered -> start/restart idle timer
-      scheduleCollapse();
-    }
-  }, [hovered, scheduleCollapse]);
+  }, []);
 
   const onMouseEnter = () => setHovered(true);
-  const onMouseLeave = () => setHovered(false);
+  const onMouseLeave = () => {
+    setHovered(false);
+    // Start the 5-second auto-collapse timer when cursor leaves
+    scheduleCollapse();
+  };
 
   // Layout constants
   const SQUARE_SIZE = 16;        // 64px - larger squares for better visual presence
@@ -102,7 +107,11 @@ export default function NavSidebar() {
                   onClick={() => {
                     setCollapsed(true);
                     setShowCollapseButton(false);
-                    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+                    // Clear any pending auto-collapse timer since we're manually collapsing
+                    if (idleTimerRef.current) {
+                      window.clearTimeout(idleTimerRef.current);
+                      idleTimerRef.current = null;
+                    }
                   }}
                   className="p-2 m-2 rounded-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-opacity duration-150"
                 >
