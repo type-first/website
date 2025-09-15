@@ -11,4 +11,5 @@ export const typeExplorerLabData: LabContentData = {
   seoTitle: 'Type Explorer - Interactive TypeScript Playground',
   seoDescription: 'Explore TypeScript features with our interactive editor featuring real-time type checking, autocomplete, and multi-file support.',
   coverImage: '/images/labs/type-explorer-cover.png',
+  iconName: 'braces',
 };

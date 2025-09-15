@@ -4,6 +4,7 @@ import { listLabs, type LabRegistryEntry } from '@/registries/labs.registry';
 import { COVER_IMAGE, GRID, SPACING } from '@/modules/design-constants/v0/design-constants';
 import { ArrowUpRight } from 'lucide-react';
 import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
+import { getLabIcon } from '@/modules/labs/ui/lab-icon.util';
 
 export default async function Home() {
   let articles: ArticleRegistryEntry[] = [];
@@ -156,7 +157,7 @@ function LabCardWrapper({ lab }: { lab: LabRegistryEntry }) {
       slug={lab.slug}
       title={lab.title}
       description={lab.description}
-      icon={lab.Icon ? <lab.Icon /> : undefined}
+      icon={getLabIcon(lab.iconName)}
       status={lab.status}
       tags={lab.tags}
     />

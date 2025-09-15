@@ -11,4 +11,5 @@ export const searchTestLabData: LabContentData = {
   seoTitle: 'Search Testing Lab - Compare Text vs Vector Search',
   seoDescription: 'Compare different search methods including full-text search, vector similarity, and hybrid approaches in our interactive testing environment.',
   coverImage: '/images/labs/search-test-cover.png',
+  iconName: 'microscope',
 };

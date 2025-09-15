@@ -3,46 +3,20 @@
  * Central registry for all experimental labs and demos
  */
 
-import React from 'react';
-import { Braces, Microscope } from 'lucide-react';
-import { labsContentRegistry, type LabContentData } from '@/registries/labs.content.registry';
+import { typeExplorerLabData } from '@/content/labs/type-explorer/content.data';
+import { searchTestLabData } from '@/content/labs/search-test/content.data';
+import { type LabContentData } from '@/modules/labs/metadata.logic';
 
-export interface LabRegistryEntry extends LabContentData {
-  Icon?: React.FC;
-}
+// Re-export the content data type for external use
+export type { LabContentData };
 
-function TypeExplorerIcon() {
-  return (
-    <Braces
-      className="h-10 w-10 text-gray-700 group-hover:text-blue-700 transition-colors"
-      strokeWidth={1.8}
-      aria-hidden="true"
-    />
-  );
-}
+// Central registry of all lab content data
+export const labsRegistry: LabContentData[] = [
+  typeExplorerLabData,
+  searchTestLabData,
+];
 
-function SearchTestIcon() {
-  return (
-    <Microscope
-      className="h-10 w-10 text-gray-700 group-hover:text-blue-700 transition-colors"
-      strokeWidth={1.8}
-      aria-hidden="true"
-    />
-  );
-}
-
-// Map content data to registry entries with icons
-export const labsRegistry: LabRegistryEntry[] = labsContentRegistry.map((lab) => {
-  const iconMap: Record<string, React.FC> = {
-    'type-explorer': TypeExplorerIcon,
-    'search-test': SearchTestIcon,
-  };
-
-  return {
-    ...lab,
-    Icon: iconMap[lab.slug],
-  };
-});
+export type LabRegistryEntry = LabContentData;
 
 export interface ListLabsOptions {
   limit?: number;

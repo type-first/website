@@ -11,6 +11,7 @@ export interface LabContentData {
   author?: string;
   seoTitle?: string;
   seoDescription?: string;
+  iconName?: string;
 }
 
 export function generateLabMetadata(labData: LabContentData): Metadata {

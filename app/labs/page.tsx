@@ -3,6 +3,7 @@ import { ArrowUpRight } from 'lucide-react';
 import { labsRegistry, type LabRegistryEntry } from '@/registries/labs.registry';
 import { LabGrid } from '@/modules/labs/ui/lab-grid.cmp.iso';
 import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
+import { getLabIcon } from '@/modules/labs/ui/lab-icon.util';
 
 export const metadata = {
   title: 'Labs',
@@ -23,7 +24,7 @@ export default function LabsPage() {
             slug={lab.slug}
             title={lab.title}
             description={lab.description}
-            icon={lab.Icon ? <lab.Icon /> : undefined}
+            icon={getLabIcon(lab.iconName)}
             status={lab.status}
             tags={lab.tags}
           />
