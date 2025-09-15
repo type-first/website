@@ -1,11 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
 import TypeExplorer, { type ExplorerFile } from '@/components/TypeExplorer';
+import TypeExplorerLabIntro from '@/content/labs/type-explorer/intro';
+import { typeExplorerLabData } from '@/content/labs/type-explorer/content.data';
+import { generateLabMetadata } from '@/lib/labs/metadata.logic';
 
-export const metadata = {
+export const metadata = generateLabMetadata({
+  ...typeExplorerLabData,
   title: 'Type Explorer — Starter',
   description: 'Starter (minimal multi-file) scenario',
-};
+});
 
 async function loadLocalScenario(): Promise<ExplorerFile[]> {
   const baseDir = path.join(process.cwd(), 'app', 'labs', 'type-explorer', 'scenarios', 'starter', 'src');
@@ -36,10 +40,7 @@ export default async function StarterScenarioPage() {
   const files = await loadLocalScenario();
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Type Explorer</h1>
-        <p className="text-gray-600 mt-1">Starter (minimal multi-file)</p>
-      </div>
+      <TypeExplorerLabIntro />
       <TypeExplorer initialFiles={files} />
     </div>
   );

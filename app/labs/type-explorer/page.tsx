@@ -1,9 +1,8 @@
 import { redirect } from "next/navigation";
+import { typeExplorerLabData } from '@/content/labs/type-explorer/content.data';
+import { generateLabMetadata } from '@/lib/labs/metadata.logic';
 
-export const metadata = {
-  title: "Type Explorer",
-  description: "Starter preset: minimal multi-file TypeScript editor.",
-};
+export const metadata = generateLabMetadata(typeExplorerLabData);
 
 export default function TypeExplorerPage() {
   redirect('/labs/type-explorer/starter');

@@ -1,8 +1,9 @@
 import Link from 'next/link';
-import { listArticles, type ArticleRegistryEntry } from '@/registry.articles';
-import { listLabs, type LabRegistryEntry } from '@/registry.labs';
+import { listArticles, type ArticleRegistryEntry } from '@/content/registries/articles.registry';
+import { listLabs, type LabRegistryEntry } from '@/content/registries/labs.registry';
 import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants/v0/design-constants';
 import { ArrowUpRight } from 'lucide-react';
+import { LabCard } from '@/lib/labs/ui';
 
 export default async function Home() {
   let articles: ArticleRegistryEntry[] = [];
@@ -34,7 +35,7 @@ export default async function Home() {
         {labs.length > 0 ? (
           <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${SPACING.CARD_GAP}`}>
             {labs.map((lab) => (
-              <LabCard key={lab.slug} lab={lab} />
+              <LabCardWrapper key={lab.slug} lab={lab} />
             ))}
           </div>
         ) : (
@@ -149,26 +150,15 @@ function ArticleCard({ article }: { article: ArticleRegistryEntry }) {
   );
 }
 
-function LabCard({ lab }: { lab: LabRegistryEntry }) {
-  const Icon = lab.Icon;
+function LabCardWrapper({ lab }: { lab: LabRegistryEntry }) {
   return (
-    <Link
-      href={`/labs/${lab.slug}`}
-      className="group rounded-xl border border-gray-200 bg-white hover:border-blue-300 hover:shadow-sm transition-colors p-5 flex items-start gap-4"
-    >
-      <div className="shrink-0 rounded-lg ring-1 ring-gray-200 bg-gray-50 group-hover:ring-blue-300 transition">
-        {Icon ? <Icon /> : null}
-      </div>
-      <div>
-        <h3 className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
-          {lab.title}
-        </h3>
-        <p className="text-sm text-gray-600 mt-1">{lab.description}</p>
-        <span className="inline-flex items-center gap-1 text-sm text-blue-700 mt-3">
-          Open
-          <ArrowUpRight className="w-4 h-4" strokeWidth={1.8} />
-        </span>
-      </div>
-    </Link>
+    <LabCard 
+      slug={lab.slug}
+      title={lab.title}
+      description={lab.description}
+      icon={lab.Icon ? <lab.Icon /> : undefined}
+      status={lab.status}
+      tags={lab.tags}
+    />
   );
 }

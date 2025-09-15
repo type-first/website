@@ -4,7 +4,7 @@ import {
   getPublishedArticles, 
   getArticleBySlug,
   ArticleRegistryEntry 
-} from '@/registry.articles';
+} from '@/content/registries/articles.registry';
 
 export type ArticleWithSlug = ArticleRegistryEntry;
 
