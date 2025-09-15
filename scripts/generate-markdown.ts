@@ -9,7 +9,7 @@ import { promises as fs } from 'fs';
 import * as path from 'path';
 
 // Import available articles
-import { AdvancedTypescriptPatternsReactArticle, articleMetadata as advancedTsMetadata } from '../content/articles/advanced-typescript-patterns-react/article';
+import { AdvancedTypescriptPatternsReactArticle, articleMetadata as advancedTsMetadata } from '../content/articles/advanced-typescript-patterns-react/ui';
 
 const ARTICLES = {
   'advanced-typescript-patterns-react': {

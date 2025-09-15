@@ -20,7 +20,7 @@ import { JsonLd } from "@/modules/articles/ui/json-ld.cmp.iso";
 import { Section } from "@/modules/articles/ui/section.cmp.iso";
 import { Code } from "@/modules/articles/ui/code.cmp.iso";
 
-import { articleContentData } from "./content.data";
+import { articleContentData } from "./data";
 
 type ArticleProps = {};
 

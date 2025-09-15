@@ -43,7 +43,8 @@ export const articleContentData = {
       codeSnippet: {
         language: "typescript",
         filename: "components/GenericList.tsx",
-        code: `interface ListProps<T> {
+        code: /* tsx */ `
+interface ListProps<T> {
   items: T[];
   renderItem: (item: T) => React.ReactNode;
   keyExtractor?: (item: T, index: number) => string | number;
@@ -162,7 +163,8 @@ function Button<T extends ButtonVariant>(props: ButtonProps<T>) {
       codeSnippet: {
         language: "typescript",
         filename: "lib/ApiClient.ts",
-        code: `// Define your API structure
+        code: /* tsx */ `
+// Define your API structure
 interface User {
   id: number;
   name: string;

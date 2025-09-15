@@ -1,5 +1,5 @@
 import React from 'react';
-import { AdvancedTypescriptPatternsReactArticle } from './content/articles/advanced-typescript-patterns-react/article';
+import { AdvancedTypescriptPatternsReactArticle } from './content/articles/advanced-typescript-patterns-react/ui';
 
 // Simple test to verify the article renders without multimodal complexity
 const TestComponent = () => <AdvancedTypescriptPatternsReactArticle />;

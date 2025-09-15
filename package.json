@@ -15,6 +15,7 @@
     "db:reset": "tsx lib/db/scripts/reset-cloud.ts && npm run db:migrate && npm run db:seed",
     "db:test": "tsx lib/db/scripts/test-articles.ts && tsx lib/db/scripts/test-db.ts",
     "embeddings:gen": "tsx lib/db/scripts/generate-embeddings.ts",
+    "embeddings:article": "tsx scripts/generate-embedding-for-article.ts",
     "db:covers": "tsx lib/db/scripts/backfill-covers.ts",
     "search:test": "tsx lib/db/scripts/test-search.ts",
     "markdown:gen": "tsx scripts/generate-markdown.ts --",
@@ -30,6 +31,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@types/yaml": "^1.9.7",
     "@vercel/blob": "^1.1.1",
     "@vercel/postgres": "^0.10.0",
     "clipboardy": "^4.0.0",
@@ -52,6 +54,7 @@
     "schema-dts": "^1.1.5",
     "sharp": "^0.34.3",
     "shiki": "^3.12.2",
+    "yaml": "^2.8.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@
  * Central registry for all articles in the application
  */
 
-import { articleMetadata as advancedTypescriptPatternsReactMeta } from '@/content/articles/advanced-typescript-patterns-react/article';
+import { articleMetadata as advancedTypescriptPatternsReactMeta } from '@/content/articles/advanced-typescript-patterns-react/ui';
 
 export interface ArticleRegistryEntry {
   slug: string;
