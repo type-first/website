@@ -87,56 +87,34 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
         description={articleContentData.codeExplore.description}
       />
 
-      {/* Generic Components Section */}
-      <Section>
-        <Heading level={2}>{articleContentData.sections.genericComponents.title}</Heading>
-        <Paragraph>{articleContentData.sections.genericComponents.content}</Paragraph>
-        
-        <Heading level={3}>{articleContentData.sections.genericComponents.subtitle}</Heading>
-        <Code 
-          language={articleContentData.sections.genericComponents.codeSnippet.language}
-        >
-          {articleContentData.sections.genericComponents.codeSnippet.code}
-        </Code>
-      </Section>
-
-      {/* Conditional Types Section */}
-      <Section>
-        <Heading level={2}>{articleContentData.sections.conditionalTypes.title}</Heading>
-        <Paragraph>{articleContentData.sections.conditionalTypes.content}</Paragraph>
-        
-        <Heading level={3}>{articleContentData.sections.conditionalTypes.subtitle}</Heading>
-        <Code 
-          language={articleContentData.sections.conditionalTypes.codeSnippet.language}
-        >
-          {articleContentData.sections.conditionalTypes.codeSnippet.code}
-        </Code>
-      </Section>
-
-      {/* Type-Safe APIs Section */}
-      <Section>
-        <Heading level={2}>{articleContentData.sections.typeSafeApis.title}</Heading>
-        <Paragraph>{articleContentData.sections.typeSafeApis.content}</Paragraph>
-        
-        <Heading level={3}>{articleContentData.sections.typeSafeApis.subtitle}</Heading>
-        <Code 
-          language={articleContentData.sections.typeSafeApis.codeSnippet.language}
-        >
-          {articleContentData.sections.typeSafeApis.codeSnippet.code}
-        </Code>
-      </Section>
-
-      {/* Best Practices Section */}
-      <Section>
-        <Heading level={2}>{articleContentData.sections.bestPractices.title}</Heading>
-        <ul>
-          {articleContentData.sections.bestPractices.content.map((practice, index) => (
-            <li key={index}>
-              <strong>{practice.title}:</strong> {practice.description}
-            </li>
-          ))}
-        </ul>
-      </Section>
+      {/* Article Sections */}
+      {articleContentData.sections.map((section) => (
+        <Section key={section.id}>
+          <Heading level={2}>{section.title}</Heading>
+          <Paragraph>{section.content}</Paragraph>
+          
+          {'subtitle' in section && section.subtitle && (
+            <Heading level={3}>{section.subtitle}</Heading>
+          )}
+          
+          {'codeSnippet' in section && section.codeSnippet && (
+            <Code language={section.codeSnippet.language}>
+              {section.codeSnippet.code}
+            </Code>
+          )}
+          
+          {/* Special handling for Best Practices section */}
+          {section.id === 'bestPractices' && 'practices' in section && (
+            <ul>
+              {section.practices.map((practice, index) => (
+                <li key={index}>
+                  <strong>{practice.title}:</strong> {practice.description}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Section>
+      ))}
 
       {/* Footer */}
       <Section>

@@ -34,8 +34,9 @@ export const articleContentData = {
   },
 
   // Article sections
-  sections: {
-    genericComponents: {
+  sections: [
+    {
+      id: "genericComponents",
       title: "Generic Components",
       subtitle: "Basic Generic Component Pattern",
       content: "Generic components are one of the most powerful patterns in TypeScript React development. They allow you to create reusable components that work with different data types while maintaining type safety.",
@@ -74,7 +75,8 @@ const users = [
       },
     },
 
-    conditionalTypes: {
+    {
+      id: "conditionalTypes",
       title: "Conditional Types in Components",
       subtitle: "Advanced Conditional Type Example",
       content: "Conditional types allow you to create components that adapt their behavior based on their props, enabling powerful type-driven patterns.",
@@ -152,7 +154,8 @@ function Button<T extends ButtonVariant>(props: ButtonProps<T>) {
       },
     },
 
-    typeSafeApis: {
+    {
+      id: "typeSafeApis",
       title: "Type-Safe APIs",
       subtitle: "API Client Pattern",
       content: "Creating type-safe APIs involves using TypeScript's type system to ensure that your API calls are correct at compile time.",
@@ -281,9 +284,11 @@ await api['/users/:id'].PUT({ id: '123' }, { name: 'Alice Smith' });
       },
     },
 
-    bestPractices: {
+    {
+      id: "bestPractices", 
       title: "Best Practices",
-      content: [
+      content: "Here are the essential best practices for advanced TypeScript React development:",
+      practices: [
         {
           title: "Use strict TypeScript configuration",
           description: "Enable all strict type checking options",
@@ -306,7 +311,7 @@ await api['/users/:id'].PUT({ id: '123' }, { name: 'Alice Smith' });
         },
       ],
     },
-  },
+  ],
 
   // Footer content
   footer: {
