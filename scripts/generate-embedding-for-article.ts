@@ -27,11 +27,11 @@ async function main() {
     const articlePath = path.join(process.cwd(), 'content', 'articles', articleSlug);
     
     // Import the article content data
-    const contentDataModule = await import(`${articlePath}/content.data.ts`);
+    const contentDataModule = await import(`${articlePath}/data.ts`);
     const contentData = contentDataModule.articleContentData;
     
     if (!contentData) {
-      console.error(`Error: Could not find articleContentData in ${articlePath}/content.data.ts`);
+      console.error(`Error: Could not find articleContentData in ${articlePath}/data.ts`);
       process.exit(1);
     }
 
