@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchHybrid } from '@/lib/search/v0/search';
 
 export async function GET(request: NextRequest) {
   try {
@@ -14,13 +13,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await searchHybrid(query, limit);
+    // Placeholder implementation - backend functionality removed
+    const results: any[] = [];
     
     return NextResponse.json({ 
       results,
-      total: results.length,
+      total: 0,
       type: 'hybrid',
-      query 
+      query,
+      message: 'Hybrid search functionality is currently unavailable. Backend implementation has been removed.'
     });
   } catch (error) {
     console.error('Hybrid search error:', error);

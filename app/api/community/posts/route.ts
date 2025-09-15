@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/config';
-import { createCommunityPost } from '@/lib/db/v0/community';
+import { auth } from '@/modules/auth/config';
+import { createCommunityPost } from '@/modules/db/v0/community';
 
 export async function POST(req: NextRequest) {
   try {

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchByText } from '@/lib/search/v0/search';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,13 +12,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const results = await searchByText(query, limit);
+    // Placeholder implementation - backend functionality removed
+    const results: any[] = [];
     
     return NextResponse.json({ 
       results,
-      total: results.length,
+      total: 0,
       query,
-      limit
+      limit,
+      message: 'Search functionality is currently unavailable. Backend implementation has been removed.'
     });
     
   } catch (error) {
@@ -44,13 +45,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await searchByText(query, limit);
+    // Placeholder implementation - backend functionality removed
+    const results: any[] = [];
     
     return NextResponse.json({ 
       results,
-      total: results.length,
+      total: 0,
       query,
-      limit
+      limit,
+      message: 'Search functionality is currently unavailable. Backend implementation has been removed.'
     });
     
   } catch (error) {

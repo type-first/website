@@ -1,9 +1,0 @@
-// Re-export all lab UI components
-export { LabHeader } from './lab-header.cmp.iso';
-export { LabTitle } from './lab-title.cmp.iso';
-export { LabDescription } from './lab-description.cmp.iso';
-export { LabTags } from './lab-tags.cmp.iso';
-export { LabStatus } from './lab-status.cmp.iso';
-export { LabCard } from './lab-card.cmp.iso';
-export { LabMeta } from './lab-meta.cmp.iso';
-export { LabGrid } from './lab-grid.cmp.iso';

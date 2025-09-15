@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
-import TypeExplorer, { type ExplorerFile } from '@/components/TypeExplorer';
+import TypeExplorer, { type ExplorerFile } from '@/modules/playground/components/type-explorer.client';
 import TypeExplorerLabIntro from '@/content/labs/type-explorer/intro';
 import { typeExplorerLabData } from '@/content/labs/type-explorer/content.data';
-import { generateLabMetadata } from '@/lib/labs/metadata.logic';
+import { generateLabMetadata } from '@/modules/labs/metadata.logic';
 
 export const metadata = generateLabMetadata({
   ...typeExplorerLabData,

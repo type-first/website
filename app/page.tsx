@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { listArticles, type ArticleRegistryEntry } from '@/content/registries/articles.registry';
-import { listLabs, type LabRegistryEntry } from '@/content/registries/labs.registry';
-import { COVER_IMAGE, GRID, SPACING } from '@/lib/design-constants/v0/design-constants';
+import { listArticles, type ArticleRegistryEntry } from '@/registries/articles.registry';
+import { listLabs, type LabRegistryEntry } from '@/registries/labs.registry';
+import { COVER_IMAGE, GRID, SPACING } from '@/modules/design-constants/v0/design-constants';
 import { ArrowUpRight } from 'lucide-react';
-import { LabCard } from '@/lib/labs/ui';
+import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
 
 export default async function Home() {
   let articles: ArticleRegistryEntry[] = [];

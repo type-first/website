@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth/config';
-import { addCommunityComment } from '@/lib/db/v0/community';
+import { auth } from '@/modules/auth/config';
+import { addCommunityComment } from '@/modules/db/v0/community';
 
 type RouteContext = { params: Promise<{ id: string }> } | { params: { id: string } };
 

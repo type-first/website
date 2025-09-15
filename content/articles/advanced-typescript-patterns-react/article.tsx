@@ -4,23 +4,21 @@
  */
 
 import React from "react";
-import { 
-  Header, 
-  Navigation, 
-  Link, 
-  CoverImage, 
-  ArticleHeader, 
-  ArticleMetadata, 
-  Heading, 
-  Paragraph, 
-  CodeExplore, 
-  Footer, 
-  Container, 
-  TagsList, 
-  JsonLd,
-  Section,
-  Code
-} from "@/lib/articles/ui";
+import { Header } from "@/modules/articles/ui/header.cmp.iso";
+import { Navigation } from "@/modules/articles/ui/navigation.cmp.iso";
+import { Link } from "@/modules/articles/ui/link.cmp.iso";
+import { CoverImage } from "@/modules/articles/ui/cover-image.cmp.iso";
+import { ArticleHeader } from "@/modules/articles/ui/article-header.cmp.iso";
+import { ArticleMetadata } from "@/modules/articles/ui/article-metadata.cmp.iso";
+import { Heading } from "@/modules/articles/ui/heading.cmp.iso";
+import { Paragraph } from "@/modules/articles/ui/paragraph.cmp.iso";
+import { CodeExplore } from "@/modules/articles/ui/code-explore.cmp.iso";
+import { Footer } from "@/modules/articles/ui/footer.cmp.iso";
+import { Container } from "@/modules/articles/ui/container.cmp.iso";
+import { TagsList } from "@/modules/articles/ui/tags-list.cmp.iso";
+import { JsonLd } from "@/modules/articles/ui/json-ld.cmp.iso";
+import { Section } from "@/modules/articles/ui/section.cmp.iso";
+import { Code } from "@/modules/articles/ui/code.cmp.iso";
 
 import { articleMetadata } from "./meta";
 import { articleContentData } from "./content.data";

@@ -1,15 +1,16 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
-import SearchBarLauncher from '@/components/SearchBarLauncher';
-import ChatSidebar from '@/components/ChatSidebar';
-import MobileTopBar from '@/components/MobileTopBar';
+import SearchBarLauncher from '@/modules/search/components/search-launcher.client';
+import ChatSidebar from '@/modules/chat/components/chat-sidebar.client';
+import MobileTopBar from '@/modules/navigation/components/top-bar.client.mobile';
 import './globals.css';
 import { Suspense } from 'react';
-import NavSidebar from '@/components/NavSidebar';
+import NavSidebar from '@/modules/navigation/components/nav-sidebar.client';
+import { FlaskConical, BookOpen, Users } from 'lucide-react';
 
 // Initialize island registry
-import '@/lib/islands/v0/setup';
+import '@/modules/islands/v0/setup';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -69,7 +70,24 @@ export default function RootLayout({
           {/* Main column */}
           <div className="flex-1 flex flex-col min-w-0">
             {/* Mobile top bar (md-) */}
-            <MobileTopBar />
+            <MobileTopBar 
+              menu={
+                <nav className="space-y-1">
+                  <Link href="/labs" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+                    <FlaskConical className="h-5 w-5" strokeWidth={1.8} />
+                    Labs
+                  </Link>
+                  <Link href="/articles" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+                    <BookOpen className="h-5 w-5" strokeWidth={1.8} />
+                    Articles
+                  </Link>
+                  <Link href="/community" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+                    <Users className="h-5 w-5" strokeWidth={1.8} />
+                    Community
+                  </Link>
+                </nav>
+              }
+            />
 
             {/* Secondary topbar: breadcrumbs + search */}
             <SearchBarLauncher />

@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { auth } from '@/lib/auth/config';
-import { getCommunityPostBySlug } from '@/lib/db/v0/community';
-import RequireAuthButton from '@/lib/auth/components/require-auth-button';
-import CommentForm from '@/components/community/CommentForm';
+import { auth } from '@/modules/auth/config';
+import { getCommunityPostBySlug } from '@/modules/db/v0/community';
+import RequireAuthButton from '@/modules/auth/components/require-auth-button';
+import CommentForm from '@/modules/community/components/comment.form.client';
 
 type Params = { params: { id: string } };
 

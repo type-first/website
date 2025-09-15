@@ -3,7 +3,9 @@
  */
 
 import React from "react";
-import { Section, Heading, Paragraph } from "@/lib/articles/ui";
+import { Section } from "@/modules/articles/ui/section.cmp.iso";
+import { Heading } from "@/modules/articles/ui/heading.cmp.iso";
+import { Paragraph } from "@/modules/articles/ui/paragraph.cmp.iso";
 
 type FooterProps = {};
 

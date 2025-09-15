@@ -172,10 +172,8 @@ Articles use a structured JSON schema with typed sections:
       "content": "code here"
     },
     {
-      "type": "island",
-      "component": "InteractiveChart",
-      "textAlt": "Chart showing performance data",
-      "props": { "data": [...] }
+      "type": "text",
+      "content": "Interactive components have been replaced with explanatory text for better performance and maintainability."
     }
   ],
   "tags": ["nextjs", "react"],
@@ -183,16 +181,12 @@ Articles use a structured JSON schema with typed sections:
 }
 ```
 
-## 🎨 Available Islands
+## 🎨 Interactive Components
 
-### Counter
-Interactive counter with customizable step and initial value.
+### TypeExplorer
+Advanced TypeScript playground with Monaco editor, providing comprehensive type checking and IntelliSense. Available in the labs section for hands-on TypeScript exploration.
 
-### InteractiveChart  
-Data visualization with bar/line toggle and click interactions.
-
-### CodePlayground
-In-browser code editor and executor for JavaScript.
+*Note: Previous island components (Counter, InteractiveChart, CodePlayground) have been removed as they are obsolete. TypeExplorer serves as the primary interactive component.*
 
 ## 🚀 Deployment
 

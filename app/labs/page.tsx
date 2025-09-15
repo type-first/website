@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { labsRegistry, type LabRegistryEntry } from '@/content/registries/labs.registry';
-import { LabGrid, LabCard } from '@/lib/labs/ui';
+import { labsRegistry, type LabRegistryEntry } from '@/registries/labs.registry';
+import { LabGrid } from '@/modules/labs/ui/lab-grid.cmp.iso';
+import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
 
 export const metadata = {
   title: 'Labs',

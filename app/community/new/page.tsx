@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { auth } from '@/lib/auth/config';
-import RequireAuthButton from '@/lib/auth/components/require-auth-button';
-import NewPostForm from '@/components/community/NewPostForm';
+import { auth } from '@/modules/auth/config';
+import RequireAuthButton from '@/modules/auth/components/require-auth-button';
+import NewPostForm from '@/modules/community/components/new-post.form.client';
 
 export const metadata = {
   title: 'New Post – Community',

@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { typeExplorerLabData } from '@/content/labs/type-explorer/content.data';
-import { generateLabMetadata } from '@/lib/labs/metadata.logic';
+import { generateLabMetadata } from '@/modules/labs/metadata.logic';
 
 export const metadata = generateLabMetadata(typeExplorerLabData);
 

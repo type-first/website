@@ -3,7 +3,12 @@
  */
 
 import React from "react";
-import { Section, Heading, Paragraph, List, ListItem, Strong } from "@/lib/articles/ui";
+import { Section } from "@/modules/articles/ui/section.cmp.iso";
+import { Heading } from "@/modules/articles/ui/heading.cmp.iso";
+import { Paragraph } from "@/modules/articles/ui/paragraph.cmp.iso";
+import { List } from "@/modules/articles/ui/list.cmp.iso";
+import { ListItem } from "@/modules/articles/ui/list-item.cmp.iso";
+import { Strong } from "@/modules/articles/ui/strong.cmp.iso";
 
 type SectionProps = {};
 

@@ -1,4 +1,4 @@
-import { type LabContentData } from '@/lib/labs/metadata.logic';
+import { type LabContentData } from '@/modules/labs/metadata.logic';
 
 export const searchTestLabData: LabContentData = {
   slug: 'search-test',

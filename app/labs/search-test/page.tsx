@@ -1,7 +1,7 @@
 import { SearchTestClient } from './search-test-client';
 import SearchTestLabIntro from '@/content/labs/search-test/intro';
 import { searchTestLabData } from '@/content/labs/search-test/content.data';
-import { generateLabMetadata } from '@/lib/labs/metadata.logic';
+import { generateLabMetadata } from '@/modules/labs/metadata.logic';
 
 export const metadata = generateLabMetadata(searchTestLabData);
 

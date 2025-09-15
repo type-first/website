@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next';
-import { listArticles } from '@/lib/db/v0/articles';
+import { listArticles } from '@/registries/articles.registry';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://yoursite.com';
@@ -22,15 +22,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Get all published articles
-    const articles = await listArticles({ 
-      status: 'published',
-      limit: 10000 // Get all articles
+    const { articles } = listArticles({ 
+      status: 'published'
     });
 
     // Article routes
-    const articleRoutes: MetadataRoute.Sitemap = articles.map((article: any) => ({
+    const articleRoutes: MetadataRoute.Sitemap = articles.map((article) => ({
       url: `${baseUrl}/article/${article.slug}`,
-      lastModified: article.updatedAt,
+      lastModified: article.updatedAt || article.publishedAt,
       changeFrequency: 'weekly' as const,
       priority: 0.6,
     }));

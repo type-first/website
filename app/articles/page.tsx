@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { listArticles, ArticleRegistryEntry } from '@/content/registries/articles.registry';
+import { listArticles, ArticleRegistryEntry } from '@/registries/articles.registry';
 
 interface ArticlesPageProps {
   searchParams: Promise<{ page?: string; tag?: string }>;

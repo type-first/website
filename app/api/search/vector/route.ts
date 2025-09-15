@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { searchByVector } from '@/lib/search/v0/search';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,12 +12,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const results = await searchByVector(embedding, limit);
+    // Placeholder implementation - backend functionality removed
+    const results: any[] = [];
     
     return NextResponse.json({ 
       results,
-      total: results.length,
-      type: 'vector' 
+      total: 0,
+      type: 'vector',
+      message: 'Vector search functionality is currently unavailable. Backend implementation has been removed.'
     });
   } catch (error) {
     console.error('Vector search error:', error);
@@ -42,42 +43,15 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Generate embedding for the query
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    
-    if (!openaiApiKey) {
-      return NextResponse.json(
-        { error: 'OpenAI API key not configured' },
-        { status: 500 }
-      );
-    }
-
-    const response = await fetch('https://api.openai.com/v1/embeddings', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'text-embedding-ada-002',
-        input: query.slice(0, 8000),
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.status} ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    const embedding = data.data[0].embedding;
-
-    const results = await searchByVector(embedding, limit);
+    // Placeholder implementation - backend functionality removed
+    const results: any[] = [];
     
     return NextResponse.json({ 
       results,
-      total: results.length,
+      total: 0,
       type: 'vector',
-      query 
+      query,
+      message: 'Vector search functionality is currently unavailable. Backend implementation has been removed.'
     });
   } catch (error) {
     console.error('Vector search error:', error);

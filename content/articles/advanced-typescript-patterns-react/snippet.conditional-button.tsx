@@ -4,7 +4,7 @@
  */
 
 import React from "react";
-import { Code } from "@/lib/articles/ui";
+import { Code } from "@/modules/articles/ui/code.cmp.iso";
 
 // Raw snippet string for reuse
 export const conditionalButtonSnippet = `type ButtonVariant = 'button' | 'link' | 'submit';
