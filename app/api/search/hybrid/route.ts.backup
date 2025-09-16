@@ -1,0 +1,173 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { searchChunksRegistry } from '@/content/chunks.registry';
+import { hybridSearch } from '@/lib/content/search';
+
+interface HybridSearchResult {
+  // Article metadata
+  slug: string;
+  title: string;
+  description: string;
+  tags: string[];
+  author: string;
+  publishedAt: string;
+  readingTime: string;
+  
+  // Search result metadata
+  score: number;
+  type: 'text' | 'vector'; // Individual result type, not 'hybrid'
+  textScore?: number;
+  vectorScore?: number;
+  similarity?: number;
+  
+  // Chunk information
+  chunkId: string;
+  chunkTitle: string;
+  chunkType: string;
+  chunkText: string;
+  highlightedText?: string;
+  snippet: string;
+}
+
+// Helper function to highlight search terms in text
+function highlightSearchTerms(text: string, query: string): string {
+  const words = query.toLowerCase().split(/\s+/).filter(word => word.length > 2);
+  let highlighted = text;
+  
+  words.forEach(word => {
+    const regex = new RegExp(`(${word})`, 'gi');
+    highlighted = highlighted.replace(regex, '<mark>$1</mark>');
+  });
+  
+  return highlighted;
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const query = searchParams.get('q');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const textWeight = parseFloat(searchParams.get('textWeight') || '0.3');
+    const vectorWeight = parseFloat(searchParams.get('vectorWeight') || '0.7');
+
+    if (!query) {
+      return NextResponse.json(
+        { error: 'query parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    // Use centralized hybrid search function
+    const searchResults = hybridSearch(query, [...searchChunksRegistry], {
+      textWeight,
+      vectorWeight,
+      limit
+    });
+
+    // Format results for API response
+    const results: HybridSearchResult[] = searchResults.map(result => ({
+      // Article metadata
+      slug: result.chunk.target.slug,
+      title: result.chunk.target.name,
+      description: result.chunk.target.blurb,
+      tags: [...result.chunk.tags],
+      author: 'Anonymous', // TODO: Add author to content meta
+      publishedAt: new Date().toISOString(), // TODO: Add publish date to content meta
+      readingTime: '5 min read', // TODO: Calculate reading time
+      
+      // Search result metadata (preserve original type)
+      score: result.score,
+      type: result.type,
+      textScore: result.textScore,
+      vectorScore: result.vectorScore,
+      similarity: result.similarity,
+      
+      // Chunk information
+      chunkId: `${result.chunk.target.slug}-${result.chunk.label}`,
+      chunkTitle: result.chunk.label,
+      chunkType: result.chunk.label.includes('Overview') ? 'metadata' : 'content',
+      chunkText: result.chunk.text,
+      highlightedText: result.type === 'text' ? highlightSearchTerms(result.chunk.text, query) : undefined,
+      snippet: result.chunk.text.substring(0, 200) + (result.chunk.text.length > 200 ? '...' : ''),
+    }));
+
+    return NextResponse.json({
+      query,
+      results,
+      total: results.length,
+      searchType: 'hybrid',
+      limit,
+      weights: { textWeight, vectorWeight }
+    });
+
+  } catch (error) {
+    console.error('Hybrid search error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { query, textWeight = 0.3, vectorWeight = 0.7, limit = 10 } = await request.json();
+
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      return NextResponse.json(
+        { error: 'Query parameter is required and must be a non-empty string' },
+        { status: 400 }
+      );
+    }
+
+    // Use centralized hybrid search function
+    const searchResults = hybridSearch(query, [...searchChunksRegistry], {
+      textWeight,
+      vectorWeight,
+      limit
+    });
+
+    // Format results for API response
+    const results: HybridSearchResult[] = searchResults.map(result => ({
+      // Article metadata
+      slug: result.chunk.target.slug,
+      title: result.chunk.target.name,
+      description: result.chunk.target.blurb,
+      tags: [...result.chunk.tags],
+      author: 'Anonymous', // TODO: Add author to content meta
+      publishedAt: new Date().toISOString(), // TODO: Add publish date to content meta
+      readingTime: '5 min read', // TODO: Calculate reading time
+      
+      // Search result metadata (preserve original type)
+      score: result.score,
+      type: result.type,
+      textScore: result.textScore,
+      vectorScore: result.vectorScore,
+      similarity: result.similarity,
+      
+      // Chunk information
+      chunkId: `${result.chunk.target.slug}-${result.chunk.label}`,
+      chunkTitle: result.chunk.label,
+      chunkType: result.chunk.label.includes('Overview') ? 'metadata' : 'content',
+      chunkText: result.chunk.text,
+      highlightedText: result.type === 'text' ? highlightSearchTerms(result.chunk.text, query) : undefined,
+      snippet: result.chunk.text.substring(0, 200) + (result.chunk.text.length > 200 ? '...' : ''),
+    }));
+
+    return NextResponse.json({
+      results,
+      meta: {
+        total: results.length,
+        query: query.trim(),
+        searchType: 'hybrid',
+        weights: { textWeight, vectorWeight }
+      }
+    });
+
+  } catch (error) {
+    console.error('Hybrid search error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error during hybrid search' },
+      { status: 500 }
+    );
+  }
+}

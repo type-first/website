@@ -1,31 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-
-interface SearchResult {
-  slug: string;
-  title: string;
-  description: string;
-  tags: string[];
-  coverImage: string;
-  author: string;
-  publishedAt: string;
-  readingTime: number;
-  wordCount: number;
-  score?: number;
-  type: 'text' | 'vector';
-}
+import type { TextSearchResult, VectorSearchResult, HybridSearchResult } from '@/lib/content/search/search.model';
 
 interface SearchResponse {
   query: string;
-  results: SearchResult[];
-  total: number;
+  results: (TextSearchResult | VectorSearchResult)[];
+  total?: number;
+  totalResults?: number;
   searchType: string;
-  hasEmbedding?: boolean;
-  threshold?: number;
-  weights?: {
-    text: number;
-    vector: number;
+  limit?: number;
+  meta?: {
+    total: number;
+    query: string;
+    searchType: string;
   };
 }
 
@@ -51,31 +39,55 @@ export function SearchTestClient() {
       searchParams.set('limit', '10');
 
       if (enableText && enableVector) {
-        // Hybrid search
-        endpoint = `/api/search/hybrid?${searchParams.toString()}`;
+        // For now, let's use text search since hybrid endpoint doesn't exist
+        endpoint = `/api/search/text?${searchParams.toString()}`;
+        
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Search failed');
+        }
+
+        const data: SearchResponse = await response.json();
+        setResults(data);
+        
       } else if (enableText) {
         // Text-only search
         endpoint = `/api/search/text?${searchParams.toString()}`;
+        
+        const response = await fetch(endpoint);
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Search failed');
+        }
+
+        const data: SearchResponse = await response.json();
+        setResults(data);
+        
       } else if (enableVector) {
-        // Vector-only search - this requires a different approach since we need to generate embeddings
-        setError('Vector-only search requires embedding generation. Please enable text search as well for now.');
-        setLoading(false);
-        return;
+        // Vector search
+        endpoint = `/api/search/vector`;
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: query.trim(), limit: 10 }),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Vector search failed');
+        }
+
+        const data: SearchResponse = await response.json();
+        setResults(data);
+        
       } else {
         setError('Please enable at least one search method.');
         setLoading(false);
         return;
       }
-
-      const response = await fetch(endpoint);
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Search failed');
-      }
-
-      const data: SearchResponse = await response.json();
-      setResults(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -170,30 +182,15 @@ export function SearchTestClient() {
                   Search Results
                 </h2>
                 <p className="text-sm text-gray-600 mt-1">
-                  Found {results.total} results for "{results.query}"
+                  Found {results.total || results.totalResults || results.results.length} results for "{results.query}"
                 </p>
               </div>
               <div className="text-right">
                 <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                   {results.searchType}
                 </div>
-                {results.hasEmbedding !== undefined && (
-                  <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ml-2 ${
-                    results.hasEmbedding 
-                      ? 'bg-green-100 text-green-800' 
-                      : 'bg-yellow-100 text-yellow-800'
-                  }`}>
-                    {results.hasEmbedding ? '🔍 Vector Enabled' : '📝 Text Only'}
-                  </div>
-                )}
               </div>
             </div>
-            
-            {results.weights && (
-              <div className="mt-2 text-xs text-gray-500">
-                Weights: Text {(results.weights.text * 100).toFixed(0)}% • Vector {(results.weights.vector * 100).toFixed(0)}%
-              </div>
-            )}
           </div>
 
           <div className="divide-y divide-gray-200">
@@ -203,16 +200,16 @@ export function SearchTestClient() {
               </div>
             ) : (
               results.results.map((result, index) => (
-                <div key={`${result.slug}-${index}`} className="p-6 hover:bg-gray-50">
+                <div key={`${result.chunk.target.slug}-${result.chunk.label}-${result.type}-${index}`} className="p-6 hover:bg-gray-50">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
                         <h3 className="text-lg font-medium text-gray-900">
                           <a 
-                            href={`/articles/${result.slug}`}
+                            href={`/articles/${result.chunk.target.slug}`}
                             className="hover:text-blue-600 transition-colors"
                           >
-                            {result.title}
+                            {result.chunk.target.name}
                           </a>
                         </h3>
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
@@ -228,17 +225,20 @@ export function SearchTestClient() {
                         </span>
                       </div>
                       
-                      <p className="text-gray-600 text-sm mb-2">
-                        {result.description}
-                      </p>
+                      <div className="mb-2">
+                        <span className="text-sm font-medium text-blue-600">
+                          Chunk: {result.chunk.label}
+                        </span>
+                      </div>
+                      
+                      <div className="text-gray-600 text-sm mb-2">
+                        <p>{result.chunk.text.substring(0, 300)}{result.chunk.text.length > 300 ? '...' : ''}</p>
+                      </div>
                       
                       <div className="flex items-center gap-4 text-xs text-gray-500">
-                        <span>By {result.author}</span>
-                        <span>
-                          {new Date(result.publishedAt).toLocaleDateString()}
-                        </span>
+                        <span>Article: {result.chunk.target.name}</span>
                         <div className="flex gap-1">
-                          {result.tags.slice(0, 3).map((tag: string) => (
+                          {result.chunk.tags.slice(0, 3).map((tag: string) => (
                             <span 
                               key={tag}
                               className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-600"
@@ -252,12 +252,19 @@ export function SearchTestClient() {
                     
                     <div className="ml-4 text-right">
                       <div className="text-sm font-medium text-gray-900">
-                        Score: {(result.score || 0).toFixed(3)}
+                        Score: {result.score.toFixed(2)}
                       </div>
+                      {result.type === 'vector' && 'similarity' in result && (
+                        <div className="text-xs text-gray-500">
+                          Similarity: {(result.similarity * 100).toFixed(1)}%
+                        </div>
+                      )}
                       <div className="w-16 bg-gray-200 rounded-full h-2 mt-1">
                         <div 
                           className="bg-blue-600 h-2 rounded-full" 
-                          style={{ width: `${Math.min(100, (result.score || 0) * 100)}%` }}
+                          style={{ 
+                            width: `${Math.min(100, result.type === 'vector' && 'similarity' in result ? result.similarity * 100 : result.score * 10)}%` 
+                          }}
                         ></div>
                       </div>
                     </div>

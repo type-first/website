@@ -1,47 +1,66 @@
 /**
  * Advanced TypeScript Patterns for React Applications
- * Main article component that combines all sections
+ * Main article component using the new content system
  */
 
 import React from "react";
-import { Header } from "@/modules/articles/ui/header.cmp.iso";
-import { Navigation } from "@/modules/articles/ui/navigation.cmp.iso";
-import { Link } from "@/modules/articles/ui/link.cmp.iso";
-import { CoverImage } from "@/modules/articles/ui/cover-image.cmp.iso";
-import { ArticleHeader } from "@/modules/articles/ui/article-header.cmp.iso";
-import { ArticleMetadata } from "@/modules/articles/ui/article-metadata.cmp.iso";
-import { Heading } from "@/modules/articles/ui/heading.cmp.iso";
-import { Paragraph } from "@/modules/articles/ui/paragraph.cmp.iso";
-import { CodeExplore } from "@/modules/articles/ui/code-explore.cmp.iso";
-import { Footer } from "@/modules/articles/ui/footer.cmp.iso";
-import { Container } from "@/modules/articles/ui/container.cmp.iso";
-import { TagsList } from "@/modules/articles/ui/tags-list.cmp.iso";
-import { JsonLd } from "@/modules/articles/ui/json-ld.cmp.iso";
-import { Section } from "@/modules/articles/ui/section.cmp.iso";
-import { Code } from "@/modules/articles/ui/code.cmp.iso";
+import { Header } from "@/lib/content/ui/header.cmp.iso";
+import { Navigation } from "@/lib/content/ui/navigation.cmp.iso";
+import { Link } from "@/lib/content/ui/link.cmp.iso";
+import { CoverImage } from "@/lib/content/ui/cover-image.cmp.iso";
+import { ArticleHeader } from "@/lib/content/ui/article/article-header.cmp.iso";
+import { ArticleMetadata } from "@/lib/content/ui/article/article-metadata.cmp.iso";
+import { Heading } from "@/lib/content/ui/heading.cmp.iso";
+import { CodeExplore } from "@/lib/content/ui/code-explore.cmp.iso";
+import { Footer } from "@/lib/content/ui/footer.cmp.iso";
+import { Container } from "@/lib/content/ui/container.cmp.iso";
+import { TagsList } from "@/lib/content/ui/tags-list.cmp.iso";
+import { JsonLd } from "@/lib/content/ui/json-ld.cmp.iso";
+import { Section } from "@/lib/content/ui/section.cmp.iso";
+import { Code } from "@/lib/content/ui/code.cmp.iso";
 
-import { articleContentData } from "./data";
+import { article } from "./meta";
+import { 
+  IntroductionParagraph,
+  GenericsIntroduction,
+  ConditionalTypesIntro,
+  ConditionalTypesExample,
+  ApiIntroduction,
+  ApiExample,
+  BestPracticesIntro,
+  BestPracticesList,
+  ConclusionParagraph
+} from "./body";
 
-type ArticleProps = {};
+// Import snippet content
+import { genericComponentsSnippet } from "./snippets/react-component.snippet.tsx";
+import { deploymentConfigSnippet } from "./snippets/deployment-config.snippet.yml";
 
 /**
  * Advanced TypeScript Patterns for React Applications
  * A comprehensive guide to advanced TypeScript patterns for React development
  */
-export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = () => (
+export const AdvancedTypescriptPatternsReactArticle = async () => {
+  // Load snippet content
+  const snippets = {
+    genericComponents: genericComponentsSnippet,
+    deploymentConfig: deploymentConfigSnippet
+  };
+
+  return (
   <>
     {/* JSON-LD Structured Data */}
     <JsonLd 
       data={{
         '@type': 'Article',
-        headline: articleContentData.metadata.title,
-        description: articleContentData.metadata.description,
-        image: articleContentData.metadata.coverImage,
-        datePublished: new Date(articleContentData.metadata.publishedAt).toISOString(),
-        dateModified: new Date(articleContentData.metadata.updatedAt).toISOString(),
+        headline: article.name,
+        description: article.blurb,
+        image: article.coverImgUrl,
+        datePublished: new Date(article.publishedTs).toISOString(),
+        dateModified: new Date(article.publishedTs).toISOString(),
         author: {
           '@type': 'Person',
-          name: articleContentData.metadata.author,
+          name: article.author.name,
         },
         publisher: {
           '@type': 'Organization',
@@ -51,86 +70,103 @@ export const AdvancedTypescriptPatternsReactArticle: React.FC<ArticleProps> = ()
             url: 'https://type-first.com/logo.png',
           },
         },
-        keywords: articleContentData.metadata.tags.join(', '),
+        keywords: article.tags.join(', '),
       }}
     />
 
     <Header>
       <Container>
         <Navigation>
-          {articleContentData.navigation.map((link) => (
-            <Link key={link.href} href={link.href}>{link.label}</Link>
-          ))}
+          <Link href="/articles">Articles</Link>
+          <Link href="/labs">Labs</Link>
+          <Link href="/community">Community</Link>
         </Navigation>
 
         {/* Cover Image */}
         <CoverImage 
-          src={articleContentData.metadata.coverImage}
-          alt={articleContentData.metadata.title}
+          src={article.coverImgUrl}
+          alt={article.name}
         />
       </Container>
     </Header>
 
     <Container>
       <ArticleHeader>
-        <Heading level={1}>{articleContentData.metadata.title}</Heading>
-        <ArticleMetadata publishedAt={new Date(articleContentData.metadata.publishedAt)} />
+        <Heading level={1}>{article.name}</Heading>
+        <ArticleMetadata publishedAt={new Date(article.publishedTs)} />
       </ArticleHeader>
 
-      <Paragraph>
-        {articleContentData.introduction}
-      </Paragraph>
-
-      <CodeExplore 
-        slug={articleContentData.codeExplore.slug}
-        name={articleContentData.codeExplore.name}
-        description={articleContentData.codeExplore.description}
-      />
-
-      {/* Article Sections */}
-      {articleContentData.sections.map((section) => (
-        <Section key={section.id}>
-          <Heading level={2}>{section.title}</Heading>
-          <Paragraph>{section.content}</Paragraph>
-          
-          {'subtitle' in section && section.subtitle && (
-            <Heading level={3}>{section.subtitle}</Heading>
-          )}
-          
-          {'codeSnippet' in section && section.codeSnippet && (
-            <Code language={section.codeSnippet.language}>
-              {section.codeSnippet.code}
-            </Code>
-          )}
-          
-          {/* Special handling for Best Practices section */}
-          {section.id === 'bestPractices' && 'practices' in section && (
-            <ul>
-              {section.practices.map((practice, index) => (
-                <li key={index}>
-                  <strong>{practice.title}:</strong> {practice.description}
-                </li>
-              ))}
-            </ul>
-          )}
-        </Section>
-      ))}
-
-      {/* Footer */}
+      {/* Introduction */}
       <Section>
-        <Heading level={2}>{articleContentData.footer.title}</Heading>
-        <Paragraph>{articleContentData.footer.content}</Paragraph>
+        <IntroductionParagraph />
+      </Section>
+
+      {/* Generic Components */}
+      <Section>
+        <Heading level={2}>Generic Components</Heading>
+        <GenericsIntroduction />
+        
+        <Heading level={3}>Basic Generic Component Pattern</Heading>
+        
+        <Code language="typescript">{snippets.genericComponents}</Code>
+      </Section>
+
+      {/* Conditional Types */}
+      <Section>
+        <Heading level={2}>Conditional Types in Components</Heading>
+        <ConditionalTypesIntro />
+        
+        <Heading level={3}>Advanced Conditional Type Example</Heading>
+        <ConditionalTypesExample />
+      </Section>
+
+      {/* Type-Safe APIs */}
+      <Section>
+        <Heading level={2}>Type-Safe APIs</Heading>
+        <ApiIntroduction />
+        
+        <Heading level={3}>API Client Pattern</Heading>
+        <ApiExample />
+      </Section>
+
+      {/* Best Practices */}
+      <Section>
+        <Heading level={2}>Best Practices</Heading>
+        <BestPracticesIntro />
+        <BestPracticesList />
+      </Section>
+
+      {/* Deployment Configuration */}
+      <Section>
+        <Heading level={2}>Production Deployment</Heading>
+        <p>Here's a sample GitHub Actions workflow for deploying TypeScript React applications:</p>
+        
+        <Code language="yaml">{snippets.deploymentConfig}</Code>
+      </Section>
+
+      {/* Conclusion */}
+      <Section>
+        <Heading level={2}>Conclusion</Heading>
+        <ConclusionParagraph />
       </Section>
 
       <Footer>
         <TagsList 
           label="Tags"
-          tags={[...articleContentData.metadata.tags]} 
+          tags={[...article.tags]} 
         />
       </Footer>
     </Container>
   </>
-);
+  );
+};
 
 // Re-export metadata for compatibility
-export const articleMetadata = articleContentData.metadata;
+export const articleMetadata = {
+  title: article.name,
+  description: article.blurb,
+  tags: article.tags,
+  author: article.author.name,
+  publishedAt: article.publishedTs,
+  coverImage: article.coverImgUrl
+};

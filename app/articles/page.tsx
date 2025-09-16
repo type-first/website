@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import { listArticles, ArticleRegistryEntry } from '@/registries/articles.registry';
+import { articlesMetaRegistry } from '@/content/articles/meta.registry';
+import type { ArticleMeta } from '@/lib/content/article.model';
 
 interface ArticlesPageProps {
   searchParams: Promise<{ page?: string; tag?: string }>;
@@ -19,17 +20,18 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   const selectedTag = params.tag;
   const pageSize = 12;
 
-  let articles: ArticleRegistryEntry[] = [];
+  let articles: ArticleMeta[] = [];
   let total = 0;
 
-  const result = listArticles({
-    status: 'published',
-    limit: pageSize,
-    offset: (currentPage - 1) * pageSize,
-    tags: selectedTag ? [selectedTag] : undefined,
-  });
-  articles = result.articles;
-  total = result.total;
+  // Get all articles and filter/paginate
+  const allArticles = articlesMetaRegistry;
+  const filteredArticles = selectedTag ? 
+    allArticles.filter(article => article.tags?.includes(selectedTag)) : 
+    allArticles;
+  
+  total = filteredArticles.length;
+  const startIndex = (currentPage - 1) * pageSize;
+  articles = filteredArticles.slice(startIndex, startIndex + pageSize);
 
   const totalPages = Math.ceil(total / pageSize);
 
@@ -42,8 +44,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
         <p className="text-xl text-gray-600">
           {selectedTag 
             ? `Articles tagged with "${selectedTag}" (${total} articles)`
-            : `Browse all ${total} published articles`
-          }
+            : `Browse all ${total} published articles`}
         </p>
         
         {selectedTag && (
@@ -73,7 +74,7 @@ export default async function ArticlesPage({ searchParams }: ArticlesPageProps) 
   );
 }
 
-function ArticleGrid({ articles }: { articles: ArticleRegistryEntry[] }) {
+function ArticleGrid({ articles }: { articles: ArticleMeta[] }) {
   if (articles.length === 0) {
     return (
       <div className="text-center py-12">
@@ -92,14 +93,14 @@ function ArticleGrid({ articles }: { articles: ArticleRegistryEntry[] }) {
   );
 }
 
-function ArticleCard({ article }: { article: ArticleRegistryEntry }) {
+function ArticleCard({ article }: { article: ArticleMeta }) {
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-      {article.coverImage && (
+      {article.coverImgUrl && (
         <div className="bg-gray-100" style={{ aspectRatio: '2.7 / 1' }}>
           <img 
-            src={article.coverImage}
-            alt={article.title}
+            src={article.coverImgUrl}
+            alt={article.name}
             className="w-full h-full object-cover"
           />
         </div>
@@ -123,18 +124,16 @@ function ArticleCard({ article }: { article: ArticleRegistryEntry }) {
             href={`/article/${article.slug}`}
             className="hover:text-blue-600 transition-colors line-clamp-2"
           >
-            {article.title}
+            {article.name}
           </Link>
         </h3>
         
-        {article.description && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-            {article.description}
-          </p>
-        )}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {article.blurb}
+        </p>
         
         <div className="text-xs text-gray-500">
-          {article.publishedAt && new Date(article.publishedAt).toLocaleDateString('en-US', {
+          {new Date(article.publishedTs).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',

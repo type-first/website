@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { listArticles, type ArticleRegistryEntry } from '@/registries/articles.registry';
+import { articlesMetaRegistry } from '@/content/articles/meta.registry';
+import type { ArticleMeta } from '@/lib/content/article.model';
 import { listLabs, type LabRegistryEntry } from '@/registries/labs.registry';
 import { COVER_IMAGE, GRID, SPACING } from '@/modules/design-constants/v0/design-constants';
 import { ArrowUpRight } from 'lucide-react';
@@ -7,11 +8,11 @@ import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
 import { getLabIcon } from '@/modules/labs/ui/lab-icon.util';
 
 export default async function Home() {
-  let articles: ArticleRegistryEntry[] = [];
+  let articles: ArticleMeta[] = [];
   let labs: LabRegistryEntry[] = [];
 
   try {
-    const { articles: latest } = listArticles({ status: 'published', limit: 6 });
+    const latest = articlesMetaRegistry.slice(0, 6);
     articles = latest;
   } catch (error) {
     console.warn(
@@ -99,14 +100,14 @@ export default async function Home() {
   );
 }
 
-function ArticleCard({ article }: { article: ArticleRegistryEntry }) {
+function ArticleCard({ article }: { article: ArticleMeta }) {
   return (
     <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-      {article.coverImage && (
+      {article.coverImgUrl && (
         <div className={`${COVER_IMAGE.ASPECT_CLASS} bg-gray-100`}>
           <img 
-            src={article.coverImage} 
-            alt={article.title}
+            src={article.coverImgUrl} 
+            alt={article.name}
             className="w-full h-full object-cover"
           />
         </div>
@@ -129,18 +130,16 @@ function ArticleCard({ article }: { article: ArticleRegistryEntry }) {
             href={`/article/${article.slug}`}
             className="hover:text-blue-600 transition-colors"
           >
-            {article.title}
+            {article.name}
           </Link>
         </h3>
         
-        {article.description && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-            {article.description}
-          </p>
-        )}
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {article.blurb}
+        </p>
         
         <div className="text-xs text-gray-500">
-          {article.publishedAt && new Date(article.publishedAt).toLocaleDateString('en-US', {
+          {new Date(article.publishedTs).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
             day: 'numeric',

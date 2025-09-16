@@ -1,36 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { query, limit = 10 } = body;
-
-    if (!query || typeof query !== 'string') {
-      return NextResponse.json(
-        { error: 'query string is required' },
-        { status: 400 }
-      );
-    }
-
-    // Placeholder implementation - backend functionality removed
-    const results: any[] = [];
-    
-    return NextResponse.json({ 
-      results,
-      total: 0,
-      query,
-      limit,
-      message: 'Search functionality is currently unavailable. Backend implementation has been removed.'
-    });
-    
-  } catch (error) {
-    console.error('Text search error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
+import { searchChunksRegistry } from '@/content/chunks.registry';
+import { textSearch } from '@/lib/content/search';
 
 export async function GET(request: NextRequest) {
   try {
@@ -45,21 +15,56 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Placeholder implementation - backend functionality removed
-    const results: any[] = [];
-    
-    return NextResponse.json({ 
-      results,
-      total: 0,
+    // Use centralized text search function
+    const searchResults = textSearch(query, [...searchChunksRegistry]);
+
+    // Apply limit
+    const limitedResults = searchResults.slice(0, limit);
+
+    return NextResponse.json({
       query,
+      results: limitedResults,
+      total: limitedResults.length,
+      searchType: 'text',
       limit,
-      message: 'Search functionality is currently unavailable. Backend implementation has been removed.'
     });
-    
+
   } catch (error) {
     console.error('Text search error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const { query } = await request.json();
+
+    if (!query || typeof query !== 'string' || query.trim().length === 0) {
+      return NextResponse.json(
+        { error: 'Query parameter is required and must be a non-empty string' },
+        { status: 400 }
+      );
+    }
+
+    // Use centralized text search function
+    const searchResults = textSearch(query, [...searchChunksRegistry]);
+
+    return NextResponse.json({
+      results: searchResults,
+      meta: {
+        total: searchResults.length,
+        query: query.trim(),
+        searchType: 'text'
+      }
+    });
+
+  } catch (error) {
+    console.error('Text search error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error during text search' },
       { status: 500 }
     );
   }
