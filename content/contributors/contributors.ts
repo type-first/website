@@ -3,7 +3,7 @@
  * Using the new lib/content system
  */
 
-import { createContributor } from '@/lib/content'
+import { createContributor } from '@/lib/content/contributor.model'
 
 export const typeFirstTeam = createContributor({
   slug: 'type-first-team',

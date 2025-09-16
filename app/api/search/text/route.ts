@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchChunksRegistry } from '@/content/chunks.registry';
-import { textSearch } from '@/lib/content/search';
+import { textSearch } from '@/lib/content/search/text';
 
 export async function GET(request: NextRequest) {
   try {

@@ -29,8 +29,9 @@ const createChunk = chunker(article)
 
 // Helper to create vector file paths
 const vectorPath = (filename: string) => 
-  path.resolve(__dirname, 'vectors', filename + '.yml')
+  path.resolve(__dirname, 'vectors', `${filename}.yml`)
 
+// --- Export all chunks
 
 export const chunks = [
   // Article metadata chunk
@@ -54,7 +55,7 @@ export const chunks = [
   // Introduction chunk
   createChunk({
     id: 'advanced-typescript-patterns-react:introduction',
-    label: 'Introduction to Advanced TypeScript Patterns for React',
+    label: 'Introduction to TypeScript React Development and Type Safety Benefits',
     tags: [...article.tags, 'Introduction', 'Overview'] as const,
     text: renderPlainText(<IntroductionParagraph />),
     vectorFp: vectorPath('introduction')

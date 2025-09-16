@@ -1,92 +1,60 @@
 /**
- * Hybrid search functionality that combines text and vector search
+ * Hybrid Search Implementation
+ * Combines text and vector search results
  */
 
 import type { GenericContentChunk } from '../content.model';
-import type { HybridSearchResult, HybridSearchOptions } from './search.model';
+import type { HybridSearchOptions, HybridSearchResult } from './search.model';
 import { textSearch } from './text';
 import { vectorSearch } from './vector';
-import { 
-  combineScores, 
-  deduplicateResults, 
-  sortByScore, 
-  limitResults 
-} from './search.utils';
 
-/**
- * Perform hybrid search combining text and vector search
- */
-export function hybridSearch(
+export async function hybridSearch(
   query: string,
   chunks: GenericContentChunk[],
   options: HybridSearchOptions = {}
-): HybridSearchResult[] {
+): Promise<HybridSearchResult[]> {
   const {
     limit = 10,
     textWeight = 0.6,
     vectorWeight = 0.4,
-    textMinScore = 1,
-    vectorThreshold = 0.1,
+    textMinScore = 0.1,
+    vectorThreshold = 0.3,
   } = options;
 
-  // Perform both searches
-  const textResults = textSearch(query, chunks, { 
-    limit: limit * 2, 
-    minScore: textMinScore 
-  });
-  
-  const vectorResults = vectorSearch(query, chunks, { 
-    limit: limit * 2, 
-    threshold: vectorThreshold 
-  });
+  // Perform both searches in parallel
+  const [textResults, vectorResults] = await Promise.all([
+    Promise.resolve(textSearch(query, chunks, { minScore: textMinScore })),
+    vectorSearch(query, chunks, { threshold: vectorThreshold })
+  ]);
 
-  // Combine results, merging duplicates
-  const combinedResults = new Map<string, HybridSearchResult>();
+  // Combine and deduplicate results while preserving their original types
+  const seenChunkIds = new Set<string>();
+  const combinedResults: HybridSearchResult[] = [];
 
-  // Add text results
+  // Add text results first (higher weight)
   textResults.forEach(result => {
-    const chunkId = result.chunk.id;
-    combinedResults.set(chunkId, {
-      chunk: result.chunk,
-      score: result.score,
-      type: 'text',
-      textScore: result.score,
-    });
-  });
-
-  // Add vector results or enhance existing ones
-  vectorResults.forEach(result => {
-    const chunkId = result.chunk.id;
-    
-    if (combinedResults.has(chunkId)) {
-      // Enhance existing result with vector data
-      const existing = combinedResults.get(chunkId)!;
-      existing.score = combineScores(
-        existing.textScore || 0,
-        result.similarity,
-        textWeight,
-        vectorWeight
-      );
-      existing.type = 'hybrid';
-      existing.vectorScore = Math.round(result.similarity * 100);
-      existing.similarity = result.similarity;
-    } else {
-      // Add as new vector result
-      combinedResults.set(chunkId, {
-        chunk: result.chunk,
-        score: result.similarity * vectorWeight,
-        type: 'vector',
-        vectorScore: Math.round(result.similarity * 100),
-        similarity: result.similarity,
+    if (!seenChunkIds.has(result.chunk.id)) {
+      combinedResults.push({
+        ...result,
+        score: result.score * textWeight
       });
+      seenChunkIds.add(result.chunk.id);
     }
   });
 
-  // Return sorted and limited results
-  const allResults = Array.from(combinedResults.values());
-  
-  return limitResults(
-    sortByScore(allResults),
-    limit
-  );
+  // Add vector results that aren't already included
+  vectorResults.forEach(result => {
+    if (!seenChunkIds.has(result.chunk.id)) {
+      combinedResults.push({
+        ...result,
+        score: result.similarity * vectorWeight
+      });
+      seenChunkIds.add(result.chunk.id);
+    }
+  });
+
+  // Sort by weighted score and limit
+  return combinedResults
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit);
 }

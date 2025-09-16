@@ -3,15 +3,15 @@
  * Using the new lib/content system
  */
 
+import { createArticle } from '@/lib/content/article.model'
 import { 
-  createArticle, 
   normal, 
   bold, 
   italic, 
   code, 
   link, 
   carriage 
-} from '@/lib/content'
+} from '@/lib/content/text.model'
 import { typeFirstTeam } from '../../contributors/contributors'
 
 // --- Article Content Definitions

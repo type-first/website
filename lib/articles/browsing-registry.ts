@@ -4,7 +4,7 @@
  * No full article content to keep bundle size small
  */
 
-import type { BrowsableArticle } from './models';
+import type { BrowsableArticle } from './models/browsable-article.model';
 import { defaultArticleBrowsingUI } from './components';
 
 /**

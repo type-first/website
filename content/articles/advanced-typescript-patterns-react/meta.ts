@@ -3,7 +3,7 @@
  * Lightweight metadata for bundle optimization
  */
 
-import { createArticle } from '@/lib/content'
+import { createArticle } from '@/lib/content/article.model'
 import { typeFirstTeam } from '../../contributors/contributors'
 
 export const article = createArticle({

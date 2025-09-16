@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchChunksRegistry } from '@/content/chunks.registry';
-import { vectorSearch } from '@/lib/content/search';
+import { vectorSearch } from '@/lib/content/search/vector';
 
 export async function GET(request: NextRequest) {
   try {
