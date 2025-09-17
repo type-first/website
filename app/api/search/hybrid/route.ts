@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchChunksRegistry } from '@/content/chunks.registry';
-import { vectorSearch } from '@/lib/content/search/vector';
+import { hybridSearch } from '@/lib/content/search/hybrid';
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
     const limit = parseInt(searchParams.get('limit') || '10');
-    
+    const textWeight = parseFloat(searchParams.get('textWeight') || '0.3');
+    const vectorWeight = parseFloat(searchParams.get('vectorWeight') || '0.7');
+
     if (!query) {
       return NextResponse.json(
         { error: 'Query parameter is required' },
@@ -15,17 +17,30 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Use centralized vector search function
-    const searchResults = await vectorSearch(query, [...searchChunksRegistry], { limit });
-    
+    // Use centralized hybrid search function
+    const searchResults = await hybridSearch(
+      query, 
+      [...searchChunksRegistry], 
+      { 
+        limit,
+        textWeight,
+        vectorWeight 
+      }
+    );
+
     return NextResponse.json({
       query,
       results: searchResults,
       totalResults: searchResults.length,
-      searchType: 'vector'
+      searchType: 'hybrid',
+      meta: {
+        textWeight,
+        vectorWeight,
+        total: searchResults.length
+      }
     });
   } catch (error) {
-    console.error('Vector search error:', error);
+    console.error('Hybrid search error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -36,7 +51,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { query } = body;
+    const { query, limit = 10, textWeight = 0.3, vectorWeight = 0.7 } = body;
     
     if (!query) {
       return NextResponse.json(
@@ -45,16 +60,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const searchResults = await vectorSearch(query, [...searchChunksRegistry]);
-    
+    const searchResults = await hybridSearch(
+      query, 
+      [...searchChunksRegistry], 
+      { 
+        limit,
+        textWeight,
+        vectorWeight 
+      }
+    );
+
     return NextResponse.json({
       query,
       results: searchResults,
       totalResults: searchResults.length,
-      searchType: 'vector'
+      searchType: 'hybrid',
+      meta: {
+        textWeight,
+        vectorWeight,
+        total: searchResults.length
+      }
     });
   } catch (error) {
-    console.error('Vector search error:', error);
+    console.error('Hybrid search error:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

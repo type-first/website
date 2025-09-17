@@ -5,7 +5,7 @@
 
 // Core search functions
 export { textSearch } from './text';
-export { vectorSearch, vectorSearchWithEmbeddings } from './vector';
+export { vectorSearch } from './vector';
 export { hybridSearch } from './hybrid';
 
 // Search utilities and pure functions

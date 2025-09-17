@@ -47,8 +47,19 @@ export interface VectorSearchResult {
   type: 'vector';
 }
 
-// Hybrid search result is a discriminated union of text and vector results
-export type HybridSearchResult = TextSearchResult | VectorSearchResult;
+/**
+ * Merged search result that combines both text and vector search information
+ */
+export interface MergedSearchResult {
+  chunk: GenericContentChunk;
+  score: number; // Combined weighted score
+  text: TextSearchResult | null;
+  vector: VectorSearchResult | null;
+  type: 'merged';
+}
+
+// Hybrid search result can be individual results or merged results
+export type HybridSearchResult = TextSearchResult | VectorSearchResult | MergedSearchResult;
 
 // --- Search Parameters ---
 
