@@ -62,8 +62,15 @@ export function extractPlainText(element: React.ReactElement | React.ReactNode):
         
         return extractPlainText(rendered)
       } catch (error) {
-        // If component execution fails, fall back to children
+        // Silent handling of RSC proxy errors and other component execution issues
+        // These are expected when components hit client/server boundaries during build
         const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('Cannot access') || errorMessage.includes('client module')) {
+          // RSC proxy error - silently fall back to children extraction
+          return extractPlainText(children)
+        }
+        
+        // Log other unexpected errors but still continue
         console.warn(`Failed to execute component ${elementType.name || 'unknown'}:`, errorMessage)
         return extractPlainText(children)
       }
