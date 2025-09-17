@@ -17,11 +17,21 @@ import { Paragraph } from '@/lib/content/rich-text/components/paragraph'
 export const IntroductionParagraph = () => (
   <>
     <Paragraph>
-      TypeScript has revolutionized React development by providing <Bold space="after">static type checking</Bold> and enhanced developer experience. In this comprehensive guide, we'll explore <Italic space="after">advanced TypeScript patterns</Italic> that will elevate your React applications to new levels of <Bold space="after">type safety</Bold> and <Bold>maintainability</Bold>.
+      TypeScript has revolutionized React development by providing 
+      <Bold space="after">static type checking</Bold> 
+      and enhanced developer experience. In this comprehensive guide, we'll explore 
+      <Italic space="after">advanced TypeScript patterns</Italic> 
+      that will elevate your React applications to new levels of 
+      <Bold space="after">type safety</Bold> and 
+      <Bold>maintainability</Bold>.
     </Paragraph>
     
     <Paragraph>
-      We'll cover essential patterns like <InlineCode>Generic Components</InlineCode>, <InlineCode space="after">Conditional Types</InlineCode>, and <InlineLink href="#type-safe-apis" space="after">Type-Safe APIs</InlineLink> that every TypeScript React developer should master.
+      We'll cover essential patterns like 
+      <InlineCode>Generic Components</InlineCode>, 
+      <InlineCode space="after">Conditional Types</InlineCode>, and 
+      <InlineLink href="#type-safe-apis" space="after">Type-Safe APIs</InlineLink> 
+      that every TypeScript React developer should master.
     </Paragraph>
   </>
 )

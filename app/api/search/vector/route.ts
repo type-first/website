@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchChunksRegistry } from '@/content/chunks.registry';
-import { vectorSearch } from '@/lib/content/search/vector';
+import { vectorSearchWithEmbeddings } from '@/lib/content/search/vector';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Use centralized vector search function
-    const searchResults = await vectorSearch(query, [...searchChunksRegistry], { limit });
+    const searchResults = await vectorSearchWithEmbeddings(query, [...searchChunksRegistry], { limit });
     
     return NextResponse.json({
       query,
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const searchResults = await vectorSearch(query, [...searchChunksRegistry]);
+    const searchResults = await vectorSearchWithEmbeddings(query, [...searchChunksRegistry]);
     
     return NextResponse.json({
       query,

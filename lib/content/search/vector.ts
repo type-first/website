@@ -10,6 +10,8 @@ import {
   filterByMinSimilarity, 
   limitResults 
 } from './search.utils';
+import { loadEmbeddings, cosineSimilarity } from '../embeddings';
+import { OpenAIEmbeddingProvider } from '../embeddings/providers/openai';
 
 /**
  * Perform vector search on content chunks using text-based cosine similarity
@@ -39,14 +41,50 @@ export function vectorSearch(
 /**
  * Perform vector search using actual embedding vectors
  */
-export function vectorSearchWithEmbeddings(
-  queryEmbedding: number[],
+export async function vectorSearchWithEmbeddings(
+  query: string,
   chunks: GenericContentChunk[],
   options: VectorSearchOptions = {}
-): VectorSearchResult[] {
-  const { limit = 10, threshold = 0.1 } = options;
+): Promise<VectorSearchResult[]> {
+  const { limit = 10, threshold = 0.05 } = options;
   
-  // This would be used when we have actual embeddings
-  // For now, it's a placeholder that would need embedding data
-  throw new Error('Embedding-based vector search not yet implemented. Use vectorSearch() instead.');
+  try {
+    // Generate query embedding
+    const openaiApiKey = process.env.OPENAI_API_KEY;
+    if (!openaiApiKey) {
+      console.warn('OpenAI API key not configured, falling back to text search');
+      return vectorSearch(query, chunks, options);
+    }
+
+    const embeddingProvider = new OpenAIEmbeddingProvider({ 
+      apiKey: openaiApiKey 
+    });
+    
+    const [queryEmbedding] = await embeddingProvider.generateEmbeddings([query]);
+    
+    // Load embeddings for chunks
+    const embeddedChunks = await loadEmbeddings(chunks);
+    
+    // Calculate similarities
+    const results: VectorSearchResult[] = embeddedChunks.map(chunk => {
+      const similarity = cosineSimilarity(queryEmbedding, chunk.embedding);
+      return {
+        chunk,
+        similarity,
+        score: similarity,
+        type: 'vector' as const,
+      };
+    });
+
+    return limitResults(
+      sortBySimilarity(
+        filterByMinSimilarity(results, threshold)
+      ),
+      limit
+    );
+  } catch (error) {
+    console.error('Embedding-based vector search failed:', error);
+    // Fallback to text-based search
+    return vectorSearch(query, chunks, options);
+  }
 }

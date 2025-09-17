@@ -9,6 +9,7 @@ import { extractPlainText } from '@/lib/content/rich-text/extract-text'
 import { Paragraph } from '@/lib/content/rich-text/components/paragraph'
 import { Plain } from '@/lib/content/rich-text/components/plain'
 import { List, ListItem } from '@/lib/content/rich-text/components/list'
+import { createArticleVectorPath } from '@/lib/content/vector-paths'
 import { article } from './meta'
 import { 
   IntroductionParagraph,
@@ -20,14 +21,13 @@ import {
   BestPracticesList,
   ConclusionParagraph
 } from './body'
-import path from 'path'
 
 // Create chunker for this article
 const createChunk = chunker(article)
 
 // Helper to create vector file paths
 const vectorPath = (filename: string) => 
-  path.resolve(__dirname, 'vectors', filename + '.yml')
+  createArticleVectorPath('advanced-typescript-patterns-react', filename)
 
 
 export const chunks = [
@@ -40,9 +40,9 @@ export const chunks = [
       <>
         <Plain space="none">{article.blurb}</Plain>
         <List>
-          <ListItem>**Tags:** {article.tags.join(', ')}</ListItem>
-          <ListItem>**Author:** {article.author.name}</ListItem>
-          <ListItem>**Published:** {new Date(article.publishedTs).toLocaleDateString()}</ListItem>
+          <ListItem label='tags'>{article.tags.join(', ')}</ListItem>
+          <ListItem label='author'>{article.author.name}</ListItem>
+          <ListItem label='published'>{new Date(article.publishedTs).toLocaleDateString()}</ListItem>
         </List>
       </>
     ),

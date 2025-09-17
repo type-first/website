@@ -28,16 +28,18 @@ export function List({ children, break: breakProp = 'both' }: ListProps) {
 
 interface ListItemProps {
   children: React.ReactNode
-  key?: string
+  label?: string
   marker?: 'bullet' | 'number'
 }
 
-export function ListItem({ children, marker = 'bullet' }: ListItemProps) {
+export function ListItem({ children, label, marker = 'bullet' }: ListItemProps) {
   const markerSymbol = marker === 'bullet' ? '• ' : '1. '
-  
+  const keySegment = label ? `${label}: ` : ''
   return (
     <>
-      {markerSymbol}{children}
+      <>{markerSymbol}</>
+      <>{keySegment}</>
+      <>{children}</>
       <LineBreak soft />
     </>
   )

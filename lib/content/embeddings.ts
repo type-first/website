@@ -13,6 +13,7 @@ import type {
   EmbeddedContentChunk,
   ContentKind 
 } from './content.model'
+import { resolveVectorPath } from './vector-paths'
 
 // --- embedding loading
 
@@ -22,7 +23,8 @@ export const loadEmbeddings = async (
   return Promise.all(
     chunks.map(async chunk => {
       try {
-        const ymlFp = path.resolve(chunk.vectorFp)
+        // Use centralized path resolution
+        const ymlFp = resolveVectorPath(chunk.vectorFp)
         
         if (!fs.existsSync(ymlFp)) {
           console.warn(`Embedding file not found: ${ymlFp}`)
@@ -103,14 +105,4 @@ export const cosineSimilarity = (a: number[], b: number[]): number => {
   }
   
   return dotProduct / (magnitudeA * magnitudeB)
-}
-
-// --- file path utilities
-
-export const resolveVectorPath = (basePath: string, filename: string): string => {
-  return path.resolve(basePath, filename)
-}
-
-export const createVectorFileName = (chunkId: string): string => {
-  return `${chunkId}.vector.yml`
 }
