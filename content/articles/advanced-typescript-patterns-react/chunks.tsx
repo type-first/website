@@ -1,5 +1,3 @@
-import 'server-only'
-
 /**
  * Advanced TypeScript Patterns for React Applications - Content Chunks
  * Using the new component-based content system
@@ -7,7 +5,7 @@ import 'server-only'
 
 import React from 'react'
 import { chunker } from '@/lib/content/content.model'
-import { renderPlainText } from '@/lib/content/rich-text/render-plaintext'
+import { extractPlainText } from '@/lib/content/rich-text/extract-text'
 import { Paragraph } from '@/lib/content/rich-text/components/paragraph'
 import { Plain } from '@/lib/content/rich-text/components/plain'
 import { List, ListItem } from '@/lib/content/rich-text/components/list'
@@ -38,7 +36,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:metadata',
     label: 'Advanced TypeScript Patterns for React - Complete Guide Overview',
     tags: [...article.tags, 'Overview', 'Metadata'] as const,
-    text: renderPlainText(
+    text: extractPlainText(
       <>
         <Plain space="none">{article.blurb}</Plain>
         <List>
@@ -56,7 +54,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:introduction',
     label: 'Introduction to Advanced TypeScript Patterns for React',
     tags: [...article.tags, 'Introduction', 'Overview'] as const,
-    text: renderPlainText(<IntroductionParagraph />),
+    text: extractPlainText(<IntroductionParagraph />),
     vectorFp: vectorPath('introduction')
   }),
 
@@ -65,7 +63,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:generic-components',
     label: 'Building Reusable Generic Components with TypeScript Type Parameters',
     tags: [...article.tags, 'Generics', 'Components', 'Reusability'] as const,
-    text: renderPlainText(
+    text: extractPlainText(
       <>
         <GenericsIntroduction />
       </>
@@ -78,7 +76,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:conditional-types',
     label: 'Advanced Conditional Types and Dynamic Type Logic in React Components',
     tags: [...article.tags, 'Conditional Types', 'Advanced', 'Type Logic'] as const,
-    text: renderPlainText(
+    text: extractPlainText(
       <>
         <ConditionalTypesIntro />
         <ConditionalTypesExample />
@@ -92,7 +90,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:type-safe-apis',
     label: 'Creating Type-Safe API Clients with End-to-End TypeScript Validation',
     tags: [...article.tags, 'APIs', 'Type Safety', 'Client-Server'] as const,
-    text: renderPlainText(
+    text: extractPlainText(
       <>
         <ApiIntroduction />
         <ApiExample />
@@ -106,7 +104,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:best-practices',
     label: 'Essential Best Practices for Professional TypeScript React Development',
     tags: [...article.tags, 'Best Practices', 'Guidelines', 'Standards'] as const,
-    text: renderPlainText(
+    text: extractPlainText(
       <>
         <Paragraph break="none">
           Here are the essential best practices for advanced TypeScript React development:
@@ -122,7 +120,7 @@ export const chunks = [
     id: 'advanced-typescript-patterns-react:conclusion',
     label: 'Mastering TypeScript Patterns - Next Steps and Advanced Development Journey',
     tags: [...article.tags, 'Conclusion', 'Summary', 'Next Steps'] as const,
-    text: renderPlainText(<ConclusionParagraph />),
+    text: extractPlainText(<ConclusionParagraph />),
     vectorFp: vectorPath('conclusion')
   })
 ] as const

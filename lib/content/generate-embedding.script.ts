@@ -18,6 +18,7 @@ import * as yaml from 'yaml';
 import { writeFile, mkdir } from 'fs/promises';
 import * as path from 'path';
 import { OpenAIEmbeddingProvider } from './embeddings/providers/openai';
+import { prepareChunkForEmbedding } from './rich-text/extract-text';
 
 console.log('📋 Loading chunks registry...');
 import { searchChunksRegistry as chunks } from '../../content/chunks.registry';
@@ -76,9 +77,13 @@ async function main() {
   console.log(`🚀 Generating embedding for chunk: ${chunk.id}`);
   console.log(`📝 Label: ${chunk.label}`);
   console.log(`🏷️  Tags: ${chunk.tags.join(', ')}`);
-  console.log(`📄 Text length: ${chunk.text.length} characters`);
+  console.log(`📄 Raw text length: ${chunk.text.length} characters`);
+  
+  // Prepare the text for embedding (adds label as heading)
+  const preparedText = prepareChunkForEmbedding(chunk);
+  console.log(`📄 Prepared text length: ${preparedText.length} characters (+${preparedText.length - chunk.text.length} with heading)`);
   console.log(`💾 Vector file: ${chunk.vectorFp}`);
-  console.log(`📄 First 100 chars of text: ${chunk.text.substring(0, 100)}...`);
+  console.log(`📄 First 100 chars of prepared text: ${preparedText.substring(0, 100)}...`);
   console.log('');
 
   try {
@@ -92,8 +97,8 @@ async function main() {
 
     // Generate the embedding
     console.log('🔄 Generating embedding...');
-    console.log(`📤 Sending text to OpenAI (${chunk.text.length} characters)...`);
-    const embeddings = await provider.generateEmbeddings([chunk.text]);
+    console.log(`📤 Sending prepared text to OpenAI (${preparedText.length} characters)...`);
+    const embeddings = await provider.generateEmbeddings([preparedText]);
     console.log(`📥 Received ${embeddings.length} embeddings from OpenAI`);
     
     const embedding = embeddings[0];
@@ -112,6 +117,7 @@ async function main() {
       label: chunk.label,
       tags: [...chunk.tags],
       textLength: chunk.text.length,
+      preparedTextLength: preparedText.length,
       embedding: embedding,
       model: 'text-embedding-3-small',
       generatedAt: new Date().toISOString(),

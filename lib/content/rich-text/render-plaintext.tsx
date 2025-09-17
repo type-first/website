@@ -1,31 +1,3 @@
-import 'server-only'
-
-/**
- * export function renderPlainText(component: React.ReactElement): string {
-  try {
-    if (typeof window !== 'undefined') {
-      // Client-side: Return empty string to avoid hydration issues
-      return '';
-    }
-    
-    // Server-side: Try to render to string
-    if (typeof require !== 'undefined') {
-      const { renderToString } = require('react-dom/server');
-      const htmlString = renderToString(component);
-      return stripHtmlToPlainText(htmlString);
-    }
-    
-    // Fallback: Return empty string
-    return '';
-  } catch (error) {
-    console.warn('Failed to render component to plain text:', error);
-    return '';
-  }
-}y utility for rendering React components to plain text for search indexing
- */
-
-import 'server-only'
-
 import React from 'react'
 import { stripHtmlToPlainText } from '@/lib/content/html-utils'
 

@@ -16,6 +16,7 @@
     "db:test": "tsx lib/db/scripts/test-articles.ts && tsx lib/db/scripts/test-db.ts",
     "embeddings:gen": "tsx lib/db/scripts/generate-embeddings.ts",
     "embeddings:article": "tsx scripts/generate-embedding-for-article.ts",
+    "chunk:view": "tsx lib/content/chunk-viewer.script.ts",
     "db:covers": "tsx lib/db/scripts/backfill-covers.ts",
     "search:test": "tsx lib/db/scripts/test-search.ts",
     "markdown:gen": "tsx scripts/generate-markdown.ts --",
