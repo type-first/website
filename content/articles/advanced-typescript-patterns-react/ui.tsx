@@ -11,7 +11,7 @@ import { CoverImage } from "@/lib/content/ui/cover-image.cmp.iso";
 import { ArticleHeader } from "@/lib/content/ui/article/article-header.cmp.iso";
 import { ArticleMetadata } from "@/lib/content/ui/article/article-metadata.cmp.iso";
 import { Heading } from "@/lib/content/ui/heading.cmp.iso";
-import { CodeExplore } from "@/lib/content/ui/code-explore.cmp.iso";
+import { CodeExplorerLink } from "@/lib/content/ui/link.code-explorer.cmp.iso";
 import { Footer } from "@/lib/content/ui/footer.cmp.iso";
 import { Container } from "@/lib/content/ui/container.cmp.iso";
 import { TagsList } from "@/lib/content/ui/tags-list.cmp.iso";
@@ -31,6 +31,26 @@ import {
   BestPracticesList,
   ConclusionParagraph
 } from "./body";
+
+// UI Components for interactive elements
+export const PracticalExamplesIntro = () => (
+  <Section>
+    <p className="text-gray-600 mb-6">
+      Before diving into advanced patterns, let's solidify your understanding with <strong>hands-on practice</strong>. 
+      These interactive scenarios will help you <em>apply TypeScript concepts</em> in real code.
+    </p>
+  </Section>
+);
+
+export const BasicTypesScenarioLink = () => (
+  <div className="my-6">
+    <CodeExplorerLink
+      slug="basic-types-and-functions"
+      name="Basic Types and Functions"
+      description="Learn TypeScript fundamentals through hands-on practice with basic types, interfaces, and function definitions in a multi-file project structure."
+    />
+  </div>
+);
 
 // Import snippet content
 import { genericComponentsSnippet } from "./snippets/react-component.snippet.tsx";

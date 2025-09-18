@@ -21,6 +21,10 @@ import {
   BestPracticesList,
   ConclusionParagraph
 } from './body'
+import { 
+  PracticalExamplesIntro,
+  BasicTypesScenarioLink
+} from './ui'
 
 // Create chunker for this article
 const createChunk = chunker(article)
@@ -69,6 +73,20 @@ export const chunks = [
       </>
     ),
     vectorFp: vectorPath('generic-components')
+  }),
+
+  // Practical Examples chunk
+  createChunk({
+    id: 'advanced-typescript-patterns-react:practical-examples',
+    label: 'Hands-on TypeScript Practice - Interactive Code Scenarios',
+    tags: [...article.tags, 'Practice', 'Interactive', 'Scenarios', 'Learning'] as const,
+    text: extractPlainText(
+      <>
+        <PracticalExamplesIntro />
+        <BasicTypesScenarioLink />
+      </>
+    ),
+    vectorFp: vectorPath('practical-examples')
   }),
 
   // Conditional Types chunk

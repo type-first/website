@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { articlesMetaRegistry } from '@/content/articles/meta.registry';
 import type { ArticleMeta } from '@/lib/content/article.model';
-import { listLabs, type LabRegistryEntry } from '@/registries/labs.registry';
+import { listLabs, type LegacyLabData } from '@/modules/labs/registry.logic';
 import { COVER_IMAGE, GRID, SPACING } from '@/modules/design-constants/v0/design-constants';
 import { ArrowUpRight } from 'lucide-react';
 import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
@@ -9,7 +9,7 @@ import { getLabIcon } from '@/modules/labs/ui/lab-icon.util';
 
 export default async function Home() {
   let articles: ArticleMeta[] = [];
-  let labs: LabRegistryEntry[] = [];
+  let labs: LegacyLabData[] = [];
 
   try {
     const latest = articlesMetaRegistry.slice(0, 6);
@@ -150,7 +150,7 @@ function ArticleCard({ article }: { article: ArticleMeta }) {
   );
 }
 
-function LabCardWrapper({ lab }: { lab: LabRegistryEntry }) {
+function LabCardWrapper({ lab }: { lab: LegacyLabData }) {
   return (
     <LabCard 
       slug={lab.slug}

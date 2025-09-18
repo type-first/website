@@ -42,6 +42,13 @@ export type ArticleMeta = ContentMeta<'article'> & {
   coverImgUrl: string
 }
 
+export type ScenarioMeta = ContentMeta<'scenario'> & {
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  prerequisites: readonly string[]
+  learningGoals: readonly string[]
+  files: readonly { path: string; content: string; description?: string }[]
+}
+
 // --- content kind meta registry
 
 export type ContentMetaDisc =
@@ -49,6 +56,7 @@ export type ContentMetaDisc =
   | LabMeta
   | LibraryMeta
   | ContributorMeta
+  | ScenarioMeta
 
 export type ContentKind = ContentMetaDisc['kind']
 

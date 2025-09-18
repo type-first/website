@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import { labsRegistry, type LabRegistryEntry } from '@/registries/labs.registry';
+import { listLabs, type LegacyLabData } from '@/modules/labs/registry.logic';
 import { LabGrid } from '@/modules/labs/ui/lab-grid.cmp.iso';
 import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
 import { getLabIcon } from '@/modules/labs/ui/lab-icon.util';
@@ -11,7 +11,8 @@ export const metadata = {
 };
 
 export default function LabsPage() {
-  const labs: LabRegistryEntry[] = labsRegistry;
+  const labsResult = listLabs();
+  const labs: LegacyLabData[] = labsResult.labs;
   return (
     <div className="max-w-6xl mx-auto px-6 py-12">
       <h1 className="text-3xl font-bold text-gray-900">Labs</h1>

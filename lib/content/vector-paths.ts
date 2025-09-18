@@ -29,6 +29,13 @@ export function createLabVectorPath(labSlug: string, filename: string): string {
 }
 
 /**
+ * Create vector path for scenario chunks
+ */
+export function createScenarioVectorPath(scenarioSlug: string, filename: string): string {
+  return createVectorPath(`content/scenarios/${scenarioSlug}`, filename)
+}
+
+/**
  * Resolve vector path to absolute path for file system operations
  * Handles build-time path transformation issues
  */
