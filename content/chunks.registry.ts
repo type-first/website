@@ -7,6 +7,7 @@ import { chunks as advancedTypescriptChunks } from './articles/advanced-typescri
 import { chunks as searchTestLabChunks } from './labs/search-test/chunks';
 import { chunks as typeExplorerLabChunks } from './labs/type-explorer/chunks';
 import { chunks as basicTypesAndFunctionsScenarioChunks } from './scenarios/basic-types-and-functions';
+import { chunks as typistDocChunks } from './docs/typist';
 import type { ContentChunk } from '@/lib/content/content.model';
 
 export const searchChunksRegistry = [
@@ -14,5 +15,6 @@ export const searchChunksRegistry = [
   ...searchTestLabChunks,
   ...typeExplorerLabChunks,
   ...basicTypesAndFunctionsScenarioChunks,
+  ...typistDocChunks,
   // Add more content chunks here as they are created
 ] as const satisfies readonly ContentChunk<any>[];
