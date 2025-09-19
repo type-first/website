@@ -13,19 +13,17 @@ interface DocLibraryCardProps {
 export function DocLibraryCard({ library, className = '' }: DocLibraryCardProps) {
   return (
     <div className={`bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow duration-200 ${className}`}>
-      {library.coverImgUrl && (
-        <div className="relative h-48 bg-gradient-to-br from-blue-50 to-indigo-100">
-          <img 
-            src={library.coverImgUrl} 
-            alt={library.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-      
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
-          <Book className="h-6 w-6 text-blue-600 flex-shrink-0" strokeWidth={1.8} />
+          {library.logoUrl ? (
+            <img 
+              src={library.logoUrl} 
+              alt={`${library.name} logo`}
+              className="h-8 w-8 flex-shrink-0 rounded-md"
+            />
+          ) : (
+            <Book className="h-8 w-8 text-blue-600 flex-shrink-0" strokeWidth={1.8} />
+          )}
           <div className="flex gap-2 ml-2">
             {library.githubUrl && (
               <a 

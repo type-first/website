@@ -70,17 +70,27 @@ export default async function LibraryPage({ params }: LibraryPageProps) {
             <header className="mb-8">
               {library.coverImgUrl && (
                 <div className="mb-6 rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
-                  <img 
-                    src={library.coverImgUrl} 
-                    alt={library.name}
-                    className="w-full h-64 object-cover"
-                  />
+                  <div className="relative w-full" style={{ aspectRatio: '2539 / 771' }}>
+                    <img 
+                      src={library.coverImgUrl} 
+                      alt={library.name}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  </div>
                 </div>
               )}
               
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <Book className="h-8 w-8 text-blue-600" strokeWidth={1.8} />
+                  {library.logoUrl ? (
+                    <img 
+                      src={library.logoUrl} 
+                      alt={`${library.name} logo`}
+                      className="h-8 w-8 flex-shrink-0 rounded-md"
+                    />
+                  ) : (
+                    <Book className="h-8 w-8 text-blue-600" strokeWidth={1.8} />
+                  )}
                   <h1 className="text-4xl font-bold text-gray-900">
                     {library.name}
                   </h1>

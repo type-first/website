@@ -14,6 +14,7 @@ export type DocLibraryMeta = ContentMeta<'doc-library'> & {
   updatedTs: number
   description: string
   coverImgUrl?: string
+  logoUrl?: string
   githubUrl?: string
   npmPackage?: string
   version?: string
@@ -54,6 +55,7 @@ export const createDocLibrary = (data: {
   createdTs: number
   updatedTs: number
   coverImgUrl?: string
+  logoUrl?: string
   githubUrl?: string
   npmPackage?: string
   version?: string
