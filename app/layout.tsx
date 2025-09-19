@@ -7,7 +7,7 @@ import MobileTopBar from '@/modules/navigation/components/top-bar.client.mobile'
 import './globals.css';
 import { Suspense } from 'react';
 import NavSidebar from '@/modules/navigation/components/nav-sidebar.client';
-import { FlaskConical, BookOpen, Users } from 'lucide-react';
+import { FlaskConical, FileText, Menu, X, BookOpen, Users } from 'lucide-react';
 
 // Initialize island registry
 import '@/modules/islands/v0/setup';
@@ -77,8 +77,12 @@ export default function RootLayout({
                     <FlaskConical className="h-5 w-5" strokeWidth={1.8} />
                     Labs
                   </Link>
-                  <Link href="/articles" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+                  <Link href="/docs" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
                     <BookOpen className="h-5 w-5" strokeWidth={1.8} />
+                    Docs
+                  </Link>
+                  <Link href="/articles" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+                    <FileText className="h-5 w-5" strokeWidth={1.8} />
                     Articles
                   </Link>
                   <Link href="/community" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
@@ -127,6 +131,16 @@ export default function RootLayout({
                     <li>
                       <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">
                         Home
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/docs" className="text-gray-600 hover:text-gray-900 transition-colors">
+                        Documentation
+                      </Link>
+                    </li>
+                    <li>
+                      <Link href="/docs" className="text-gray-600 hover:text-gray-900 transition-colors">
+                        Documentation
                       </Link>
                     </li>
                     <li>

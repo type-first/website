@@ -1,27 +1,30 @@
 /**
  * Paragraph component
- * For structured paragraph content with break control
+ * For structured paragraph content with CSS-only spacing
  */
 
 import React from 'react'
-import { LineBreak } from './line-break'
 
 interface ParagraphProps {
   children: React.ReactNode
-  break?: 'before' | 'after' | 'both' | 'none'
+  className?: string
+  variant?: 'default' | 'lead' | 'small'
 }
 
-export function Paragraph({ children, break: breakProp = 'both' }: ParagraphProps) {
-  const shouldBreakBefore = breakProp === 'before' || breakProp === 'both'
-  const shouldBreakAfter = breakProp === 'after' || breakProp === 'both'
+export function Paragraph({ 
+  children, 
+  className = '',
+  variant = 'default'
+}: ParagraphProps) {
+  const variantClasses = {
+    default: 'text-gray-700 text-lg leading-relaxed',
+    lead: 'text-xl text-gray-800 leading-relaxed font-light',
+    small: 'text-base text-gray-600 leading-relaxed'
+  }
   
   return (
-    <>
-      {shouldBreakBefore && <LineBreak />}
-      <div>
-        {children}
-      </div>
-      {shouldBreakAfter && <LineBreak />}
-    </>
+    <p className={`${variantClasses[variant]} mb-4 ${className}`}>
+      {children}
+    </p>
   )
 }

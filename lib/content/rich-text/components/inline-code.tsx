@@ -11,20 +11,16 @@ interface InlineCodeProps {
   children: React.ReactNode
   syntax?: CodeSyntax
   className?: string
-  space?: 'before' | 'after' | 'both' | 'none'
 }
 
-export function InlineCode({ children, syntax, className = '', space = 'both' }: InlineCodeProps) {
-  const beforeSpace = space === 'before' || space === 'both' ? ' ' : ''
-  const afterSpace = space === 'after' || space === 'both' ? ' ' : ''
-  
+export function InlineCode({ children, syntax, className = '' }: InlineCodeProps) {
   return (
     <>
-      {beforeSpace}
-      <code className={`bg-gray-100 px-1 py-0.5 rounded text-sm font-mono ${className}`}>
+      {' '}
+      <code className={`bg-blue-50 text-blue-800 px-1.5 py-0.5 rounded text-sm font-mono font-medium border border-blue-200 mx-1 ${className}`}>
         {children}
       </code>
-      {afterSpace}
+      {' '}
     </>
   )
 }

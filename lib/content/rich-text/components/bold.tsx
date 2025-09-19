@@ -8,20 +8,16 @@ import React from 'react'
 interface BoldProps {
   children: React.ReactNode
   className?: string
-  space?: 'before' | 'after' | 'both' | 'none'
 }
 
-export function Bold({ children, className = '', space = 'both' }: BoldProps) {
-  const beforeSpace = space === 'before' || space === 'both' ? ' ' : ''
-  const afterSpace = space === 'after' || space === 'both' ? ' ' : ''
-  
+export function Bold({ children, className = '' }: BoldProps) {
   return (
     <>
-      {beforeSpace}
-      <strong className={`font-semibold ${className}`}>
+      {' '}
+      <strong className={`font-semibold mx-1 ${className}`}>
         {children}
       </strong>
-      {afterSpace}
+      {' '}
     </>
   )
 }

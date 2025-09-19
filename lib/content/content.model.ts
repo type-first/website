@@ -49,6 +49,17 @@ export type ScenarioMeta = ContentMeta<'scenario'> & {
   files: readonly { path: string; content: string; description?: string }[]
 }
 
+export type DocLibraryMeta = ContentMeta<'doc-library'> & {
+  author: ContributorMeta
+  createdTs: number
+  updatedTs: number
+  description: string
+  coverImgUrl?: string
+  githubUrl?: string
+  npmPackage?: string
+  version?: string
+}
+
 // --- content kind meta registry
 
 export type ContentMetaDisc =
@@ -57,6 +68,7 @@ export type ContentMetaDisc =
   | LibraryMeta
   | ContributorMeta
   | ScenarioMeta
+  | DocLibraryMeta
 
 export type ContentKind = ContentMetaDisc['kind']
 
@@ -141,6 +153,10 @@ export const isContributor = (content: GenericContentMeta): content is Contribut
 
 export const isLibrary = (content: GenericContentMeta): content is LibraryMeta => {
   return content.kind === 'library'
+}
+
+export const isDocLibrary = (content: GenericContentMeta): content is DocLibraryMeta => {
+  return content.kind === 'doc-library'
 }
 
 // --- utilities
