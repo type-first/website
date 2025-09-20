@@ -1,16 +1,57 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type Suggestion = { title: string; slug: string; snippet: string };
 type Msg = { role: 'user' | 'assistant'; content: string; suggestions?: Suggestion[] };
 
+const AUTO_COLLAPSE_MS = 1_000; // 1 second
+
 export default function ChatSidebar() {
   const [open, setOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const idleTimerRef = useRef<number | null>(null);
+
+  // Start an idle timer that collapses the sidebar after inactivity
+  const scheduleCollapse = () => {
+    if (idleTimerRef.current) {
+      window.clearTimeout(idleTimerRef.current);
+    }
+    idleTimerRef.current = window.setTimeout(() => {
+      setOpen(false);
+    }, AUTO_COLLAPSE_MS);
+  };
+
+  // Clear timer when hovered, expand if needed
+  useEffect(() => {
+    if (hovered && !open) {
+      // Clear any pending collapse timer
+      if (idleTimerRef.current) {
+        window.clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
+      }
+    }
+  }, [hovered, open]);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    };
+  }, []);
+
+  const onMouseEnter = () => setHovered(true);
+  const onMouseLeave = () => {
+    setHovered(false);
+    // Start auto-collapse timer when cursor leaves (only if open)
+    if (open) {
+      scheduleCollapse();
+    }
+  };
 
   useEffect(() => {
     if (open) {
@@ -63,7 +104,14 @@ export default function ChatSidebar() {
 
   // External open/close/toggle controls via window events
   useEffect(() => {
-    function onOpen() { setOpen(true); }
+    function onOpen() { 
+      setOpen(true);
+      // Clear any pending auto-collapse when manually opened
+      if (idleTimerRef.current) {
+        window.clearTimeout(idleTimerRef.current);
+        idleTimerRef.current = null;
+      }
+    }
     function onClose() { setOpen(false); }
     function onToggle() { setOpen((v) => !v); }
     window.addEventListener('chat:open', onOpen as EventListener);
@@ -76,16 +124,33 @@ export default function ChatSidebar() {
     };
   }, []);
 
+  // Layout constants
+  const EXPANDED_W = 'w-96';     // 384px - chat sidebar width when open
+  const COLLAPSED_W = 'w-0';     // 0px - completely hidden when closed
+  
+  const widthClass = open ? EXPANDED_W : COLLAPSED_W;
+  const isVisible = open;
+
   return (
-    <>
-      {open && (
-        <div className="fixed inset-0 z-50">
-          <div className="absolute inset-0 bg-black/30" onClick={() => setOpen(false)} />
-          <aside className="absolute right-0 top-0 h-full w-full sm:w-[420px] bg-white shadow-xl border-l border-gray-200 flex flex-col">
-            <header className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
+    <aside 
+      className={`hidden md:flex ${widthClass} flex-none border-l border-gray-200 bg-white transition-[width] duration-300 ease-in-out overflow-hidden sticky top-0 self-start h-screen`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {/* Inner container */}
+      <div className={`flex flex-col ${EXPANDED_W} flex-none h-full transition-opacity duration-300 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        {isVisible && (
+          <>
+            <header className="px-4 py-3 border-b border-gray-200 flex items-center justify-between flex-none">
               <div className="font-medium text-gray-900">Assistant</div>
-              <button onClick={() => setOpen(false)} className="text-gray-500 hover:text-gray-700">Close</button>
+              <button 
+                onClick={() => setOpen(false)} 
+                className="text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                Close
+              </button>
             </header>
+            
             <div ref={listRef} className="flex-1 overflow-auto p-4 space-y-3 bg-gray-50">
               {messages.length === 0 && (
                 <div className="text-sm text-gray-600">
@@ -118,7 +183,8 @@ export default function ChatSidebar() {
                 </div>
               )}
             </div>
-            <form className="p-3 border-t border-gray-200 bg-white" onSubmit={(e) => { e.preventDefault(); void send(); }}>
+            
+            <form className="p-3 border-t border-gray-200 bg-white flex-none" onSubmit={(e) => { e.preventDefault(); void send(); }}>
               <div className="flex items-end gap-2">
                 <textarea
                   value={input}
@@ -137,10 +203,10 @@ export default function ChatSidebar() {
                 </button>
               </div>
             </form>
-          </aside>
-        </div>
-      )}
-    </>
+          </>
+        )}
+      </div>
+    </aside>
   );
 }
 
@@ -148,7 +214,7 @@ function renderContent(m: Msg) {
   // Minimal linkification for /article/... and http(s) links
   const text = m.content;
   const parts: Array<string | { href: string; label: string }> = [];
-  const urlRe = /(https?:\/\/[^\s)]+)|(\/articles\/[a-z0-9-]+)/gi;
+  const urlRe = /(https?:\/\/[^\s)]+)|(\/article\/[a-z0-9-]+)/gi;
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   while ((match = urlRe.exec(text)) !== null) {

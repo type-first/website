@@ -11,7 +11,7 @@ export const library = createDocLibrary({
   name: 'Typist',
   slug: 'typist',
   blurb: 'A minimal, compositional, and debug-friendly suite of type-level utilities for TypeScript.',
-  description: 'Master type-level programming with typist - a powerful toolkit for static analysis, symbolic testing, and phantom type operations. Build type-safe applications with confidence using composable constraints and static proofs.',
+  description: 'A powerful toolkit for static analysis, symbolic testing, and phantom type operations. Build type-safe applications with confidence using composable constraints and static proofs.',
   tags: ['TypeScript', 'type-level', 'utilities', 'phantom-types', 'static-analysis', 'testing'],
   author: typeFirstTeam,
   createdTs: new Date('2024-09-19').getTime(),

@@ -174,9 +174,10 @@ export default function RootLayout({
               </div>
             </footer>
           </div>
+
+          {/* Chat Sidebar (right) for md+ screens */}
+          <ChatSidebar />
         </div>
-        {/* Global chat assistant */}
-        <ChatSidebar />
       </body>
     </html>
   );
