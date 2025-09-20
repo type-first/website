@@ -1,57 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState } from 'react';
+import { updateChatState } from '@/modules/chat/utils/chat-controls.util';
 
 type Suggestion = { title: string; slug: string; snippet: string };
 type Msg = { role: 'user' | 'assistant'; content: string; suggestions?: Suggestion[] };
 
-const AUTO_COLLAPSE_MS = 1_000; // 1 second
-
 export default function ChatSidebar() {
   const [open, setOpen] = useState(false);
-  const [hovered, setHovered] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
-  const idleTimerRef = useRef<number | null>(null);
-
-  // Start an idle timer that collapses the sidebar after inactivity
-  const scheduleCollapse = () => {
-    if (idleTimerRef.current) {
-      window.clearTimeout(idleTimerRef.current);
-    }
-    idleTimerRef.current = window.setTimeout(() => {
-      setOpen(false);
-    }, AUTO_COLLAPSE_MS);
-  };
-
-  // Clear timer when hovered, expand if needed
-  useEffect(() => {
-    if (hovered && !open) {
-      // Clear any pending collapse timer
-      if (idleTimerRef.current) {
-        window.clearTimeout(idleTimerRef.current);
-        idleTimerRef.current = null;
-      }
-    }
-  }, [hovered, open]);
-
-  // Cleanup timer on unmount
-  useEffect(() => {
-    return () => {
-      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
-    };
-  }, []);
-
-  const onMouseEnter = () => setHovered(true);
-  const onMouseLeave = () => {
-    setHovered(false);
-    // Start auto-collapse timer when cursor leaves (only if open)
-    if (open) {
-      scheduleCollapse();
-    }
-  };
 
   useEffect(() => {
     if (open) {
@@ -59,6 +19,11 @@ export default function ChatSidebar() {
       return () => clearTimeout(t);
     }
   }, [open, messages.length]);
+
+  // Update global chat state whenever open state changes
+  useEffect(() => {
+    updateChatState(open);
+  }, [open]);
 
   // Seed intro message on first open
   useEffect(() => {
@@ -106,11 +71,6 @@ export default function ChatSidebar() {
   useEffect(() => {
     function onOpen() { 
       setOpen(true);
-      // Clear any pending auto-collapse when manually opened
-      if (idleTimerRef.current) {
-        window.clearTimeout(idleTimerRef.current);
-        idleTimerRef.current = null;
-      }
     }
     function onClose() { setOpen(false); }
     function onToggle() { setOpen((v) => !v); }
@@ -134,14 +94,12 @@ export default function ChatSidebar() {
   return (
     <aside 
       className={`hidden md:flex ${widthClass} flex-none border-l border-gray-200 bg-white transition-[width] duration-300 ease-in-out overflow-hidden sticky top-0 self-start h-screen`}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
     >
       {/* Inner container */}
       <div className={`flex flex-col ${EXPANDED_W} flex-none h-full transition-opacity duration-300 ease-in-out ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         {isVisible && (
           <>
-            <header className="px-4 py-3 border-b border-gray-200 flex items-center justify-between flex-none">
+            <header className="px-6 py-3 h-[60px] border-b border-gray-200 flex items-center justify-between flex-none">
               <div className="font-medium text-gray-900">Assistant</div>
               <button 
                 onClick={() => setOpen(false)} 
@@ -185,23 +143,14 @@ export default function ChatSidebar() {
             </div>
             
             <form className="p-3 border-t border-gray-200 bg-white flex-none" onSubmit={(e) => { e.preventDefault(); void send(); }}>
-              <div className="flex items-end gap-2">
-                <textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={onKey}
-                  placeholder="Type a message…"
-                  rows={2}
-                  className="flex-1 resize-none text-sm p-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-200"
-                />
-                <button
-                  type="submit"
-                  disabled={loading || input.trim().length === 0}
-                  className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md disabled:opacity-50"
-                >
-                  Send
-                </button>
-              </div>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={onKey}
+                placeholder="Type a message…"
+                rows={2}
+                className="w-full resize-none text-sm p-2 border rounded-md outline-none focus:ring-2 focus:ring-blue-200"
+              />
             </form>
           </>
         )}
