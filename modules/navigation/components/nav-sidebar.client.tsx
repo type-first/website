@@ -4,14 +4,13 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AuthProvider, { useSessionSafe } from '@/modules/auth/components/auth-provider';
 import { signOut } from 'next-auth/react';
-import { ChevronLeft, FlaskConical, Newspaper, BookOpen, Users, MessageCircle } from 'lucide-react';
+import { FlaskConical, Newspaper, BookOpen, MessageCircle } from 'lucide-react';
 
-const AUTO_COLLAPSE_MS = 5_000; // 5 seconds
+const AUTO_COLLAPSE_MS = 1_000; // 1 second
 
 export default function NavSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const [showCollapseButton, setShowCollapseButton] = useState(true);
   const idleTimerRef = useRef<number | null>(null);
 
   // Start an idle timer that collapses the sidebar after inactivity
@@ -22,7 +21,6 @@ export default function NavSidebar() {
       }
       idleTimerRef.current = window.setTimeout(() => {
         setCollapsed(true);
-        setShowCollapseButton(false);
       }, AUTO_COLLAPSE_MS);
     };
   }, []);
@@ -39,8 +37,6 @@ export default function NavSidebar() {
       // If collapsed, expand the sidebar
       if (collapsed) {
         setCollapsed(false);
-        // Delay showing collapse button until transition completes
-        setTimeout(() => setShowCollapseButton(true), 300);
       }
     }
   }, [hovered, collapsed]);
@@ -77,12 +73,12 @@ export default function NavSidebar() {
   const BUTTON_ROW = `${ROW_BASE} ${ROW_COLORS} ${ROW_PADDING}`;
 
   return (
-    <aside className={`hidden md:flex ${widthClass} flex-none border-r border-gray-200 bg-white transition-[width] duration-300 ease-in-out overflow-hidden`}
+    <aside className={`hidden md:flex ${widthClass} flex-none border-r border-gray-200 bg-white transition-[width] duration-300 ease-in-out overflow-hidden sticky top-0 self-start h-screen`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       {/* Inner container matches the sidebar width */}
-      <div className={`flex flex-col ${widthClass} flex-none h-screen sticky top-0 transition-[width] duration-300 ease-in-out`}> 
+      <div className={`flex flex-col ${widthClass} flex-none h-full transition-[width] duration-300 ease-in-out`}> 
         <div className="h-15 flex items-center border-b border-gray-200 relative">
           {/* Logo - always positioned consistently */}
           <div className="w-16 h-14 flex items-center justify-center flex-none">
@@ -95,29 +91,10 @@ export default function NavSidebar() {
 
           {/* Expandable content */}
           {!collapsed && (
-            <div className={`flex-1 flex items-center justify-between ${labelTransition} ${labelOpacity}`}>
+            <div className={`flex-1 flex items-center ${labelTransition} ${labelOpacity}`}>
               <span className="text-sm font-semibold text-gray-900 whitespace-nowrap">
                 typefirst
               </span>
-              
-              {showCollapseButton && (
-                <button
-                  type="button"
-                  aria-label="Collapse sidebar"
-                  onClick={() => {
-                    setCollapsed(true);
-                    setShowCollapseButton(false);
-                    // Clear any pending auto-collapse timer since we're manually collapsing
-                    if (idleTimerRef.current) {
-                      window.clearTimeout(idleTimerRef.current);
-                      idleTimerRef.current = null;
-                    }
-                  }}
-                  className="p-2 m-2 rounded-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-opacity duration-150"
-                >
-                  <ChevronLeft className="h-5 w-5" strokeWidth={1.8} />
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -142,24 +119,7 @@ export default function NavSidebar() {
 
             <li>
               <Link
-                href="/articles"
-                className={LINK_ROW}
-                aria-label="Blog"
-              >
-                <div className="w-16 h-14 flex items-center justify-center flex-none">
-                  <Newspaper className="h-6 w-6 text-current" strokeWidth={1.8} />
-                </div>
-                {!collapsed && (
-                  <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-                    Blog
-                  </div>
-                )}
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                href="/articles"
+                href="/docs"
                 className={LINK_ROW}
                 aria-label="Docs"
               >
@@ -178,23 +138,6 @@ export default function NavSidebar() {
               <Link
                 href="/community"
                 className={LINK_ROW}
-                aria-label="Contributors"
-              >
-                <div className="w-16 h-14 flex items-center justify-center flex-none">
-                  <Users className="h-6 w-6 text-current" strokeWidth={1.8} />
-                </div>
-                {!collapsed && (
-                  <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-                    Contributors
-                  </div>
-                )}
-              </Link>
-            </li>
-
-            <li>
-              <Link
-                href="/community"
-                className={LINK_ROW}
                 aria-label="Community"
               >
                 <div className="w-16 h-14 flex items-center justify-center flex-none">
@@ -203,6 +146,23 @@ export default function NavSidebar() {
                 {!collapsed && (
                   <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
                     Community
+                  </div>
+                )}
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="/articles"
+                className={LINK_ROW}
+                aria-label="Articles"
+              >
+                <div className="w-16 h-14 flex items-center justify-center flex-none">
+                  <Newspaper className="h-6 w-6 text-current" strokeWidth={1.8} />
+                </div>
+                {!collapsed && (
+                  <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
+                    Articles
                   </div>
                 )}
               </Link>
