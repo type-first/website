@@ -3,30 +3,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Search } from 'lucide-react';
+import type { HybridSearchResult } from '@/lib/content/search/search.model';
 
-type Result = {
-  slug: string;
-  title: string;
-  description: string;
-  tags: string[];
-  author: string;
-  publishedAt: string;
-  readingTime: string;
-  score: number;
-  type: 'text' | 'vector' | 'hybrid';
-  sectionId: string;
-  sectionTitle: string;
-  sectionType: string;
-  snippet: string;
-  similarity?: number;
-  textScore?: number;
-  vectorScore?: number;
-};
+interface SearchResponse {
+  query: string;
+  results: HybridSearchResult[];
+  totalResults: number;
+  searchType: string;
+  meta?: {
+    textWeight?: number;
+    vectorWeight?: number;
+    total: number;
+  };
+}
 
 export default function SearchDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<HybridSearchResult[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -45,7 +39,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
       try {
         const res = await fetch(`/api/search/hybrid?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
         if (!res.ok) return;
-        const data = await res.json();
+        const data: SearchResponse = await res.json();
         setResults(data.results || []);
       } catch {
         /* ignore */
@@ -89,47 +83,70 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
           {!loading && results.length === 0 && query.trim() !== '' && (
             <div className="px-4 py-3 text-sm text-gray-500">No results</div>
           )}
-          {results.map((r, idx) => (
-            <Link key={`${r.sectionId}-${idx}`} href={`/articles/${r.slug}`} onClick={onClose} className="block px-4 py-3 hover:bg-gray-50">
-              <div className="flex items-center justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-medium text-gray-900 line-clamp-1">{r.title}</h4>
-                  <div className="text-xs text-blue-600 mt-0.5">
-                    {r.sectionTitle} ({r.sectionType})
+          {results.map((result, idx) => {
+            // Determine the link URL based on content kind
+            const isLab = result.chunk.target.kind === 'lab';
+            const linkUrl = isLab ? `/labs/${result.chunk.target.slug}` : `/articles/${result.chunk.target.slug}`;
+            
+            // Get similarity for vector results
+            const similarity = result.type === 'vector' 
+              ? result.similarity 
+              : result.type === 'merged' && result.vector 
+                ? result.vector.similarity 
+                : null;
+
+            return (
+              <Link 
+                key={`${result.chunk.id}-${idx}`} 
+                href={linkUrl} 
+                onClick={onClose} 
+                className="block px-4 py-3 hover:bg-gray-50"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-medium text-gray-900 line-clamp-1">
+                      {result.chunk.target.name}
+                    </h4>
+                    <div className="text-xs text-blue-600 mt-0.5">
+                      {result.chunk.label}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded ${
+                      result.type === 'text' ? 'text-green-700 bg-green-100' : 
+                      result.type === 'vector' ? 'text-purple-700 bg-purple-100' : 
+                      'text-blue-700 bg-blue-100'
+                    }`}>
+                      {result.type}
+                    </span>
+                    {similarity && (
+                      <span className="text-[10px] text-gray-500">
+                        {(similarity * 100).toFixed(0)}%
+                      </span>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className={`text-[10px] uppercase tracking-wide px-2 py-0.5 rounded ${
-                    r.type === 'text' ? 'text-green-700 bg-green-100' : 
-                    r.type === 'vector' ? 'text-purple-700 bg-purple-100' : 
-                    'text-blue-700 bg-blue-100'
-                  }`}>
-                    {r.type}
-                  </span>
-                  {r.similarity && (
-                    <span className="text-[10px] text-gray-500">
-                      {(r.similarity * 100).toFixed(0)}%
-                    </span>
-                  )}
+                <div className="mt-1 text-sm text-gray-600 line-clamp-3">
+                  {result.chunk.text.substring(0, 150)}
+                  {result.chunk.text.length > 150 ? '...' : ''}
                 </div>
-              </div>
-              <div className="mt-1 text-sm text-gray-600 line-clamp-3">
-                {r.snippet}
-              </div>
-              <div className="mt-1 flex items-center justify-between">
-                <div className="flex gap-2">
-                  {r.tags.slice(0, 3).map((tag: string) => (
-                    <span key={tag} className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-                      {tag}
-                    </span>
-                  ))}
+                <div className="mt-1 flex items-center justify-between">
+                  <div className="flex gap-2">
+                    {result.chunk.tags.slice(0, 3).map((tag: string) => (
+                      <span key={tag} className="text-xs text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="text-xs text-gray-500">
+                    {result.chunk.target.kind === 'article' && 'author' in result.chunk.target ? 
+                      (result.chunk.target as any).author.name : 
+                      result.chunk.target.kind}
+                  </div>
                 </div>
-                <div className="text-xs text-gray-500">
-                  {r.readingTime} • {r.author}
-                </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
