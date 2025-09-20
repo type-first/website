@@ -18,14 +18,18 @@ export async function hybridSearch(
     textWeight = 0.6,
     vectorWeight = 0.4,
     textMinScore = 0.1,
-    vectorThreshold = 0.3,
+    vectorThreshold = 0.1, // Lowered from 0.3 for better vector results
   } = options;
+
+  console.log(`Hybrid search: textWeight=${textWeight}, vectorWeight=${vectorWeight}`);
 
   // Perform both searches in parallel
   const [textResults, vectorResults] = await Promise.all([
     Promise.resolve(textSearch(query, chunks, { minScore: textMinScore })),
     vectorSearch(query, chunks, { threshold: vectorThreshold })
   ]);
+
+  console.log(`Text results: ${textResults.length}, Vector results: ${vectorResults.length}`);
 
   // Create a map to track results by chunk ID
   const resultMap = new Map<string, {
@@ -74,6 +78,8 @@ export async function hybridSearch(
     if (textResult && vectorResult) {
       const combinedScore = (textResult.score * textWeight) + (vectorResult.similarity * vectorWeight);
       
+      console.log(`Merged result for ${chunk.id}: text=${textResult.score.toFixed(2)}, vector=${vectorResult.similarity.toFixed(2)}, combined=${combinedScore.toFixed(2)}`);
+      
       const mergedResult: MergedSearchResult = {
         chunk,
         score: combinedScore,
@@ -85,20 +91,16 @@ export async function hybridSearch(
       return mergedResult;
     }
     
-    // If we only have text result, return it with adjusted weight
+    // If we only have text result, return it as-is (don't scale by weight for single-method results)
     if (textResult) {
-      return {
-        ...textResult,
-        score: textResult.score * textWeight
-      };
+      console.log(`Text-only result for ${chunk.id}: score=${textResult.score.toFixed(2)}`);
+      return textResult;
     }
     
-    // If we only have vector result, return it with adjusted weight
+    // If we only have vector result, return it as-is (don't scale by weight for single-method results)
     if (vectorResult) {
-      return {
-        ...vectorResult,
-        score: vectorResult.similarity * vectorWeight
-      };
+      console.log(`Vector-only result for ${chunk.id}: similarity=${vectorResult.similarity.toFixed(2)}`);
+      return vectorResult;
     }
     
     // This shouldn't happen, but TypeScript needs it
@@ -106,7 +108,11 @@ export async function hybridSearch(
   });
 
   // Sort by combined score and limit
-  return combinedResults
+  const sortedResults = combinedResults
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
+    
+  console.log(`Final hybrid results: ${sortedResults.length} items`);
+  
+  return sortedResults;
 }

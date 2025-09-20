@@ -5,7 +5,6 @@
 import type { GenericContentChunk } from '../content.model';
 import type { VectorSearchResult, VectorSearchOptions } from './search.model';
 import { 
-  textCosineSimilarity, 
   sortBySimilarity, 
   filterByMinSimilarity, 
   limitResults 
@@ -14,7 +13,8 @@ import { loadEmbeddings, cosineSimilarity } from '../embeddings';
 import { OpenAIEmbeddingProvider } from '../embeddings/providers/openai';
 
 /**
- * Perform vector search using actual embedding vectors
+ * Perform vector search using actual embedding vectors only
+ * Returns empty array if no embeddings are available
  */
 export async function vectorSearch(
   query: string,
@@ -27,8 +27,8 @@ export async function vectorSearch(
     // Generate query embedding
     const openaiApiKey = process.env.OPENAI_API_KEY;
     if (!openaiApiKey) {
-      console.warn('OpenAI API key not configured, falling back to text search');
-      return textBasedVectorSearch(query, chunks, options);
+      console.warn('OpenAI API key not configured - vector search unavailable');
+      return [];
     }
 
     const embeddingProvider = new OpenAIEmbeddingProvider({ 
@@ -37,8 +37,14 @@ export async function vectorSearch(
     
     const [queryEmbedding] = await embeddingProvider.generateEmbeddings([query]);
     
-    // Load embeddings for chunks
-    const embeddedChunks = await loadEmbeddings(chunks);
+    // Only load embeddings for chunks that actually have embedding files
+    // This will filter out chunks without embeddings
+    const embeddedChunks = await loadEmbeddingsWithFilter(chunks);
+    
+    if (embeddedChunks.length === 0) {
+      console.log('No chunks with embeddings found for vector search');
+      return [];
+    }
     
     // Calculate similarities
     const results: VectorSearchResult[] = embeddedChunks.map(chunk => {
@@ -58,84 +64,33 @@ export async function vectorSearch(
       limit
     );
   } catch (error) {
-    console.error('Embedding-based vector search failed:', error);
-    // Fallback to text-based search
-    return textBasedVectorSearch(query, chunks, options);
+    console.error('Vector search failed:', error);
+    return [];
   }
 }
 
 /**
- * Fallback text-based vector search using word frequency vectors
+ * Load embeddings only for chunks that have embedding files
+ * Silently filters out chunks without embeddings instead of throwing errors
  */
-function textBasedVectorSearch(
-  query: string,
-  chunks: GenericContentChunk[],
-  options: VectorSearchOptions = {}
-): VectorSearchResult[] {
-  const { limit = 10, threshold = 0.1 } = options;
+async function loadEmbeddingsWithFilter(chunks: GenericContentChunk[]) {
+  const embeddedChunks = [];
   
-  const results: VectorSearchResult[] = chunks.map(chunk => ({
-    chunk,
-    similarity: textCosineSimilarity(query, chunk.text),
-    score: textCosineSimilarity(query, chunk.text), // For compatibility
-    type: 'vector' as const,
-  }));
-
-  return limitResults(
-    sortBySimilarity(
-      filterByMinSimilarity(results, threshold)
-    ),
-    limit
-  );
-}
-
-/**
- * Perform vector search using actual embedding vectors
- */
-export async function vectorSearchWithEmbeddings(
-  query: string,
-  chunks: GenericContentChunk[],
-  options: VectorSearchOptions = {}
-): Promise<VectorSearchResult[]> {
-  const { limit = 10, threshold = 0.05 } = options;
-  
-  try {
-    // Generate query embedding
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    if (!openaiApiKey) {
-      console.warn('OpenAI API key not configured, falling back to text search');
-      return vectorSearch(query, chunks, options);
+  for (const chunk of chunks) {
+    try {
+      const embeddedChunk = await loadEmbeddings([chunk]);
+      embeddedChunks.push(embeddedChunk[0]);
+    } catch (error) {
+      // Silently skip chunks without embeddings
+      console.log(`Skipping chunk ${chunk.id} - no embedding file found`);
     }
-
-    const embeddingProvider = new OpenAIEmbeddingProvider({ 
-      apiKey: openaiApiKey 
-    });
-    
-    const [queryEmbedding] = await embeddingProvider.generateEmbeddings([query]);
-    
-    // Load embeddings for chunks
-    const embeddedChunks = await loadEmbeddings(chunks);
-    
-    // Calculate similarities
-    const results: VectorSearchResult[] = embeddedChunks.map(chunk => {
-      const similarity = cosineSimilarity(queryEmbedding, chunk.embedding);
-      return {
-        chunk,
-        similarity,
-        score: similarity,
-        type: 'vector' as const,
-      };
-    });
-
-    return limitResults(
-      sortBySimilarity(
-        filterByMinSimilarity(results, threshold)
-      ),
-      limit
-    );
-  } catch (error) {
-    console.error('Embedding-based vector search failed:', error);
-    // Fallback to text-based search
-    return vectorSearch(query, chunks, options);
   }
+  
+  return embeddedChunks;
 }
+
+/**
+ * For backwards compatibility - use the main vectorSearch function
+ * @deprecated Use vectorSearch directly
+ */
+export const vectorSearchWithEmbeddings = vectorSearch;

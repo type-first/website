@@ -85,8 +85,23 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
           )}
           {results.map((result, idx) => {
             // Determine the link URL based on content kind
-            const isLab = result.chunk.target.kind === 'lab';
-            const linkUrl = isLab ? `/labs/${result.chunk.target.slug}` : `/articles/${result.chunk.target.slug}`;
+            const getContentUrl = (kind: string, slug: string) => {
+              switch (kind) {
+                case 'article':
+                  return `/article/${slug}`;
+                case 'lab':
+                  return `/labs/${slug}`;
+                case 'scenario':
+                  return `/scenarios/${slug}`;
+                case 'doc-library':
+                  return `/docs/${slug}`;
+                default:
+                  console.warn(`Unknown content kind: ${kind}`);
+                  return `/article/${slug}`; // fallback
+              }
+            };
+            
+            const linkUrl = getContentUrl(result.chunk.target.kind, result.chunk.target.slug);
             
             // Get similarity for vector results
             const similarity = result.type === 'vector' 
@@ -141,7 +156,15 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
                   <div className="text-xs text-gray-500">
                     {result.chunk.target.kind === 'article' && 'author' in result.chunk.target ? 
                       (result.chunk.target as any).author.name : 
-                      result.chunk.target.kind}
+                      (() => {
+                        switch (result.chunk.target.kind) {
+                          case 'article': return 'Article';
+                          case 'lab': return 'Lab';
+                          case 'scenario': return 'Scenario';
+                          case 'doc-library': return 'Documentation';
+                          default: return result.chunk.target.kind;
+                        }
+                      })()}
                   </div>
                 </div>
               </Link>
