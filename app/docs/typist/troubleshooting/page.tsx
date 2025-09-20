@@ -1,51 +1,30 @@
 import { notFound } from 'next/navigation';
 import { getDocLibraryBySlug } from '@/lib/content/docs.registry.logic';
-import { getDocPageByPath, getDocBreadcrumbs, buildDocNavigation } from '@/lib/content/doc.model';
+import { getDocPageBySlug, getDocBreadcrumbs, buildDocNavigation } from '@/lib/content/doc.model';
 import { DocBreadcrumbs } from '@/lib/content/ui/doc/doc-breadcrumbs.cmp.iso';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Calendar, User } from 'lucide-react';
+import { TroubleshootingIntroduction } from '@/content/docs/typist/body';
 
-interface DocPageProps {
-  params: Promise<{
-    library: string;
-    path: string[];
-  }>;
-}
-
-export async function generateMetadata({ params }: DocPageProps) {
-  const { library: librarySlug, path } = await params;
-  const library = getDocLibraryBySlug(librarySlug);
+export async function generateMetadata() {
+  const library = getDocLibraryBySlug('typist');
+  const page = getDocPageBySlug(library!, 'troubleshooting');
   
-  if (!library) {
-    return {
-      title: 'Library Not Found',
-    };
-  }
-
-  const page = getDocPageByPath(library, path);
-  
-  if (!page) {
-    return {
-      title: 'Page Not Found',
-    };
-  }
-
   return {
-    title: `${page.title} - ${library.name}`,
-    description: page.description,
+    title: `${page?.title} - ${library?.name}`,
+    description: page?.description,
   };
 }
 
-export default async function DocPage({ params }: DocPageProps) {
-  const { library: librarySlug, path } = await params;
-  const library = getDocLibraryBySlug(librarySlug);
+export default function TypistTroubleshootingPage() {
+  const library = getDocLibraryBySlug('typist');
   
   if (!library) {
     notFound();
   }
 
-  const page = getDocPageByPath(library, path);
+  const page = getDocPageBySlug(library, 'troubleshooting');
   
   if (!page) {
     notFound();
@@ -102,16 +81,7 @@ export default async function DocPage({ params }: DocPageProps) {
 
             {/* Page content */}
             <div className="prose prose-lg max-w-none">
-              {/* Placeholder for actual page content */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                  Content Coming Soon
-                </h3>
-                <p className="text-gray-600">
-                  This documentation page is being prepared. The content will be 
-                  loaded from the library's UI component.
-                </p>
-              </div>
+              <TroubleshootingIntroduction />
             </div>
 
             {/* Page navigation */}
