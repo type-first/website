@@ -4,7 +4,8 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AuthProvider, { useSessionSafe } from '@/modules/auth/components/auth-provider';
 import { signOut } from 'next-auth/react';
-import { FlaskConical, Newspaper, BookOpen, MessageCircle } from 'lucide-react';
+import { FlaskConical, Newspaper, BookOpen, MessageCircle, Github, LogIn } from 'lucide-react';
+import { openAuthPopup } from '@/modules/auth/utils/popup';
 
 const AUTO_COLLAPSE_MS = 1_000; // 1 second
 
@@ -200,39 +201,89 @@ function UserNavRow({
 }) {
   const { data: session, status } = useSessionSafe();
   const user = session?.user as { image?: string | null } | undefined;
+  const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  // Show loading state
+  if (status === 'loading' || isAuthenticating) {
+    return (
+      <div className={BUTTON_ROW.replace('cursor-pointer hover:bg-gray-50', 'cursor-default')}>
+        <div className="w-16 h-14 flex items-center justify-center flex-none">
+          <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
+        </div>
+        {!collapsed && (
+          <span className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
+            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  // If user is logged in, show sign out button
+  if (user) {
+    return (
+      <button
+        type="button"
+        onClick={() => { 
+          try { 
+            // Try to use NextAuth signOut if available
+            if (typeof signOut === 'function') {
+              signOut(); 
+            } else {
+              console.log('SignOut not available');
+            }
+          } catch (e) {
+            console.log('SignOut failed:', e);
+          }
+        }}
+        className={BUTTON_ROW}
+        aria-label="Sign out"
+        title="Sign out"
+      >
+        <div className="w-16 h-14 flex items-center justify-center flex-none">
+          {user?.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.image} alt="User" className="h-8 w-8 rounded-full" />
+          ) : (
+            // Keep a subtle placeholder circle if no image
+            <div className="h-8 w-8 rounded-full bg-gray-200" />
+          )}
+        </div>
+        {!collapsed && (
+          <span className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
+            Sign out
+          </span>
+        )}
+      </button>
+    );
+  }
+
+  // If user is not logged in, show login button with GitHub icon
   return (
     <button
       type="button"
-      onClick={() => { 
-        try { 
-          // Try to use NextAuth signOut if available
-          if (typeof signOut === 'function') {
-            signOut(); 
-          } else {
-            console.log('SignOut not available');
-          }
+      onClick={() => {
+        try {
+          openAuthPopup(
+            () => setIsAuthenticating(false), // onSuccess callback
+            () => setIsAuthenticating(true)   // onStart callback
+          );
         } catch (e) {
-          console.log('SignOut failed:', e);
+          console.log('Login failed:', e);
+          setIsAuthenticating(false);
         }
       }}
       className={BUTTON_ROW}
-      aria-label="Sign out"
-      title="Sign out"
+      aria-label="Log in"
+      title="Log in with GitHub"
+      disabled={isAuthenticating}
     >
       <div className="w-16 h-14 flex items-center justify-center flex-none">
-        {status === 'loading' ? (
-          <div className="h-8 w-8 rounded-full bg-gray-200 animate-pulse" />
-        ) : user?.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={user.image} alt="User" className="h-8 w-8 rounded-full" />
-        ) : (
-          // Keep a subtle placeholder circle if no image
-          <div className="h-8 w-8 rounded-full bg-gray-200" />
-        )}
+        <Github className="h-6 w-6 text-gray-600" strokeWidth={1.8} />
       </div>
       {!collapsed && (
         <span className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-          Sign out
+          Log in
         </span>
       )}
     </button>

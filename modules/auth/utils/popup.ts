@@ -1,7 +1,10 @@
 /**
  * Opens auth popup window with proper positioning and messaging
  */
-export function openAuthPopup() {
+export function openAuthPopup(onSuccess?: () => void, onStart?: () => void) {
+  // Call start callback if provided
+  onStart?.();
+  
   const w = 520;
   const h = 650;
   const dualScreenLeft = (window as any).screenLeft ?? window.screenX;
@@ -26,7 +29,18 @@ export function openAuthPopup() {
     if ((event.data as any)?.type === 'auth:complete') {
       window.removeEventListener('message', onMessage);
       try { popup?.close(); } catch {}
-      window.location.reload();
+      
+      // Instead of page reload, trigger session update
+      try {
+        const { getSession } = require('next-auth/react');
+        // Update the session, which will trigger re-renders
+        getSession().then(() => {
+          onSuccess?.();
+        });
+      } catch {
+        // Fallback to reload if NextAuth methods aren't available
+        window.location.reload();
+      }
     }
   }
   
@@ -38,6 +52,8 @@ export function openAuthPopup() {
       if (popup?.closed) {
         clearInterval(timer);
         window.removeEventListener('message', onMessage);
+        // Call success callback even if popup was closed manually
+        onSuccess?.();
       }
     } catch {
       // ignore cross-origin access errors while navigating
