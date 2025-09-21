@@ -3,6 +3,7 @@ import { getDocLibraryBySlug } from '@/lib/content/docs.registry.logic';
 import { buildDocNavigation } from '@/lib/content/doc.model';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
+import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User, Book, ExternalLink, Package, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { IntroductionParagraph } from '@/content/docs/typist/body';
@@ -231,6 +232,34 @@ export default function TypistOverviewPage() {
                     Static assertions for comprehensive type testing. <span className="text-sm text-gray-500">(Coming soon)</span>
                   </p>
                 </div>
+              </div>
+            </section>
+
+            {/* Interactive Learning Section */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Interactive Learning</h2>
+              <p className="text-gray-600 mb-6">
+                Master typist concepts through hands-on practice with our interactive scenarios in the Type Explorer:
+              </p>
+              
+              <div className="grid gap-4">
+                <CodeExplorerLink
+                  slug="typist-phantom-types-basics"
+                  name="Phantom Types Basics"
+                  description="Learn the fundamentals of phantom types and type-level programming with typist. Create phantom values and build branded types."
+                />
+                
+                <CodeExplorerLink
+                  slug="typist-type-comparisons"
+                  name="Type Comparisons & Verdicts"
+                  description="Master type-level comparisons using $Equal, $Extends, and the verdict system. Learn to create compile-time assertions."
+                />
+                
+                <CodeExplorerLink
+                  slug="typist-advanced-patterns"
+                  name="Advanced Type-Level Patterns"
+                  description="Explore advanced type-level programming patterns. Build complex type computations, state machines, and compile-time proofs."
+                />
               </div>
             </section>
 

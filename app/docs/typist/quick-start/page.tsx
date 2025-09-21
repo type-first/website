@@ -5,6 +5,7 @@ import { DocBreadcrumbs } from '@/lib/content/ui/doc/doc-breadcrumbs.cmp.iso';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
+import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User } from 'lucide-react';
 import { QuickStartIntroduction, BasicUsageIntroduction } from '@/content/docs/typist/body';
 import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
@@ -323,6 +324,28 @@ function validateConfig<T>(config: T) {
                 <li><a href="/docs/typist/operators">Type Operators</a> - Explore comparison and transformation utilities</li>
                 <li><a href="/docs/typist/assertions">Type Assertions</a> - Build robust type tests</li>
               </ul>
+
+              {/* Interactive scenarios */}
+              <div className="mt-8">
+                <h2>Interactive Learning</h2>
+                <p className="mb-6">
+                  Master typist concepts through hands-on practice with our interactive scenarios:
+                </p>
+                
+                <div className="grid gap-4 mb-6">
+                  <CodeExplorerLink
+                    slug="typist-phantom-types-basics"
+                    name="Phantom Types Basics"
+                    description="Learn the fundamentals of phantom types and type-level programming with typist. Create phantom values and build branded types."
+                  />
+                  
+                  <CodeExplorerLink
+                    slug="typist-type-comparisons"
+                    name="Type Comparisons & Verdicts"
+                    description="Master type-level comparisons using $Equal, $Extends, and the verdict system. Learn to create compile-time assertions."
+                  />
+                </div>
+              </div>
               
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 mt-8">
                 <h3 className="text-lg font-semibold text-amber-900 mt-0 mb-3">

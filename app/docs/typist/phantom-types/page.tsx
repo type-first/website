@@ -5,6 +5,7 @@ import { DocBreadcrumbs } from '@/lib/content/ui/doc/doc-breadcrumbs.cmp.iso';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
+import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User } from 'lucide-react';
 import { PhantomTypesExplanation } from '@/content/docs/typist/body';
 import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
@@ -380,6 +381,21 @@ function isValidUserId(value: string): value is UserId {
                   Phantom types are about encoding domain knowledge in the type system. They help prevent bugs by making 
                   invalid states unrepresentable, turning runtime errors into compile-time errors.
                 </p>
+              </div>
+
+              {/* Interactive scenarios */}
+              <div className="mt-8">
+                <h2>Try It Yourself</h2>
+                <p className="mb-6">
+                  Explore phantom types interactively with these hands-on scenarios in our Type Explorer:
+                </p>
+                
+                <CodeExplorerLink
+                  slug="typist-phantom-types-basics"
+                  name="Phantom Types Basics"
+                  description="Learn the fundamentals of phantom types and type-level programming with typist. Create phantom values and build branded types."
+                  className="mb-4"
+                />
               </div>
             </div>
 

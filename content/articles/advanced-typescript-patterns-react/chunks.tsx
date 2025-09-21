@@ -124,7 +124,7 @@ export const chunks = [
     tags: [...article.tags, 'Best Practices', 'Guidelines', 'Standards'] as const,
     text: extractPlainText(
       <>
-        <Paragraph break="none">
+        <Paragraph>
           Here are the essential best practices for advanced TypeScript React development:
         </Paragraph>
         <BestPracticesList />

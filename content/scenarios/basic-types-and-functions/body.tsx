@@ -37,14 +37,14 @@ export async function loadScenarioFiles() {
 export const OverviewContent = () => (
   <>
     <Paragraph>
-      This scenario introduces <Bold space="after">core TypeScript concepts</Bold> through a practical example. 
-      You'll work with <Italic space="after">type definitions</Italic>, <InlineCode space="after">interfaces</InlineCode>, 
-      and <Bold space="after">function signatures</Bold> while building a simple greeting system with string utilities.
+      This scenario introduces <Bold>core TypeScript concepts</Bold> through a practical example. 
+      You'll work with <Italic>type definitions</Italic>, <InlineCode>interfaces</InlineCode>, 
+      and <Bold>function signatures</Bold> while building a simple greeting system with string utilities.
     </Paragraph>
     
     <Paragraph>
-      The scenario demonstrates <InlineCode space="after">module structure</InlineCode>, 
-      <InlineCode space="after">type safety</InlineCode>, and 
+      The scenario demonstrates <InlineCode>module structure</InlineCode>, 
+      <InlineCode>type safety</InlineCode>, and 
       <Bold>import/export patterns</Bold> essential for TypeScript development.
     </Paragraph>
   </>
@@ -80,11 +80,11 @@ export const PrerequisitesContent = () => (
 export const FileStructureContent = () => (
   <>
     <Paragraph>
-      This scenario demonstrates <Bold space="after">TypeScript module structure</Bold> with two files:
+      This scenario demonstrates <Bold>TypeScript module structure</Bold> with two files:
     </Paragraph>
     <List>
-      <ListItem><InlineCode space="after">index.ts</InlineCode>: Main entry point with User interface and greet function</ListItem>
-      <ListItem><InlineCode space="after">utils/strings.ts</InlineCode>: Utility module with string manipulation functions</ListItem>
+      <ListItem><InlineCode>index.ts</InlineCode>: Main entry point with User interface and greet function</ListItem>
+      <ListItem><InlineCode>utils/strings.ts</InlineCode>: Utility module with string manipulation functions</ListItem>
     </List>
   </>
 )
@@ -95,10 +95,10 @@ export const CodeExampleContent = () => (
       <Bold>Key TypeScript features demonstrated:</Bold>
     </Paragraph>
     <List>
-      <ListItem><InlineCode space="after">Interface definition</InlineCode> with proper typing</ListItem>
-      <ListItem><InlineCode space="after">Type-safe functions</InlineCode> with parameter and return type inference</ListItem>
-      <ListItem><InlineCode space="after">Module imports/exports</InlineCode> for code organization</ListItem>
-      <ListItem><InlineCode space="after">String manipulation</InlineCode> with proper type annotations</ListItem>
+      <ListItem><InlineCode>Interface definition</InlineCode> with proper typing</ListItem>
+      <ListItem><InlineCode>Type-safe functions</InlineCode> with parameter and return type inference</ListItem>
+      <ListItem><InlineCode>Module imports/exports</InlineCode> for code organization</ListItem>
+      <ListItem><InlineCode>String manipulation</InlineCode> with proper type annotations</ListItem>
     </List>
   </>
 )
