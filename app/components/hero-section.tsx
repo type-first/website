@@ -8,121 +8,109 @@ interface HeroSectionProps {
 
 export function HeroSection({ overview }: HeroSectionProps) {
   return (
-    <section className="relative min-h-[90vh] bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-50">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-        }}></div>
+    <section className="relative min-h-[90vh] bg-gradient-to-br from-gray-50 via-white to-blue-50/30 overflow-hidden">
+      {/* Subtle background elements */}
+      <div className="absolute inset-0">
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}></div>
+        </div>
+        
+        {/* Floating gradient orbs */}
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-blue-100/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-80 h-80 bg-purple-100/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
       </div>
       
       {/* Content */}
-      <div className="relative max-w-7xl mx-auto px-6 pt-20 pb-32">
-        <div className="grid lg:grid-cols-2 gap-16 items-center min-h-[70vh]">
-          {/* Left Column - Text Content */}
-          <div className="space-y-8 text-white">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium">TypeScript Excellence</span>
-            </div>
-            
-            {/* Main Heading */}
-            <div className="space-y-6">
-              <h1 className="text-5xl lg:text-7xl font-bold leading-tight">
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200">
-                  {overview.title}
-                </span>
-                <span className="block text-2xl lg:text-3xl text-blue-200 font-normal mt-4">
-                  {overview.subtitle}
-                </span>
-              </h1>
+      <div className="relative max-w-6xl mx-auto px-6 pt-24 pb-20">
+        <div className="text-center max-w-4xl mx-auto">
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50/80 backdrop-blur-sm border border-blue-200/50 rounded-full mb-8 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-blue-700">TypeScript Excellence</span>
+          </div>
+          
+          {/* Main Heading */}
+          <div className="space-y-6 mb-12">
+            <h1 className="text-5xl lg:text-7xl font-bold tracking-tight">
+              <span className="text-gray-900">Type-First</span>
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
+                Development
+              </span>
+            </h1>
+            <p className="text-xl lg:text-2xl text-gray-600 font-light">
+              {overview.subtitle}
+            </p>
+            <p className="text-lg text-gray-500 max-w-3xl mx-auto leading-relaxed">
+              {overview.description}
+            </p>
+          </div>
+          
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            {overview.callToAction && (
+              <button className="group relative inline-flex items-center justify-center px-8 py-4 bg-black text-white font-medium rounded-xl hover:bg-gray-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                <span className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity"></span>
+                {overview.callToAction.text}
+                <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            )}
+            <button className="group inline-flex items-center justify-center px-8 py-4 bg-white/70 backdrop-blur-sm border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-white hover:border-gray-300 hover:shadow-md transition-all duration-200">
+              <Zap className="mr-2 h-4 w-4 text-blue-600" />
+              Interactive Labs
+            </button>
+          </div>
+          
+          {/* Enhanced Code Preview */}
+          <div className="max-w-2xl mx-auto mb-16">
+            <div className="relative bg-gray-950 rounded-2xl border border-gray-200/20 shadow-2xl overflow-hidden">
+              {/* Window chrome */}
+              <div className="flex items-center gap-2 px-6 py-4 bg-gray-900 border-b border-gray-700">
+                <div className="flex gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                </div>
+                <div className="text-gray-400 text-sm ml-4 font-mono">advanced-types.ts</div>
+                <div className="ml-auto">
+                  <div className="w-4 h-4 rounded border border-gray-600 bg-gray-800"></div>
+                </div>
+              </div>
               
-              <p className="text-xl lg:text-2xl text-slate-300 leading-relaxed max-w-2xl">
-                {overview.description}
-              </p>
-            </div>
-            
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              {overview.callToAction && (
-                <Link 
-                  href={overview.callToAction.href}
-                  className="group inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  {overview.callToAction.text}
-                  <ChevronRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-              )}
-              <Link 
-                href="/labs"
-                className="group inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-sm text-white font-semibold rounded-xl border border-white/20 hover:bg-white/20 transition-all duration-200"
-              >
-                <Zap className="mr-2 h-5 w-5" />
-                Interactive Labs
-              </Link>
-            </div>
-            
-            {/* Stats */}
-            <div className="flex flex-wrap gap-8 pt-8 border-t border-white/10">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">50+</div>
-                <div className="text-sm text-slate-400">Advanced Patterns</div>
+              {/* Code content */}
+              <div className="p-6 space-y-1 font-mono text-sm text-left">
+                <div className="text-purple-400">type <span className="text-blue-400">DeepReadonly</span>&lt;<span className="text-orange-400">T</span>&gt; = {`{`}</div>
+                <div className="text-gray-400 ml-4">readonly [<span className="text-orange-400">K</span> in keyof <span className="text-orange-400">T</span>]:</div>
+                <div className="text-gray-400 ml-8"><span className="text-orange-400">T</span>[<span className="text-orange-400">K</span>] extends object</div>
+                <div className="text-gray-400 ml-12">? <span className="text-blue-400">DeepReadonly</span>&lt;<span className="text-orange-400">T</span>[<span className="text-orange-400">K</span>]&gt;</div>
+                <div className="text-gray-400 ml-12">: <span className="text-orange-400">T</span>[<span className="text-orange-400">K</span>]</div>
+                <div className="text-purple-400">{`}`}</div>
               </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">100%</div>
-                <div className="text-sm text-slate-400">Type Safe</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-white">10k+</div>
-                <div className="text-sm text-slate-400">Developers</div>
-              </div>
+              
+              {/* Subtle glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/5 to-purple-500/5 pointer-events-none"></div>
             </div>
           </div>
           
-          {/* Right Column - Visual */}
-          <div className="relative">
-            {/* Main Code Preview */}
-            <div className="relative bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-white/10 p-8 shadow-2xl">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="flex gap-2">
-                  <div className="w-3 h-3 bg-red-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <div className="w-3 h-3 bg-green-400 rounded-full"></div>
-                </div>
-                <div className="text-slate-400 text-sm ml-4">advanced-types.ts</div>
-              </div>
-              
-              <div className="space-y-2 font-mono text-sm">
-                <div className="text-purple-300">type <span className="text-blue-300">DeepReadonly</span>&lt;<span className="text-orange-300">T</span>&gt; = {`{`}</div>
-                <div className="text-slate-400 ml-4">readonly [<span className="text-orange-300">K</span> in keyof <span className="text-orange-300">T</span>]:</div>
-                <div className="text-slate-400 ml-8"><span className="text-orange-300">T</span>[<span className="text-orange-300">K</span>] extends object</div>
-                <div className="text-slate-400 ml-12">? <span className="text-blue-300">DeepReadonly</span>&lt;<span className="text-orange-300">T</span>[<span className="text-orange-300">K</span>]&gt;</div>
-                <div className="text-slate-400 ml-12">: <span className="text-orange-300">T</span>[<span className="text-orange-300">K</span>]</div>
-                <div className="text-purple-300">{`}`}</div>
-              </div>
-              
-              {/* Floating Elements */}
-              <div className="absolute -top-4 -right-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full p-3 shadow-lg">
-                <Code2 className="h-6 w-6 text-white" />
-              </div>
-              <div className="absolute -bottom-4 -left-4 bg-gradient-to-r from-green-500 to-teal-600 rounded-full p-3 shadow-lg">
-                <Globe className="h-6 w-6 text-white" />
-              </div>
+          {/* Enhanced Stats */}
+          <div className="flex justify-center gap-16 pt-8 border-t border-gray-200/50">
+            <div className="text-center group">
+              <div className="text-3xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors">50+</div>
+              <div className="text-sm text-gray-500">Advanced Patterns</div>
             </div>
-            
-            {/* Decorative Elements */}
-            <div className="absolute top-16 -left-8 w-20 h-20 bg-blue-500/20 rounded-full blur-xl"></div>
-            <div className="absolute bottom-16 -right-8 w-32 h-32 bg-purple-500/20 rounded-full blur-xl"></div>
+            <div className="text-center group">
+              <div className="text-3xl font-bold text-gray-900 group-hover:text-green-600 transition-colors">100%</div>
+              <div className="text-sm text-gray-500">Type Safe</div>
+            </div>
+            <div className="text-center group">
+              <div className="text-3xl font-bold text-gray-900 group-hover:text-purple-600 transition-colors">10k+</div>
+              <div className="text-sm text-gray-500">Developers</div>
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* Bottom Wave */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0,64L48,69.3C96,75,192,85,288,85.3C384,85,480,75,576,69.3C672,64,768,64,864,69.3C960,75,1056,85,1152,85.3C1248,85,1344,75,1392,69.3L1440,64V120H1392C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120H0V64Z" fill="white"/>
-        </svg>
       </div>
     </section>
   );
