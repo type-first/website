@@ -11,14 +11,24 @@ export async function POST(req: NextRequest, context: RouteContext) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { body } = await req.json();
+    const { body, parentId } = await req.json();
     if (typeof body !== 'string' || !body.trim()) {
       return NextResponse.json({ error: 'Comment body required' }, { status: 400 });
     }
 
+    // Validate parentId if provided
+    if (parentId && typeof parentId !== 'string') {
+      return NextResponse.json({ error: 'Invalid parent comment ID' }, { status: 400 });
+    }
+
     const authorName = (session.user.name || session.user.email || 'user').toString();
     const params = 'then' in (context.params as any) ? await (context.params as Promise<{ id: string }>) : (context.params as { id: string });
-    await addCommunityComment({ slug: params.id, authorName, body: body.trim() });
+    await addCommunityComment({ 
+      slug: params.id, 
+      authorName, 
+      body: body.trim(),
+      parentId: parentId || undefined
+    });
     return NextResponse.json({ ok: true }, { status: 201 });
   } catch (err: any) {
     console.error('Add comment error', err);

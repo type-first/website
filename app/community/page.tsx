@@ -31,32 +31,51 @@ export default async function CommunityPage() {
         </RequireAuthButton>
       </div>
 
-      <div className="mt-8 divide-y divide-gray-200 border border-gray-200 rounded-lg overflow-hidden bg-white">
+      <div className="mt-8 divide-y divide-gray-100 border border-gray-200 rounded-lg overflow-hidden bg-white">
         {posts.map((p) => (
-          <div key={p.id} className="p-5 flex gap-4">
-            <div className="flex flex-col items-center gap-2 text-gray-600">
-              <RequireAuthButton isAuthed={isAuthed} className="p-1 rounded hover:bg-gray-100">
+          <div key={p.id} className="p-4 flex gap-3 hover:bg-gray-50 transition-colors">
+            {/* Vote Section */}
+            <div className="flex flex-col items-center gap-1 text-gray-600 min-w-[50px]">
+              <RequireAuthButton isAuthed={isAuthed} className="p-1 rounded hover:bg-gray-100 hover:text-orange-500 transition-colors">
                 <ChevronUp className="w-5 h-5" strokeWidth={1.8} />
               </RequireAuthButton>
-              <div className="text-sm font-medium text-gray-900">{p.votes}</div>
-              <RequireAuthButton isAuthed={isAuthed} className="p-1 rounded hover:bg-gray-100">
+              <div className="text-sm font-bold text-gray-900">{p.votes}</div>
+              <RequireAuthButton isAuthed={isAuthed} className="p-1 rounded hover:bg-gray-100 hover:text-blue-500 transition-colors">
                 <ChevronDown className="w-5 h-5" strokeWidth={1.8} />
               </RequireAuthButton>
             </div>
 
+            {/* Content Section */}
             <div className="min-w-0 flex-1">
-              <h2 className="text-lg font-semibold text-gray-900">
-                <Link className="hover:text-blue-700" href={`/community/${p.id}`}>{p.title}</Link>
+              <h2 className="text-lg font-semibold text-gray-900 leading-tight">
+                <Link className="hover:text-blue-600 transition-colors" href={`/community/${p.id}`}>
+                  {p.title}
+                </Link>
               </h2>
-              <p className="text-gray-700 mt-1 line-clamp-2">{p.body}</p>
-              <div className="mt-2 text-sm text-gray-500 flex items-center gap-4">
-                <span>by {p.author}</span>
+              <p className="text-gray-700 mt-2 line-clamp-3 text-sm leading-relaxed">{p.body}</p>
+              
+              {/* Post metadata */}
+              <div className="mt-3 flex items-center gap-3 text-xs text-gray-500">
+                <span className="hover:underline cursor-pointer">by <strong className="text-blue-600">{p.author}</strong></span>
                 <span>•</span>
-                <span>{p.commentsCount ?? 0} comments</span>
+                <Link href={`/community/${p.id}`} className="hover:underline">
+                  {p.commentsCount ?? 0} {(p.commentsCount ?? 0) === 1 ? 'comment' : 'comments'}
+                </Link>
+                <span>•</span>
+                <span>Share</span>
+                <span>•</span>
+                <span>Save</span>
               </div>
             </div>
           </div>
         ))}
+        
+        {posts.length === 0 && (
+          <div className="p-12 text-center text-gray-500">
+            <div className="text-lg font-medium mb-2">No posts yet</div>
+            <p>Be the first to start a discussion in the community!</p>
+          </div>
+        )}
       </div>
     </div>
   );
