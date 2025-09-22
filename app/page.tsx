@@ -1,11 +1,15 @@
-import Link from 'next/link';
 import { articlesMetaRegistry } from '@/content/articles/meta.registry';
+import { mainContentRegistry } from '@/content/main/registry';
 import type { ArticleMeta } from '@/lib/content/article.model';
 import { listLabs, type LegacyLabData } from '@/modules/labs/registry.logic';
-import { COVER_IMAGE, GRID, SPACING } from '@/modules/design-constants/v0/design-constants';
-import { ArrowUpRight } from 'lucide-react';
-import { LabCard } from '@/modules/labs/ui/lab-card.cmp.iso';
-import { getLabIcon } from '@/modules/labs/ui/lab-icon.util';
+import { Beaker, BookOpen, Target, Code2 } from 'lucide-react';
+
+// Import our new components
+import { HeroSection } from './components/hero-section';
+import { SectionCard } from './components/section-card';
+import { HomeLabCard } from './components/home-lab-card';
+import { HomeArticleCard } from './components/home-article-card';
+import { SectionHeader, EmptyState, TechBadge } from './components/ui-elements';
 
 export default async function Home() {
   let articles: ArticleMeta[] = [];
@@ -22,7 +26,7 @@ export default async function Home() {
   }
 
   try {
-    labs = listLabs({ limit: 3 }).labs;
+    labs = listLabs({ limit: 6 }).labs;
   } catch (error) {
     console.warn(
       'Failed to load labs from registry:',
@@ -30,135 +34,118 @@ export default async function Home() {
     );
   }
 
+  const { overview, sections } = mainContentRegistry;
+
   return (
-    <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
+    <div className="min-h-screen bg-gray-50">
+      {/* Hero Section */}
+      <HeroSection overview={overview} />
 
-      <section className="mb-12">
-        {labs.length > 0 ? (
-          <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ${SPACING.CARD_GAP}`}>
-            {labs.map((lab) => (
-              <LabCardWrapper key={lab.slug} lab={lab} />
-            ))}
+      {/* Main Content */}
+      <div className="relative">
+        {/* Website Sections */}
+        <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <SectionHeader
+              title="Explore Our Platform"
+              subtitle="Discover comprehensive resources, interactive tools, and expert insights to master TypeScript and modern web development."
+              icon={<Target className="h-6 w-6" />}
+            />
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {sections.map((section) => (
+                <SectionCard key={section.slug} section={section} />
+              ))}
+            </div>
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No labs available yet.</p>
-            <p className="text-gray-400 mt-2">New experiments land here.</p>
-          </div>
-        )}
-        
-        <div className="flex justify-between items-center py-4 px-2 mb-8">
-          <Link 
-            href="/labs"
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            View all apps →
-          </Link>
-        </div>
-      </section>
+        </section>
 
-      <section className="mb-12">
-        {articles.length > 0 ? (
-          <div className={`grid ${GRID.ARTICLES.FULL} ${SPACING.CARD_GAP}`}>
-            {articles.map((article) => (
-              <ArticleCard key={article.slug} article={article} />
-            ))}
+        {/* Featured Labs Section */}
+        <section className="py-24 bg-gradient-to-br from-blue-50 to-indigo-50">
+          <div className="max-w-7xl mx-auto px-6">
+            <SectionHeader
+              title="Interactive Labs"
+              subtitle="Hands-on experiments to explore TypeScript concepts in real-time"
+              href="/labs"
+              linkText="View all labs"
+              icon={<Beaker className="h-6 w-6" />}
+            />
+            
+            {labs.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {labs.slice(0, 6).map((lab) => (
+                  <HomeLabCard key={lab.slug} lab={lab} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                icon={<Beaker className="h-8 w-8" />}
+                title="No labs available yet"
+                subtitle="New interactive experiments will appear here soon. Check back for exciting TypeScript explorations!"
+              />
+            )}
           </div>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No articles published yet.</p>
-            <p className="text-gray-400 mt-2">Check back soon for new content!</p>
-          </div>
-        )}
-        
-        <div className="flex justify-between items-center py-4 px-2 mb-8">
-          <Link 
-            href="/articles"
-            className="text-blue-600 hover:text-blue-800 font-medium"
-          >
-            View all articles →
-          </Link>
-        </div>
-      </section>
+        </section>
 
-      <section className="bg-gray-50 rounded-lg p-8 text-center">
-        <h3 className="text-xl font-semibold text-gray-900 mb-4">
-          Built with Modern Technology
-        </h3>
-        <p className="text-gray-600 mb-6">
-          This site showcases state-of-the-art Next.js features including App Router, 
-          Server Components, and interactive islands architecture.
-        </p>
-        <div className="flex flex-wrap justify-center gap-3">
-          <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Next.js 15</span>
-          <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">Server Components</span>
-          <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Islands Architecture</span>
-          <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">TypeScript</span>
-        </div>
-      </section>
+        {/* Featured Articles Section */}
+        <section className="py-24 bg-white">
+          <div className="max-w-7xl mx-auto px-6">
+            <SectionHeader
+              title="Latest Articles"
+              subtitle="In-depth guides and advanced TypeScript patterns from our experts"
+              href="/articles"
+              linkText="View all articles"
+              icon={<BookOpen className="h-6 w-6" />}
+            />
+            
+            {articles.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {articles.map((article) => (
+                  <HomeArticleCard key={article.slug} article={article} />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                icon={<BookOpen className="h-8 w-8" />}
+                title="No articles published yet"
+                subtitle="Expert content and tutorials will be available here soon. Stay tuned for comprehensive TypeScript guides!"
+              />
+            )}
+          </div>
+        </section>
+
+        {/* Technology Showcase */}
+        <section className="py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900">
+          <div className="max-w-7xl mx-auto px-6 text-center">
+            <div className="max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-8">
+                <Code2 className="h-5 w-5 text-white" />
+                <span className="text-white font-medium">Powered by Modern Technology</span>
+              </div>
+              
+              <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                Built for the Future
+              </h2>
+              
+              <p className="text-xl text-blue-100 mb-12 leading-relaxed">
+                This platform showcases state-of-the-art Next.js features including App Router, 
+                Server Components, and interactive islands architecture, all powered by advanced TypeScript patterns.
+              </p>
+              
+              <div className="flex flex-wrap justify-center gap-4">
+                <TechBadge name="Next.js 15" variant="blue" />
+                <TechBadge name="Server Components" variant="green" />
+                <TechBadge name="Islands Architecture" variant="purple" />
+                <TechBadge name="TypeScript" variant="orange" />
+                <TechBadge name="Advanced Types" variant="red" />
+                <TechBadge name="Tailwind CSS" variant="yellow" />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
 
-function ArticleCard({ article }: { article: ArticleMeta }) {
-  return (
-    <article className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
-      {article.coverImgUrl && (
-        <div className={`${COVER_IMAGE.ASPECT_CLASS} bg-gray-100`}>
-          <img 
-            src={article.coverImgUrl} 
-            alt={article.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-      )}
-      
-      <div className="p-6">
-        <div className="flex flex-wrap gap-2 mb-3">
-          {article.tags.slice(0, 2).map((tag: string) => (
-            <span 
-              key={tag}
-              className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-        
-        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-          <Link 
-            href={`/article/${article.slug}`}
-            className="hover:text-blue-600 transition-colors"
-          >
-            {article.name}
-          </Link>
-        </h3>
-        
-        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-          {article.blurb}
-        </p>
-        
-        <div className="text-xs text-gray-500">
-          {new Date(article.publishedTs).toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          })}
-        </div>
-      </div>
-    </article>
-  );
-}
 
-function LabCardWrapper({ lab }: { lab: LegacyLabData }) {
-  return (
-    <LabCard 
-      slug={lab.slug}
-      title={lab.title}
-      description={lab.description}
-      icon={getLabIcon(lab.iconName)}
-      status={lab.status}
-      tags={lab.tags}
-    />
-  );
-}
