@@ -7,7 +7,7 @@ import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
 import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { QuickStartIntroduction, BasicUsageIntroduction } from '@/content/docs/typist/body';
+import { Intro, BasicUsageIntroduction } from '@/content/docs/typist/body';
 import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
 
 export async function generateMetadata() {
@@ -84,7 +84,7 @@ export default function TypistQuickStartPage() {
 
             {/* Page content */}
             <div className="prose prose-lg max-w-none">
-              <QuickStartIntroduction />
+              <Intro />
               
               <h2>Your First Phantom Type</h2>
               <p>
@@ -100,7 +100,7 @@ export default function TypistQuickStartPage() {
                 meaningful verdicts about their relationships.
               </p>
               
-              <Code language="typescript">{`import { $Equal, $Extends, yes_, no_ } from '@type-first/typist';
+              <Code language="typescript">{`import { $Equal, $Extends, yes_, no_ } from '@typefirst/typist';
 
 // Basic type equality
 type StringTest = $Equal<string, string>;        // $Yes
@@ -122,7 +122,7 @@ no_<GeneralExtends>();  // ✅ General types don't extend specific literals`}</C
                 Let's build a practical example that demonstrates how typist can prevent common bugs in a user management system.
               </p>
               
-              <Code language="typescript">{`import { t_, $Equal, $Extends, yes_, has_ } from '@type-first/typist';
+              <Code language="typescript">{`import { t_, $Equal, $Extends, yes_, has_ } from '@typefirst/typist';
 
 // Define distinct ID types
 type UserId = string & { readonly __brand: 'UserId' };
@@ -177,7 +177,7 @@ const validUser = validateUser({
                 Here's a more advanced example showing how to validate API responses at the type level:
               </p>
               
-              <Code language="typescript">{`import { t_, $Equal, $Extends, yes_, extends_, example_ } from '@type-first/typist';
+              <Code language="typescript">{`import { t_, $Equal, $Extends, yes_, extends_, example_ } from '@typefirst/typist';
 
 // Define expected API response structure
 interface ApiResponse<T> {
@@ -225,7 +225,7 @@ class TypeSafeApiClient {
                 Typist encourages you to test your types just like you test your runtime code. Here's how to create a comprehensive type test suite:
               </p>
               
-              <Code language="typescript">{`import { test_, proof_, $Equal, $Extends, yes_, no_ } from '@type-first/typist';
+              <Code language="typescript">{`import { test_, proof_, $Equal, $Extends, yes_, no_ } from '@typefirst/typist';
 
 // Named test for user type validation
 const userTypeTest = test_('User type structure', () => {

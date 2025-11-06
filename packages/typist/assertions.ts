@@ -1,4 +1,4 @@
-import { $Yes, $No, $Maybe } from '@/packages/typist/verdicts'
+import { $Yes, $No, $Maybe } from './verdicts'
 
 ; /* md */ `
 ## typist.assertions

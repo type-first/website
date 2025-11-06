@@ -6,7 +6,7 @@ import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { InstallationParagraph } from '@/content/docs/typist/body';
+import { Intro } from '@/content/docs/typist/body';
 import { installationSnippet } from '@/content/docs/typist/snippets/installation.yml';
 
 export async function generateMetadata() {
@@ -83,7 +83,7 @@ export default function TypistInstallationPage() {
 
             {/* Page content */}
             <div className="prose prose-lg max-w-none">
-              <InstallationParagraph />
+              <Intro />
               
               <h2>Prerequisites</h2>
               <p>
@@ -123,7 +123,7 @@ export default function TypistInstallationPage() {
               </p>
               
               <Code language="typescript">{`// test-typist.ts
-import { t_, $Equal, yes_ } from '@type-first/typist';
+import { t_, $Equal, yes_ } from '@typefirst/typist';
 
 // Create a phantom value
 const stringValue = t_<string>();
@@ -182,7 +182,7 @@ node test-typist.js`}</Code>
               </p>
               
               <Code language="typescript">{`// In your test files
-import { $Equal, yes_, no_ } from '@type-first/typist';
+import { $Equal, yes_, no_ } from '@typefirst/typist';
 
 describe('Type Tests', () => {
   it('should validate user type structure', () => {
@@ -200,7 +200,7 @@ describe('Type Tests', () => {
               
               <h4>Module not found</h4>
               <p>
-                If you see <code>Cannot find module '@type-first/typist'</code>, ensure:
+                If you see <code>Cannot find module '@typefirst/typist'</code>, ensure:
               </p>
               <ul>
                 <li>The package is installed in your project</li>

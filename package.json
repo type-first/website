@@ -32,6 +32,7 @@
   "dependencies": {
     "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/typography": "^0.5.16",
+    "@typefirst/typist": "^1.0.0",
     "@types/yaml": "^1.9.7",
     "@vercel/blob": "^1.1.1",
     "@vercel/postgres": "^0.10.0",

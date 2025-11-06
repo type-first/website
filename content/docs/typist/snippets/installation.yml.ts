@@ -1,13 +1,13 @@
 export const installationSnippet 
   = /* yaml */ `
 # npm
-npm install @type-first/typist
+npm install @typefirst/typist
 
 # yarn  
-yarn add @type-first/typist
+yarn add @typefirst/typist
 
 # pnpm
-pnpm add @type-first/typist
+pnpm add @typefirst/typist
 
 # Verify installation
 npx tsc --noEmit

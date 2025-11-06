@@ -19,7 +19,7 @@ export const library = createDocLibrary({
   coverImgUrl: '/images/covers/typist.png',
   logoUrl: '/images/logos/typist.png',
   githubUrl: 'https://github.com/type-first/typist',
-  npmPackage: '@type-first/typist',
+  npmPackage: '@typefirst/typist',
   version: '1.0.0',
   pages // Pages defined in pages.ts
 });

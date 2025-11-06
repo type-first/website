@@ -1,7 +1,7 @@
 export const comparisonsSnippet 
   = /* ts */ `
 // Type comparison examples with verdicts
-import { $Equal, $Extends, yes_, no_, decidable_ } from '@type-first/typist';
+import { $Equal, $Extends, yes_, no_, decidable_ } from '@typefirst/typist';
 
 // Test if types are equal
 type StringsEqual = $Equal<string, string>;     // $Yes

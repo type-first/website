@@ -1,7 +1,7 @@
 export const assertionsSnippet 
   = /* ts */ `
 // Static type assertions and testing
-import { is_, has_, extends_, instance_, never_, yes_, no_ } from '@type-first/typist';
+import { is_, has_, extends_, instance_, never_, yes_, no_ } from '@typefirst/typist';
 
 // Basic type assertions
 is_<string>("hello");        // ✅ compiles

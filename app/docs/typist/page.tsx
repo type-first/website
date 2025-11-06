@@ -6,7 +6,7 @@ import { Code } from '@/lib/content/ui/code.cmp.iso';
 import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User, Book, ExternalLink, Package, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { IntroductionParagraph } from '@/content/docs/typist/body';
+import { Intro } from '@/content/docs/typist/body';
 import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
 
 export async function generateMetadata() {
@@ -175,7 +175,7 @@ export default function TypistOverviewPage() {
             {/* Introduction Content */}
             <section className="prose prose-lg max-w-none mb-12">
               <h2>What is Typist?</h2>
-              <IntroductionParagraph />
+              <Intro />
               
               <h3>Key Benefits</h3>
               <ul>

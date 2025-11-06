@@ -1,5 +1,6 @@
 export * from './assertions'
 export * from './comparators'
-export * from './patterns'
+export * from './blocks'
 export * from './verdicts'
 export * from './operators'
+export * from './phantom'

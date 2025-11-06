@@ -1,4 +1,4 @@
-import { $No, $Yes } from '@/packages/typist/verdicts'
+import { $No, $Yes } from './verdicts'
 
 ; /* md */ `
 ## typist.comparators

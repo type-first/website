@@ -1,7 +1,7 @@
 export const phantomValuesSnippet 
   = /* ts */ `
 // Basic phantom value creation examples
-import { t_, type_, t } from '@type-first/typist';
+import { t_, type_, t } from '@typefirst/typist';
 
 // Create phantom values for any type
 const user = t_<{ name: string; age: number }>();

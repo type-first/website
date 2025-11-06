@@ -7,7 +7,7 @@ import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
 import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { PhantomTypesExplanation } from '@/content/docs/typist/body';
+import { PatternsIntroduction } from '@/content/docs/typist/body';
 import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
 
 export async function generateMetadata() {
@@ -84,7 +84,7 @@ export default function TypistPhantomTypesPage() {
 
             {/* Page content */}
             <div className="prose prose-lg max-w-none">
-              <PhantomTypesExplanation />
+              <PatternsIntroduction />
               
               <h2>Understanding Phantom Types</h2>
               <p>
@@ -125,7 +125,7 @@ createUser("user@example.com", "123", "John"); // ❌ Parameters swapped!`}</Cod
                 that help you work with phantom types:
               </p>
               
-              <Code language="typescript">{`import { t_, type_, t } from '@type-first/typist';
+              <Code language="typescript">{`import { t_, type_, t } from '@typefirst/typist';
 
 // All of these create the same phantom value
 const userIdPhantom = t_<UserId>();
@@ -297,7 +297,7 @@ const result1 = accessAdminData(adminUser, adminData); // ✅ Works
                 Use typist's testing utilities to verify your phantom type implementations:
               </p>
               
-              <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, test_ } from '@type-first/typist';
+              <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, test_ } from '@typefirst/typist';
 
 const phantomTypeTests = test_('Phantom type validation', () => {
   // Test that branded types are distinct

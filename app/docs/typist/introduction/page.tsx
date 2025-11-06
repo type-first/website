@@ -5,7 +5,7 @@ import { DocBreadcrumbs } from '@/lib/content/ui/doc/doc-breadcrumbs.cmp.iso';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { IntroductionParagraph } from '@/content/docs/typist/body';
+import { Intro } from '@/content/docs/typist/body';
 
 export async function generateMetadata() {
   const library = getDocLibraryBySlug('typist');
@@ -94,7 +94,7 @@ export default function TypistIntroductionPage() {
 
             {/* Page content */}
             <div className="prose prose-lg max-w-none">
-              <IntroductionParagraph />
+              <Intro />
               
               <h2>What is Type-Level Programming?</h2>
               <p>

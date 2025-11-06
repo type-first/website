@@ -1,4 +1,4 @@
-import { $Equal, is_, never_, t, test_, yes_ } from '@/packages/typist'
+import { $Equal, is_, never_, t, test_, yes_ } from './index'
 
 export type GetAtPath
   < Obj, Path extends readonly any[] > =

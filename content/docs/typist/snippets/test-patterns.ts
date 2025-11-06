@@ -1,7 +1,7 @@
 export const testPatternsSnippet 
   = /* ts */ `
 // Test patterns and example frameworks
-import { example_, test_, proof_, t_ } from '@type-first/typist';
+import { example_, test_, proof_, t_ } from '@typefirst/typist';
 
 // Basic example pattern
 const stringTest = example_(() => {

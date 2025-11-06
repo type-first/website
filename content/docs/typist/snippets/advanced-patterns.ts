@@ -1,7 +1,7 @@
 export const advancedPatternsSnippet 
   = /* ts */ `
 // Advanced type-level programming patterns
-import { t_, $Equal, $Extends, example_, yes_, no_, extends_ } from '@type-first/typist';
+import { t_, $Equal, $Extends, example_, yes_, no_, extends_ } from '@typefirst/typist';
 
 // Deep readonly transformation
 type DeepReadonly<T> = {

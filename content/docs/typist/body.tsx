@@ -1,8 +1,3 @@
-/**
- * Typist Documentation - Body Content
- * Pure React components for each content section (lazy-loaded for bundle optimization)
- */
-
 import React from 'react'
 import { Bold } from '@/lib/content/rich-text/components/bold'
 import { Italic } from '@/lib/content/rich-text/components/italic'
@@ -11,105 +6,88 @@ import { InlineLink } from '@/lib/content/rich-text/components/inline-link'
 import { LineBreak } from '@/lib/content/rich-text/components/line-break'
 import { List, ListItem } from '@/lib/content/rich-text/components/list'
 import { Paragraph } from '@/lib/content/rich-text/components/paragraph'
+import { Code } from '@/lib/content/ui/code.cmp.iso'
 
-// --- Pure Component-based Content Definitions
+export const Intro
+  = () => 
+    <>
+      <Paragraph>
+        typist is a minimal suite of type-level utilities for 
+        <Italic>static analysis</Italic>, 
+        <Italic>symbolic testing</Italic>, and 
+        <Italic>phantom type operations</Italic> 
+        in typescript.
+      </Paragraph>
+      <Paragraph>
+        <Bold>types are first-class</Bold> values in typist. 
+        this minimal suite of logical operators yields 
+        a highly expressive logic for
+        <Bold>zero-cost compiler-enforced</Bold>
+        <Italic>symbolic evaluations</Italic> and 
+        <Italic>static proofs</Italic> at the type-level.
+      </Paragraph>
+    </>
 
-export const IntroductionParagraph = () => (
-  <>
-    <Paragraph>
-      Typist is a 
-      <Bold>minimal, compositional, and debug-friendly</Bold> 
-      suite of type-level utilities designed for 
-      <Italic>static analysis</Italic>, 
-      <Italic>symbolic testing</Italic>, and 
-      <Italic>phantom type operations</Italic> 
-      in TypeScript.
-    </Paragraph>
-    
-    <Paragraph>
-      It treats types as 
-      <Bold>first-class values</Bold>, 
-      leveraging TypeScript's structural type system to encode 
-      <InlineCode>symbolic verdicts</InlineCode>, 
-      <InlineCode>composable constraints</InlineCode>, and 
-      <InlineCode>static proofs</InlineCode>.
-    </Paragraph>
-  </>
-)
+export const foTLPTitle 
+  = 'foundations of type-level programming in typescript'
 
-export const InstallationParagraph = () => (
-  <>
-    <Paragraph>
-      Get started with typist by installing it in your TypeScript project. 
-      Typist requires <Bold>TypeScript 4.5 or later</Bold> 
-      for optimal type inference and error reporting.
-    </Paragraph>
-    
-    <Paragraph>
-      Install using your preferred package manager:
-    </Paragraph>
-  </>
-)
+export const FoTLPIntro 
+  = () => 
+    <>
+      <Paragraph>
+        type-level programming (fotlp) is an advanced technique in typescript 
+        that leverages the type system to perform computations, 
+        enforce constraints, and validate structures at compile time.
+      </Paragraph>
+    </>
 
-export const QuickStartIntroduction = () => (
-  <>
-    <Paragraph>
-      Get up and running with typist in minutes. 
-      This guide covers the 
-      <Bold>essential patterns</Bold> you'll use in everyday 
-      <Italic>type-level programming</Italic>.
-    </Paragraph>
-    
-    <Paragraph>
-      Start by importing the core utilities: 
-      <InlineCode>t_</InlineCode>, 
-      <InlineCode>$Equal</InlineCode>, 
-      <InlineCode>$Extends</InlineCode>, 
-      <InlineCode>yes_</InlineCode>, 
-      <InlineCode>no_</InlineCode>, and 
-      <InlineCode>example_</InlineCode>.
-    </Paragraph>
-  </>
-)
+export const foTLPNegAssertTitle 
+  = 'negative assertions using @ts-expect-error'
 
-export const PhantomTypesExplanation = () => (
-  <>
-    <Paragraph>
-      <Bold>Phantom types</Bold> 
-      are the foundation of typist's approach to type-level programming.
-      They allow you to work with types as if they were 
-      <Italic>runtime values</Italic>, enabling powerful 
-      <Bold>compile-time analysis</Bold> and validation.
-    </Paragraph>
-    
-    <Paragraph>
-      A phantom type carries information at the 
-      <Bold>type level</Bold> but has no corresponding runtime representation. 
-      In typist, we create phantom values that 
-      <Italic>"lie to the compiler"</Italic> by casting 
-      <InlineCode>null</InlineCode> to any type we want to work with.
-    </Paragraph>
-  </>
-)
+export const FoTLPNegAssert 
+  = () => 
+    <>
+      <Paragraph>
+        <Italic>asserting what isnt</Italic> is often as important as asserting what is.
+        we know this from runtime testing, where negative assertions are common. 
+        at the type level, this principle holds true as well. 
+        we can use them to ensure that specific conditions are not satisfied by some given type, 
+        or that a given typescript expression is disallowed by the compiler. 
+      </Paragraph>
+      <Paragraph>
+        typescript's <InlineCode>@ts-expect-error</InlineCode> directive makes this possible by
+        allowing us to assert that a line of code produces a type error. it effectively inverts 
+        the usual positive assertion paradigm, <Italic>throwing a compilation error 
+        only if the annotated line does <Bold>not</Bold> produce an error</Italic>, 
+        and otherwise suppressing the expected error.
+      </Paragraph>
+      <Paragraph>
+        this allows us to write statements like:
+      </Paragraph>
+      <Code language="ts">
+{/*typescript*/`
+type AnimalGroup 
+  = 'mammals'|'reptiles'|'fish'
+// @ts-expect-error
+const group0:AnimalGroup = 'fungus'
+`}    </Code>
+      <Paragraph>
+        this code compiles with no errors. 
+        our assignment to <InlineCode>group0</InlineCode> is invalid, but `@ts-expect-error` serves to catch and suppress the error.
+        changing our code so that `AnimalGroup` includes 'fungus' would make the assignment valid and
+        thus produce a compilation error (<InlineCode>"unused @ts-expect-error"</InlineCode>)
+        alerting us that we expected to find a compiler error at this line and none was present.
+      </Paragraph>
+    </>
 
-export const VerdictsExplanation = () => (
-  <>
-    <Paragraph>
-      <Bold>Verdicts</Bold> 
-      are symbolic markers that encode the results of type-level comparisons. 
-      They provide <Italic>structured, debuggable feedback</Italic> 
-      about type relationships.
-    </Paragraph>
-    
-    <Paragraph>
-      Every type comparison in typist returns a verdict - either 
-      <InlineCode>$Yes</InlineCode> for successful comparisons or 
-      <InlineCode>$No</InlineCode> for failures. 
-      This system provides <Bold>rich debugging information</Bold> 
-      when types don't match expectations.
-    </Paragraph>
-  </>
-)
+export const FoTLPPhantTitle
+  = 'manipulating types as phantom values'
+
+export const FoTLPhant
+  = () =>
+    <>
+      {/* ... */}
+    </>
 
 export const OperatorsIntroduction = () => (
   <>
