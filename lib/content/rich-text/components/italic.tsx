@@ -8,16 +8,23 @@ import React from 'react'
 interface ItalicProps {
   children: React.ReactNode
   className?: string
+  space?: 'before' | 'after' | 'both' | 'none'
 }
 
-export function Italic({ children, className = '' }: ItalicProps) {
+export function Italic({ children, className = '', space = 'both' }: ItalicProps) {
+  const getMarginClass = () => {
+    switch (space) {
+      case 'before': return 'ml-1'
+      case 'after': return 'mr-1' 
+      case 'both': return 'mx-1'
+      case 'none': return ''
+      default: return 'mx-1'
+    }
+  }
+
   return (
-    <>
-      {' '}
-      <em className={`italic mx-1 ${className}`}>
-        {children}
-      </em>
-      {' '}
-    </>
+    <em className={`italic ${getMarginClass()} ${className}`}>
+      {children}
+    </em>
   )
 }
