@@ -7,8 +7,60 @@ import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
 import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { Intro, BasicUsageIntroduction } from '@/content/docs/typist/body';
-import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
+
+// Hardcoded content components
+const Intro = () => (
+  <div>
+    <p>
+      <strong>Show what your types are made of.</strong> Typist is a minimal suite for compilable proofs 
+      that treats types as first-class values in TypeScript. Create phantom representations, encode static assertions, 
+      and build compile-time validations with zero runtime overhead.
+    </p>
+    <p>
+      Whether you're building type-safe APIs, enforcing domain constraints, or creating self-documenting interfaces, 
+      typist gives you the tools to <em>prove your types work</em> before your code ever runs.
+    </p>
+  </div>
+);
+
+const BasicUsageIntroduction = () => (
+  <div>
+    <p>
+      Jump into typist with practical examples that showcase its <strong>core capabilities</strong>. 
+      Learn the essential patterns through <em>hands-on examples</em> with phantom types, compile-time proofs, 
+      and type-safe domain modeling.
+    </p>
+    <p>
+      Start with <code>phantom values</code>, build <code>type assertions</code>, 
+      then explore <strong>branded types</strong> and <strong>static constraints</strong>.
+    </p>
+  </div>
+);
+
+const phantomValuesSnippet = `import { t_, $Equal, yes_, is_, never_ } from '@typefirst/typist'
+
+// Create phantom types - no runtime cost, pure type-level
+const user = t_<{ name: string; age: number }>()
+const admin = t_<{ name: string; role: 'admin' }>()
+
+// Type assertions and proofs
+is_<string>(user.name)                    // ✓ Property type check
+yes_<$Equal<number, typeof user.age>>()   // ✓ Type equality proof
+never_<string & number>()                 // ✓ Impossibility proof
+
+// Build type-safe constraints
+type ValidUser<T> = T extends { name: string } ? T : never
+const validUser = t_<ValidUser<typeof user>>() // ✓ Compiles
+// const invalid = t_<ValidUser<string>>()      // ✗ Compile error
+
+// Use for API design and domain modeling
+type BrandedId<T extends string> = string & { __brand: T }
+const userId = t_<BrandedId<'user'>>()
+const orderId = t_<BrandedId<'order'>>()
+
+// Type-level proofs prevent mixing different ID types
+// function getUser(id: typeof userId) { ... }   // ✓ Only accepts user IDs
+// getUser(orderId)                              // ✗ Compile error`;
 
 export async function generateMetadata() {
   const library = getDocLibraryBySlug('typist');

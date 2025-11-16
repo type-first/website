@@ -5,7 +5,18 @@ import { DocBreadcrumbs } from '@/lib/content/ui/doc/doc-breadcrumbs.cmp.iso';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { TroubleshootingIntroduction } from '@/content/docs/typist/body';
+
+// Hardcoded content components
+const TroubleshootingIntroduction = () => (
+  <div>
+    <p>
+      Common issues and solutions when working with typist. Learn how to <strong>debug type-level problems</strong> and understand <em>error messages</em> from failed assertions.
+    </p>
+    <p>
+      Use <code>decidable_()</code> to accept any verdict result, then examine the structured debugging information in <code>$No</code> verdicts.
+    </p>
+  </div>
+);
 
 export async function generateMetadata() {
   const library = getDocLibraryBySlug('typist');

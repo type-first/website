@@ -5,7 +5,21 @@ import { DocBreadcrumbs } from '@/lib/content/ui/doc/doc-breadcrumbs.cmp.iso';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { Intro } from '@/content/docs/typist/body';
+
+// Hardcoded content components
+const Intro = () => (
+  <div>
+    <p>
+      <strong>Show what your types are made of.</strong> Typist is a minimal suite for compilable proofs 
+      that treats types as first-class values in TypeScript. Create phantom representations, encode static assertions, 
+      and build compile-time validations with zero runtime overhead.
+    </p>
+    <p>
+      Whether you're building type-safe APIs, enforcing domain constraints, or creating self-documenting interfaces, 
+      typist gives you the tools to <em>prove your types work</em> before your code ever runs.
+    </p>
+  </div>
+);
 
 export async function generateMetadata() {
   const library = getDocLibraryBySlug('typist');

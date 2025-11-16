@@ -7,6 +7,31 @@ import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User, Book, ExternalLink, Package, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
+const phantomValuesSnippet = `import { t_, $Equal, yes_, is_, never_ } from '@typefirst/typist'
+
+// Create phantom types - no runtime cost, pure type-level
+const user = t_<{ name: string; age: number }>()
+const admin = t_<{ name: string; role: 'admin' }>()
+
+// Type assertions and proofs
+is_<string>(user.name)                    // ✓ Property type check
+yes_<$Equal<number, typeof user.age>>()   // ✓ Type equality proof
+never_<string & number>()                 // ✓ Impossibility proof
+
+// Build type-safe constraints
+type ValidUser<T> = T extends { name: string } ? T : never
+const validUser = t_<ValidUser<typeof user>>() // ✓ Compiles
+// const invalid = t_<ValidUser<string>>()      // ✗ Compile error
+
+// Use for API design and domain modeling
+type BrandedId<T extends string> = string & { __brand: T }
+const userId = t_<BrandedId<'user'>>()
+const orderId = t_<BrandedId<'order'>>()
+
+// Type-level proofs prevent mixing different ID types
+// function getUser(id: typeof userId) { ... }   // ✓ Only accepts user IDs
+// getUser(orderId)                              // ✗ Compile error`;
+
 export async function generateMetadata() {
   const library = getDocLibraryBySlug('typist');
   
@@ -137,31 +162,7 @@ export default function TypistOverviewPage() {
               )}
             </header>
 
-            {/* Introduction Content */}
-            <section className="mb-12">
-              <Code language="typescript">{`import { is_ } from '@typefirst/typist'
-type Positive = '👍' | '👌' | '🎉' | '😊'
-is_<Positive>('🎉') // ✓
-// @ts-expect-error ✓ 
-// type '👎' is not assignable to type 'Positive'
-is_<Positive>('👎')`}</Code>
-
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Show what your types are made of.</h2>
-              
-              <div className="mb-6">
-                <p className="text-lg text-gray-600 mb-4">
-                  <code>typist</code> is a minimal suite for compilable static proofs at the type level. 
-                  It encodes static assertions and compile-time validations with zero runtime overhead.
-                </p>
-                <p className="text-lg text-gray-600">
-                  Whether you're building type-safe APIs, enforcing domain constraints, or creating 
-                  self-documenting interfaces, <code>typist</code> gives you the tools to <em className=''>prove your types work</em>.
-                </p>
-              </div>
-
-            </section>
-
-                        {/* Quick Start Section */}
+            {/* Quick Start Section */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Get Started</h2>
               
@@ -194,107 +195,91 @@ is_<Positive>('👎')`}</Code>
               </div>
             </section>
 
-            {/* Basic Example Section */}
+            {/* Introduction Content */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Basic Examples</h2>
-              <p className="text-gray-600 mb-6">
-                Here's how typist works with simple type assertions and relationship testing:
-              </p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">What is Typist?</h2>
               
-              <Code language="typescript">{`import { is_, extends_, has_, t_ } from '@typefirst/typist'
-
-// here's a basic type assertion
-type Positive = '👍' | '👌' | '🎉' | '😊'
-
-is_<Positive>('🎉') // ✓
-
-// @ts-expect-error ✓
-// type '👎' is not assignable to type 'Positive'.
-is_<Positive>('👎')
-
-// let's try out different assignment behaviors
-const smile = '😊'
-
-is_<string>(smile) // ✓
-is_<Positive>(smile) // ✓
-is_<'😓'|'😊'>(smile) // ✓
-
-// we can test if a type is more specific than (ie: extends) another
-type Reaction = '👍' | '👎' | '👌' | '🎉' | '😊' | '😢' | '❓' | '💡'
-
-extends_<Positive, Reaction>() // ✓
-
-// @ts-expect-error ✓
-// type 'Reactions' does not satisfy the constraint 'Positive'
-extends_<Reaction, Positive>()`}</Code>
+              <div className="mb-6">
+                <p className="text-lg text-gray-600 mb-4">
+                  <strong>Show what your types are made of.</strong> Typist is a minimal suite for compilable proofs 
+                  that treats types as first-class values in TypeScript. Create phantom representations, encode static assertions, 
+                  and build compile-time validations with zero runtime overhead.
+                </p>
+                <p className="text-lg text-gray-600">
+                  Whether you're building type-safe APIs, enforcing domain constraints, or creating self-documenting interfaces, 
+                  typist gives you the tools to <em>prove your types work</em> before your code ever runs.
+                </p>
+              </div>
+              
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Benefits</h3>
+              <ul className="space-y-3">
+                <li className="flex items-start">
+                  <span className="font-semibold text-gray-900 mr-2">Phantom Types</span>
+                  <span className="text-gray-600">- Create type-level representations without runtime overhead</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-semibold text-gray-900 mr-2">Compilable Proofs</span>
+                  <span className="text-gray-600">- Encode static assertions and validations in your types</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-semibold text-gray-900 mr-2">Type-First Programming</span>
+                  <span className="text-gray-600">- Treat types as first-class values for better abstractions</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-semibold text-gray-900 mr-2">Zero Bundle Impact</span>
+                  <span className="text-gray-600">- Pure compile-time operations with no runtime footprint</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-semibold text-gray-900 mr-2">Rich Debugging</span>
+                  <span className="text-gray-600">- Structured error reporting and type introspection tools</span>
+                </li>
+              </ul>
             </section>
 
-            {/* Advanced Example Section */}
+            {/* Example Section */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Advanced Usage</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">Example</h2>
               <p className="text-gray-600 mb-6">
-                Typist shines when working with complex object structures and runtime type guards:
+                Here's a quick taste of what typist can do. Create phantom types, build compile-time proofs, 
+                and enforce type-safe constraints—all with zero runtime overhead:
               </p>
               
-              <Code language="typescript">{`// we can drill deeply into runtime and type-level structures
-type RegularUser = { name:string }
-type PremiumUser = RegularUser & { premiumSince:Date }
-type User = RegularUser | PremiumUser
-
-has_<'name', string>(t_<User>()) // ✓
-
-// @ts-expect-error ✓
-// property 'premiumSince' is missing in type 'RegularUser'
-has_<'premiumSince', string>(t_<User>()) 
-
-const alice = { name:'alice' } as const
-const bob = { name:'bob', premiumSince:new Date('2022-01-01') } as const
-
-has_<'name', string>(bob) // ✓
-has_<'premiumSince', Date>(bob) // ✓
-
-is_<typeof bob['premiumSince']>(t_<Date>()) // ✓
-is_<PremiumUser>(bob) // ✓
-extends_<typeof bob, RegularUser>() // ✓
-
-is_<User['name']>(alice.name) // ✓
-is_<'alice'>(alice.name) // ✓
-
-// @ts-expect-error ✓
-// type 'alice' is not assignable to type 'bob'
-is_<'bob'>(alice.name)`}</Code>
+              <Code language="typescript">{phantomValuesSnippet}</Code>
             </section>
 
             {/* Core Concepts */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Core Functions</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Core Concepts</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">is_&lt;T&gt;(value)</h3>
+                <Link 
+                  href="/docs/typist/phantom-types"
+                  className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
+                >
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Phantom Types</h3>
                   <p className="text-gray-600">
-                    Assert that a value is assignable to type T. Works with both runtime values and phantom types.
+                    Create nominal types without runtime overhead for safer domain modeling.
+                  </p>
+                </Link>
+                
+                <div className="block p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Verdict System</h3>
+                  <p className="text-gray-600">
+                    Compile-time validation with rich error reporting. <span className="text-sm text-gray-500">(Coming soon)</span>
                   </p>
                 </div>
                 
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">extends_&lt;A, B&gt;()</h3>
+                <div className="block p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Type Operators</h3>
                   <p className="text-gray-600">
-                    Prove that type A extends type B. Essential for type relationship validation.
+                    Utilities for type-level comparisons and transformations. <span className="text-sm text-gray-500">(Coming soon)</span>
                   </p>
                 </div>
                 
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">has_&lt;K, T&gt;(obj)</h3>
+                <div className="block p-6 bg-gray-50 border border-gray-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Type Assertions</h3>
                   <p className="text-gray-600">
-                    Test that an object has property K of type T. Works with complex nested structures.
-                  </p>
-                </div>
-                
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">t_&lt;T&gt;()</h3>
-                  <p className="text-gray-600">
-                    Create phantom values for pure type-level operations without runtime overhead.
+                    Static assertions for comprehensive type testing. <span className="text-sm text-gray-500">(Coming soon)</span>
                   </p>
                 </div>
               </div>
@@ -316,8 +301,8 @@ is_<'bob'>(alice.name)`}</Code>
                 
                 <CodeExplorerLink
                   slug="typist-type-comparisons"
-                  name="Type Comparisons & Assertions"
-                  description="Master type-level comparisons using is_, extends_, and has_. Learn to create compile-time assertions and property tests."
+                  name="Type Comparisons & Verdicts"
+                  description="Master type-level comparisons using $Equal, $Extends, and the verdict system. Learn to create compile-time assertions."
                 />
                 
                 <CodeExplorerLink

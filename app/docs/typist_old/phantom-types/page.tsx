@@ -7,8 +7,44 @@ import { DocNavigation } from '@/lib/content/ui/doc/doc-navigation.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
 import { CodeExplorerLink } from '@/lib/content/ui/link.code-explorer.cmp.iso';
 import { Calendar, User } from 'lucide-react';
-import { PatternsIntroduction } from '@/content/docs/typist/body';
-import { phantomValuesSnippet } from '@/content/docs/typist/snippets/phantom-values';
+
+// Hardcoded content components
+const PatternsIntroduction = () => (
+  <div>
+    <p>
+      Test patterns and <strong>symbolic evaluation frameworks</strong> help you build structured type-level test suites and documentation. 
+      The core pattern functions are <code>example_</code>, <code>test_</code>, and <code>proof_</code>.
+    </p>
+    <p>
+      These utilities enable you to create <em>type-level examples</em> that document behavior and validate type relationships with <strong>zero runtime cost</strong>.
+    </p>
+  </div>
+);
+
+const phantomValuesSnippet = `import { t_, $Equal, yes_, is_, never_ } from '@typefirst/typist'
+
+// Create phantom types - no runtime cost, pure type-level
+const user = t_<{ name: string; age: number }>()
+const admin = t_<{ name: string; role: 'admin' }>()
+
+// Type assertions and proofs
+is_<string>(user.name)                    // ✓ Property type check
+yes_<$Equal<number, typeof user.age>>()   // ✓ Type equality proof
+never_<string & number>()                 // ✓ Impossibility proof
+
+// Build type-safe constraints
+type ValidUser<T> = T extends { name: string } ? T : never
+const validUser = t_<ValidUser<typeof user>>() // ✓ Compiles
+// const invalid = t_<ValidUser<string>>()      // ✗ Compile error
+
+// Use for API design and domain modeling
+type BrandedId<T extends string> = string & { __brand: T }
+const userId = t_<BrandedId<'user'>>()
+const orderId = t_<BrandedId<'order'>>()
+
+// Type-level proofs prevent mixing different ID types
+// function getUser(id: typeof userId) { ... }   // ✓ Only accepts user IDs
+// getUser(orderId)                              // ✗ Compile error`;
 
 export async function generateMetadata() {
   const library = getDocLibraryBySlug('typist');
