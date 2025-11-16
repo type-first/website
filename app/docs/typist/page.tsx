@@ -70,7 +70,7 @@ export default function TypistOverviewPage() {
                     <Book className="h-8 w-8 text-blue-600" strokeWidth={1.8} />
                   )}
                   <h1 className="text-4xl font-bold text-gray-900">
-                    {library.name}
+                    typist
                   </h1>
                 </div>
                 
@@ -101,18 +101,18 @@ export default function TypistOverviewPage() {
               </div>
               
               <p className="text-xl text-gray-600 mb-6">
-                {library.description}
+                a powerful toolkit for static analysis, symbolic testing, and phantom type operations. Build type-safe applications with confidence using composable constraints and static proofs.
               </p>
               
               {/* Metadata */}
               <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-6">
                 <div className="flex items-center gap-2">
                   <User className="h-4 w-4" strokeWidth={1.8} />
-                  {library.author.name}
+                  santiago elustondo
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4" strokeWidth={1.8} />
-                  Updated {new Date(library.updatedTs).toLocaleDateString()}
+                  Updated {new Date('2025-11-15').toLocaleDateString()}
                 </div>
                 {library.version && (
                   <div className="flex items-center gap-2">
@@ -137,45 +137,18 @@ export default function TypistOverviewPage() {
               )}
             </header>
 
-            {/* Introduction Content */}
-            <section className="mb-12">
-              <Code language="typescript">{`import { is_ } from '@typefirst/typist'
-type Positive = '👍' | '👌' | '🎉' | '😊'
-is_<Positive>('🎉') // ✓
-// @ts-expect-error ✓ 
-// type '👎' is not assignable to type 'Positive'
-is_<Positive>('👎')`}</Code>
-
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Show what your types are made of.</h2>
-              
-              <div className="mb-6">
-                <p className="text-lg text-gray-600 mb-4">
-                  <code>typist</code> is a minimal suite for compilable static proofs at the type level. 
-                  It encodes static assertions and compile-time validations with zero runtime overhead.
-                </p>
-                <p className="text-lg text-gray-600">
-                  Whether you're building type-safe APIs, enforcing domain constraints, or creating 
-                  self-documenting interfaces, <code>typist</code> gives you the tools to <em className=''>prove your types work</em>.
-                </p>
-              </div>
-
-            </section>
-
-                        {/* Quick Start Section */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Get Started</h2>
-              
+            <section className="mb-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <Link 
                   href="/docs/typist/installation"
                   className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Installation</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">installation</h3>
                     <ArrowRight className="h-5 w-5 text-gray-400" />
                   </div>
                   <p className="text-gray-600">
-                    Install and configure typist in your TypeScript project with our step-by-step guide.
+                    install and configure typist in your TypeScript project with our step-by-step guide.
                   </p>
                 </Link>
                 
@@ -184,85 +157,150 @@ is_<Positive>('👎')`}</Code>
                   className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Quick Start</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">quick start</h3>
                     <ArrowRight className="h-5 w-5 text-gray-400" />
                   </div>
                   <p className="text-gray-600">
-                    Jump into typist with practical examples and learn the core concepts through hands-on coding.
+                    jump into typist with practical examples and learn the core concepts through hands-on coding.
                   </p>
                 </Link>
               </div>
             </section>
 
-            {/* Basic Example Section */}
+            {/* Introduction Content */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Basic Examples</h2>
-              <p className="text-gray-600 mb-6">
-                Here's how typist works with simple type assertions and relationship testing:
-              </p>
-              
-              <Code language="typescript">{`import { is_, extends_, has_, t_ } from '@typefirst/typist'
 
-// here's a basic type assertion
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">show what your types are made of</h2>
+              
+              <div className="mb-6">
+                <p className="text-lg text-gray-600 mb-4">
+                  <code>typist</code> is a minimal suite for compilable static proofs at the type level. 
+                  it provides four core functions—<code>is_</code>, <code>extends_</code>, <code>has_</code>, and <code>t_</code>—that 
+                  let you encode assertions and validations with zero runtime overhead.
+                </p>
+                <p className="text-lg text-gray-600">
+                  whether you're building type-safe APIs, enforcing domain constraints, or creating 
+                  self-documenting interfaces, <code>typist</code> gives you the tools to <em className=''>prove your types work</em> 
+                  before your code runs.
+                </p>
+              </div>
+
+              <Code language="typescript">{`import { is_ } from '@typefirst/typist'
+type Positive = '👍' | '👌' | '🎉' | '😊'
+is_<Positive>('🎉') // ✓ 
+// @ts-expect-error ✓
+// 👎 is not assignable to Positive
+is_<Positive>('👎') `}</Code>
+
+
+            </section>
+            
+
+            {/* Guided Tour Section */}
+            <section className="mb-12">
+              
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">basic type assertions</h3>
+                  <p className="text-lg text-gray-600 mb-4">
+                    we can use <code>is_</code> to assert that values belong to a given type, invalid assertions will produce TypeScript errors.
+                    we can leverage <code>@ts-expect-error</code> to write negative tests that ensure certain values do not conform to expected types.
+                  </p>
+                  
+                  <Code language="typescript">{`import { is_ } from '@typefirst/typist'
+
 type Positive = '👍' | '👌' | '🎉' | '😊'
 
-is_<Positive>('🎉') // ✓
-
+is_<Positive>('🎉') // ✓ 
 // @ts-expect-error ✓
-// type '👎' is not assignable to type 'Positive'.
-is_<Positive>('👎')
+// 👎 is not assignable to Positive
+is_<Positive>('👎') 
 
-// let's try out different assignment behaviors
 const smile = '😊'
 
-is_<string>(smile) // ✓
-is_<Positive>(smile) // ✓
+is_<string>(smile) // ✓ 
+is_<Positive>(smile) // ✓ 
 is_<'😓'|'😊'>(smile) // ✓
+// @ts-expect-error ✓
+// 😊 is not assignable to 😓|👽
+is_<'😓'|'👽'>(smile) `}</Code>
+                </div>
 
-// we can test if a type is more specific than (ie: extends) another
-type Reaction = '👍' | '👎' | '👌' | '🎉' | '😊' | '😢' | '❓' | '💡'
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Type Relationship Testing</h3>
+                  <p className="text-gray-600 mb-4">
+                    Use <code>extends_</code> to prove that one type is more specific than another. This is 
+                    powerful for building type hierarchies and ensuring your domain types have the correct 
+                    relationships.
+                  </p>
+                  
+                  <Code language="typescript">{`type Reaction = '👍' | '👎' | '👌' | '🎉' | '😊' | '😢' | '❓' | '💡'
 
-extends_<Positive, Reaction>() // ✓
+extends_<Positive, Reaction>()  // ✓ Positive extends Reaction
 
 // @ts-expect-error ✓
-// type 'Reactions' does not satisfy the constraint 'Positive'
-extends_<Reaction, Positive>()`}</Code>
+// type 'Reaction' does not satisfy the constraint 'Positive'
+extends_<Reaction, Positive>()  // Error: Reaction is broader than Positive`}</Code>
+                </div>
+              </div>
             </section>
 
-            {/* Advanced Example Section */}
+            {/* Advanced Property Testing Section */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Advanced Usage</h2>
-              <p className="text-gray-600 mb-6">
-                Typist shines when working with complex object structures and runtime type guards:
-              </p>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Property Testing & Phantom Types</h2>
               
-              <Code language="typescript">{`// we can drill deeply into runtime and type-level structures
-type RegularUser = { name:string }
-type PremiumUser = RegularUser & { premiumSince:Date }
-type User = RegularUser | PremiumUser
+              <div className="space-y-8">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Defining Domain Types</h3>
+                  <p className="text-gray-600 mb-4">
+                    Let's model a user system with different access levels. We can use typist to prove 
+                    properties about these types both at the type level and with runtime objects.
+                  </p>
+                  
+                  <Code language="typescript">{`type RegularUser = { name: string }
+type PremiumUser = RegularUser & { premiumSince: Date }
+type User = RegularUser | PremiumUser`}</Code>
+                </div>
 
-has_<'name', string>(t_<User>()) // ✓
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Testing Type Properties</h3>
+                  <p className="text-gray-600 mb-4">
+                    Use <code>has_</code> to test whether a type has specific properties. Combined with <code>t_</code> 
+                    (phantom types), you can perform these checks purely at the type level without runtime objects.
+                  </p>
+                  
+                  <Code language="typescript">{`import { has_, t_ } from '@typefirst/typist'
 
-// @ts-expect-error ✓
+has_<'name', string>(t_<User>()) // ✓ All users have a name
+
+// @ts-expect-error ✓ 
 // property 'premiumSince' is missing in type 'RegularUser'
-has_<'premiumSince', string>(t_<User>()) 
+has_<'premiumSince', Date>(t_<User>()) // Error: Not all users are premium`}</Code>
+                </div>
 
-const alice = { name:'alice' } as const
-const bob = { name:'bob', premiumSince:new Date('2022-01-01') } as const
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Runtime Object Validation</h3>
+                  <p className="text-gray-600 mb-4">
+                    The same property testing works seamlessly with actual runtime objects, letting you 
+                    validate object structures and extract precise type information.
+                  </p>
+                  
+                  <Code language="typescript">{`const alice = { name: 'alice' } as const
+const bob = { name: 'bob', premiumSince: new Date('2022-01-01') } as const
 
-has_<'name', string>(bob) // ✓
-has_<'premiumSince', Date>(bob) // ✓
+has_<'name', string>(bob)           // ✓ Bob has a name
+has_<'premiumSince', Date>(bob)     // ✓ Bob is premium
+is_<PremiumUser>(bob)               // ✓ Bob is a premium user
+extends_<typeof bob, RegularUser>() // ✓ Bob extends regular user
 
-is_<typeof bob['premiumSince']>(t_<Date>()) // ✓
-is_<PremiumUser>(bob) // ✓
-extends_<typeof bob, RegularUser>() // ✓
-
-is_<User['name']>(alice.name) // ✓
-is_<'alice'>(alice.name) // ✓
+is_<User['name']>(alice.name)       // ✓ Alice's name fits User.name
+is_<'alice'>(alice.name)            // ✓ Literal type assertion
 
 // @ts-expect-error ✓
 // type 'alice' is not assignable to type 'bob'
-is_<'bob'>(alice.name)`}</Code>
+is_<'bob'>(alice.name)              // Error: Wrong literal type`}</Code>
+                </div>
+              </div>
             </section>
 
             {/* Core Concepts */}
