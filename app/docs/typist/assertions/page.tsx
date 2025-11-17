@@ -72,36 +72,37 @@ export default function AssertionsApiPage() {
               
               <div className="prose prose-lg text-gray-700 max-w-none space-y-6">
                 <p>
-                  The <strong>Assertions</strong> functional group provides a comprehensive suite of 
-                  compile-time type checking utilities that enable static verification without any 
-                  runtime overhead. These functions serve as the foundation for type-level testing, 
-                  constraint validation, and proof construction in the typist ecosystem.
+                  The <strong>Assertions</strong> functional group provides compile-time type checking 
+                  utilities with zero runtime overhead. These functions test type relationships, validate 
+                  assignability, and verify constraints entirely through TypeScript's type system.
                 </p>
 
                 <p>
-                  Assertions in typist operate entirely at the type level, leveraging TypeScript's 
-                  structural type system to encode static proofs, validate assignability relationships, 
-                  and verify complex type constraints. They complement the verdict system by providing 
-                  immediate compile-time feedback through TypeScript's error reporting mechanism.
+                  Assertions operate by leveraging type constraints to trigger compilation errors when 
+                  invalid relationships are tested. They accept phantom parameters that exist only for 
+                  type checking and have no runtime behavior.
                 </p>
 
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Purpose and Design</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Type-Level and Value-Level Flexibility</h3>
 
                 <p>
-                  Assertions serve three primary purposes in the typist ecosystem:
+                  Assertions work with both type identifiers and runtime values through <code>typeof </code> 
+                  and <code>t_</code> conversions. This allows flexible usage patterns:
                 </p>
 
-                <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Type-Level Testing</strong>: Enable writing comprehensive test suites that verify type relationships and constraints at compile time</li>
-                  <li><strong>Static Validation</strong>: Provide immediate feedback about type compatibility and assignability without execution</li>
-                  <li><strong>Documentation</strong>: Serve as executable documentation that demonstrates expected type behaviors and relationships</li>
-                </ul>
+                <Code language="typescript">{`// Use runtime values as type arguments
+const user = { id: 1, name: 'Alice' }
+extends_<typeof user, { id: number }>()     // Extract type from value
 
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Functional Structure</h3>
+// Use type identifiers as phantom arguments  
+type User = { id: number; name: string }
+extends_(user, t_<User>())                   // Create phantom from type
 
-                <p>
-                  The assertions group is organized around different categories of type-level verification:
-                </p>
+// Both patterns work identically
+is_<User>(user)           // Type argument + runtime value
+is_<typeof user>(t_<User>())  // Both as type arguments`}</Code>
+
+                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Functional Categories</h3>
 
                 <div className="grid gap-4 mt-6">
                   <div className="border border-gray-200 rounded-lg p-4">
@@ -109,7 +110,7 @@ export default function AssertionsApiPage() {
                       <CheckCircle className="h-5 w-5 text-green-600" />
                       Assignment Assertions
                     </h4>
-                    <p className="text-gray-600">Test direct value assignability and type compatibility (<code>is_</code>, <code>assignable_</code>)</p>
+                    <p className="text-gray-600">Test value assignability to types (<code>is_</code>, <code>assignable_</code>)</p>
                   </div>
 
                   <div className="border border-gray-200 rounded-lg p-4">
@@ -117,7 +118,7 @@ export default function AssertionsApiPage() {
                       <CheckCircle className="h-5 w-5 text-blue-600" />
                       Structural Assertions
                     </h4>
-                    <p className="text-gray-600">Verify object structure and property existence (<code>has_</code>)</p>
+                    <p className="text-gray-600">Verify object properties and structure (<code>has_</code>)</p>
                   </div>
 
                   <div className="border border-gray-200 rounded-lg p-4">
@@ -125,7 +126,7 @@ export default function AssertionsApiPage() {
                       <CheckCircle className="h-5 w-5 text-purple-600" />
                       Relationship Assertions  
                     </h4>
-                    <p className="text-gray-600">Test type extension and inheritance relationships (<code>extends_</code>, <code>instance_</code>)</p>
+                    <p className="text-gray-600">Test type extension and instance relationships (<code>extends_</code>, <code>instance_</code>)</p>
                   </div>
 
                   <div className="border border-gray-200 rounded-lg p-4">
@@ -133,7 +134,7 @@ export default function AssertionsApiPage() {
                       <XCircle className="h-5 w-5 text-red-600" />
                       Impossibility Assertions
                     </h4>
-                    <p className="text-gray-600">Verify type impossibility and contradiction (<code>never_</code>)</p>
+                    <p className="text-gray-600">Verify type contradictions and unreachable states (<code>never_</code>)</p>
                   </div>
 
                   <div className="border border-gray-200 rounded-lg p-4">
@@ -141,23 +142,21 @@ export default function AssertionsApiPage() {
                       <AlertCircle className="h-5 w-5 text-orange-600" />
                       Verdict Assertions
                     </h4>
-                    <p className="text-gray-600">Work with verdict types for meta-level verification (<code>yes_</code>, <code>no_</code>, <code>decidable_</code>)</p>
+                    <p className="text-gray-600">Test comparator results (<code>yes_</code>, <code>no_</code>, <code>decidable_</code>)</p>
                   </div>
                 </div>
 
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Design Patterns</h3>
 
                 <p>
-                  All assertion functions follow consistent design patterns that enable predictable 
-                  composition and usage:
+                  All assertion functions follow consistent patterns:
                 </p>
 
                 <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Generic Type Parameters</strong>: All assertions use generic types to capture and constrain the types being tested</li>
-                  <li><strong>Phantom Parameters</strong>: Functions accept phantom parameters that exist only for type checking, with no runtime behavior</li>
-                  <li><strong>Compile-Time Only</strong>: All functions have trivial implementations (empty bodies or simple returns) since their purpose is purely type-level</li>
-                  <li><strong>Constraint-Based</strong>: Type constraints on parameters ensure that invalid assertions result in TypeScript compiler errors</li>
-                  <li><strong>Composable</strong>: Assertions can be freely combined and composed within test blocks and examples</li>
+                  <li><strong>Generic constraints</strong> enforce valid relationships at compile time</li>
+                  <li><strong>Phantom parameters</strong> exist only for type checking, not runtime execution</li>
+                  <li><strong>Empty implementations</strong> since all behavior is type-level</li>
+                  <li><strong>Composable design</strong> allows combining assertions in test blocks</li>
                 </ul>
               </div>
             </section>
