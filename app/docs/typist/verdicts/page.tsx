@@ -3,7 +3,7 @@ import { getDocLibraryBySlug } from '@/lib/content/docs.registry.logic';
 import { buildDocNavigation } from '@/lib/content/doc.model';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
-import { ArrowLeft, CheckCircle2, XCircle, AlertTriangle, Info } from 'lucide-react';
+import { ArrowLeft, AlertTriangle, CheckCircle2, Info, XCircle, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 export async function generateMetadata() {
@@ -61,108 +61,102 @@ export default function VerdictsApiPage() {
               </div>
               
               <p className="text-xl text-gray-600 mb-6">
-                Type-level verdict system that encodes the results of type comparisons with 
-                structured success/failure information and debugging metadata.
+                Result types that encode boolean decisions with rich error information. 
+                Verdicts bridge comparators and assertions, enabling sophisticated debugging 
+                and constraint-based type testing with structured failure metadata.
               </p>
             </header>
 
-            {/* Introductory Exposition */}
+            {/* Overview */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Overview</h2>
               
-              <div className="prose prose-lg text-gray-700 max-w-none space-y-6">
-                <p>
-                  The <strong>Verdicts</strong> functional group provides structured type-level 
-                  result encoding that captures the outcomes of type comparisons and operations. 
-                  Verdicts serve as the return types for <Link href="/docs/typist/comparators" className="text-blue-600 hover:text-blue-800 underline">comparators</Link> and 
-                  the input types for <Link href="/docs/typist/assertions" className="text-blue-600 hover:text-blue-800 underline">assertion functions</Link>.
+              <p className="text-lg text-gray-600 mb-6">
+                Verdicts are the backbone of typist's type comparison system. They encode boolean results 
+                as structured types that carry both success/failure information and debugging metadata. 
+                When comparisons fail, verdicts capture exactly what went wrong and which types were involved, 
+                making TypeScript errors more informative and debugging more efficient.
+              </p>
+
+              <p className="text-lg text-gray-600 mb-6">
+                Every <Link href="/docs/typist/comparators" className="text-blue-600 underline">comparator</Link> produces 
+                a verdict type, and every <Link href="/docs/typist/assertions" className="text-blue-600 underline">assertion</Link> tests 
+                a verdict type. This creates a complete ecosystem where type relationships are evaluated, 
+                encoded as verdicts, and then verified through assertions.
+              </p>
+
+              <div className="prose max-w-none mb-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">Success and Failure Results</h3>
+                <p className="text-gray-600 mb-4">
+                  When type comparisons succeed, they produce <code>$Yes</code> verdicts with success flags. 
+                  When they fail, they produce <code>$No</code> verdicts containing descriptive error keys and type dumps for debugging.
                 </p>
+              </div>
+              
+              <div className="mb-8">
+                <Code language="typescript">{`// Success verdicts
+$Equal<string, string>        // → $Yes
+$Extends<'hello', string>     // → $Yes
+yes_<$Equal<string, string>>() // ✓ Assertion passes
 
-                <p>
-                  Verdicts work by encoding boolean results along with metadata about the comparison 
-                  or operation. Success cases produce <code>$Yes</code> verdicts, while failures 
-                  produce <code>$No</code> verdicts that include error keys and type information 
-                  for debugging.
-                </p>
+// Failure verdicts with debugging information
+$Equal<string, number>        // → $No<'not-equal', [string, number]>
+no_<$Equal<string, number>>()  // ✓ Assertion passes`}</Code>
+              </div>
 
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">The Verdict Ecosystem</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Integration Workflow</h3>
 
-                <p>
-                  Verdicts form the communication layer between different typist components:
-                </p>
+              <p className="text-gray-600 mb-4">
+                Verdicts enable a complete type testing workflow that spans the entire typist ecosystem:
+              </p>
 
-                <div className="grid gap-4 mt-6 mb-6">
-                  <div className="flex items-start gap-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                    <Info className="h-6 w-6 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold text-blue-900 mb-1">Comparators → Verdicts</h4>
-                      <p className="text-blue-800 text-sm">
-                        <Link href="/docs/typist/comparators" className="underline">Comparator types</Link> like <code>$Equal</code> and <code>$Extends</code> 
-                        evaluate type relationships and produce verdict types as their results.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <CheckCircle2 className="h-6 w-6 text-green-600 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <h4 className="font-semibold text-green-900 mb-1">Verdicts → Assertions</h4>
-                      <p className="text-green-800 text-sm">
-                        <Link href="/docs/typist/assertions" className="underline">Assertion functions</Link> like <code>yes_</code> and <code>no_</code> 
-                        test verdict types to verify expected comparison outcomes.
-                      </p>
-                    </div>
-                  </div>
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Comparators → Verdicts</h4>
+                  <p className="text-gray-600 text-sm">
+                    <Link href="/docs/typist/comparators" className="text-blue-600 underline">Comparator types</Link> like <code>$Equal</code> and <code>$Extends</code> 
+                    evaluate type relationships and produce verdict types encoding the results with debugging information.
+                  </p>
                 </div>
 
-                <Code language="typescript">{`// Complete verdict flow example
-type ComparisonResult = $Equal<string, string>    // → $Yes (comparator produces verdict)
-yes_<ComparisonResult>()                          // ✓ (assertion tests verdict)
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Verdicts → Assertions</h4>
+                  <p className="text-gray-600 text-sm">
+                    <Link href="/docs/typist/assertions" className="text-blue-600 underline">Assertion functions</Link> like <code>yes_</code> and <code>no_</code> 
+                    test verdict types to verify expected outcomes, with TypeScript showing verdict details in error messages.
+                  </p>
+                </div>
 
-type FailedComparison = $Equal<string, number>    // → $No<'not-equal', [string, number]>
-no_<FailedComparison>()                           // ✓ (assertion tests failure verdict)`}</Code>
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Structured Debugging</h4>
+                  <p className="text-gray-600 text-sm">
+                    Failed verdicts include error keys and type dumps that appear in TypeScript errors, 
+                    making it clear exactly why comparisons failed and which types were involved.
+                  </p>
+                </div>
+              </div>
 
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Verdict Structure</h3>
+              <div className="mt-8">
+                <Code language="typescript">{`// Complete verdict workflow demonstration
+type UserComparison = $Equal<User, { name: string, age: number }>  // → $Yes
+type AdminComparison = $Equal<User, AdminUser>                     // → $No<'not-equal', [User, AdminUser]>
 
-                <p>
-                  All verdict types share a common structure with specific properties that enable 
-                  both programmatic testing and debugging:
-                </p>
-
-                <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Verdict flag</strong> - Boolean result encoded in the type structure</li>
-                  <li><strong>Error information</strong> - Failure verdicts include descriptive error keys</li>
-                  <li><strong>Type dumps</strong> - Failed comparisons capture the compared types for inspection</li>
-                  <li><strong>Constraint compatibility</strong> - Verdicts work seamlessly with TypeScript's constraint system</li>
-                </ul>
-
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Debugging Benefits</h3>
-
-                <p>
-                  The structured nature of verdicts provides significant debugging advantages:
-                </p>
-
-                <Code language="typescript">{`// Failed verdict includes debugging information
-type FailedExtends = $Extends<string, number>
-// → $No<'right-does-not-extend-left', [string, number]>
-//       ↑ Error key                    ↑ Types involved
-
-// This information appears in TypeScript error messages
-no_<FailedExtends>()  // ✓ Compiles
-yes_<FailedExtends>() // ✗ Error shows: 'right-does-not-extend-left' with [string, number]`}</Code>
+// Assertions test the verdicts and provide clear error feedback
+yes_<UserComparison>()   // ✓ User matches expected shape exactly
+no_<AdminComparison>()   // ✓ User and AdminUser have different structures`}</Code>
               </div>
             </section>
 
-            {/* Canonical API List */}
+            {/* API Reference */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">API Reference</h2>
               
               <div className="space-y-8">
-                {/* Base Verdict Types */}
+                {/* Base Verdict */}
                 <div className="border border-gray-200 rounded-lg p-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <Info className="h-6 w-6 text-gray-600" />
-                    Base Verdict Type
+                    Base Verdict Structure
                   </h3>
 
                   <div>
@@ -170,14 +164,13 @@ yes_<FailedExtends>() // ✗ Error shows: 'right-does-not-extend-left' with [str
                       <code>$Verdict</code>
                     </h4>
                     <p className="text-gray-600 mb-3">
-                      Base type that defines the common structure for all verdict types. 
-                      Contains the fundamental boolean result encoding.
+                      Foundation type that defines the common structure for all verdict types. 
+                      Contains the fundamental boolean result encoding used by the entire verdict system.
                     </p>
-                    <Code language="typescript">{`export type $Verdict = { $___verdict: boolean }`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Purpose:</strong> Shared structure for all verdict types
-                      <br />
-                      <strong>Usage:</strong> Internal base type, typically used in constraints like <code>$Maybe</code>
+                    <Code language="typescript">{`// Base structure shared by all verdicts
+export type $Verdict = { $___verdict: boolean }`}</Code>
+                    <div className="mt-3 p-3 bg-gray-50 rounded border text-sm text-gray-600">
+                      <strong>Usage:</strong> Internal base type for verdict constraints and assertions
                     </div>
                   </div>
                 </div>
@@ -195,25 +188,26 @@ yes_<FailedExtends>() // ✗ Error shows: 'right-does-not-extend-left' with [str
                     </h4>
                     <p className="text-gray-600 mb-3">
                       Represents successful type comparisons and operations. Indicates that 
-                      a tested relationship or constraint is satisfied.
+                      a tested relationship or constraint is satisfied with no errors.
                     </p>
                     <Code language="typescript">{`export type $Yes = {
   $___verdict: true
   $___type_error: false  
 }`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Properties:</strong> <code>$___verdict: true</code> (success flag), <code>$___type_error: false</code> (no error)
-                      <br />
-                      <strong>Usage:</strong> Returned by successful comparisons, tested by <code>yes_</code> assertion
-                      <br />
-                      <strong>Integration:</strong> Works with <Link href="/docs/typist/assertions" className="text-blue-600 underline">assertion functions</Link>
-                    </div>
-                    
-                    <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                      <h5 className="font-semibold text-green-900 mb-2">Example Production</h5>
-                      <Code language="typescript">{`type SuccessfulEqual = $Equal<string, string>        // → $Yes
-type SuccessfulExtends = $Extends<'hello', string>   // → $Yes
-type LiteralExtends = $Extends<42, number>           // → $Yes`}</Code>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-2">Common Producers</h5>
+                        <Code language="typescript">{`type IdentityComparison = $Equal<string, string>       // → $Yes
+type ValidSubtype = $Extends<'hello', string>         // → $Yes  
+type LiteralFits = $Extends<42, number>               // → $Yes`}</Code>
+                      </div>
+                      
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-2">Assertion Integration</h5>
+                        <Code language="typescript">{`// Test success verdicts with yes_ assertion
+yes_<$Equal<User, { name: string; age: number }>>()   // ✓ Passes
+yes_<$Extends<AdminUser, User>>()                     // ✓ AdminUser extends User`}</Code>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -232,7 +226,7 @@ type LiteralExtends = $Extends<42, number>           // → $Yes`}</Code>
                     <p className="text-gray-600 mb-3">
                       Represents failed type comparisons with detailed error information. 
                       Includes an error key describing the failure reason and a type dump 
-                      containing the compared types.
+                      containing the compared types for debugging.
                     </p>
                     <Code language="typescript">{`export type $No<
   Key extends string, 
@@ -243,36 +237,30 @@ type LiteralExtends = $Extends<42, number>           // → $Yes`}</Code>
   $___type_error: true
   $___type_error_key: Key
 }`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Type Parameters:</strong> <code>Key extends string</code> (error description), <code>Dump extends readonly any[]</code> (captured types)
-                      <br />
-                      <strong>Properties:</strong> Error flag, verdict flag, error key, and type dump for debugging
-                      <br />
-                      <strong>Integration:</strong> Tested by <code>no_</code> assertion from <Link href="/docs/typist/assertions" className="text-blue-600 underline">assertions</Link>
-                    </div>
-                    
-                    <div className="mt-4 space-y-3">
-                      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-                        <h5 className="font-semibold text-red-900 mb-2">Example Production</h5>
-                        <Code language="typescript">{`type FailedEqual = $Equal<string, number>
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-2">Common Error Patterns</h5>
+                        <Code language="typescript">{`// Type equality failures
+type DifferentTypes = $Equal<string, number>
 // → $No<'not-equal', [string, number]>
 
-type FailedExtends = $Extends<string, 'hello'>  
+// Extension relationship failures  
+type BadExtension = $Extends<string, 'hello'>
 // → $No<'right-does-not-extend-left', [string, 'hello']>`}</Code>
                       </div>
                       
-                      <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                        <h5 className="font-semibold text-blue-900 mb-2">Error Key Meanings</h5>
-                        <ul className="text-blue-800 text-sm space-y-1">
-                          <li><code>'not-equal'</code> - Types are not structurally identical (from <code>$Equal</code>)</li>
-                          <li><code>'right-does-not-extend-left'</code> - Left type does not extend right type (from <code>$Extends</code>)</li>
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-2">Error Key Reference</h5>
+                        <ul className="text-gray-700 text-sm space-y-1">
+                          <li><code>'not-equal'</code> - Types have different structures (from <code>$Equal</code>)</li>
+                          <li><code>'right-does-not-extend-left'</code> - Subtype relationship failed (from <code>$Extends</code>)</li>
                         </ul>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Maybe Verdict */}
+                {/* Maybe Constraint */}
                 <div className="border border-gray-200 rounded-lg p-6">
                   <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <AlertTriangle className="h-6 w-6 text-orange-600" />
@@ -288,24 +276,15 @@ type FailedExtends = $Extends<string, 'hello'>
                       or failure. Used in assertion constraints to accept any valid comparison result.
                     </p>
                     <Code language="typescript">{`export type $Maybe = $Verdict & ($Yes | $No<string>)`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Structure:</strong> Intersection of base verdict with union of specific outcomes
-                      <br />
-                      <strong>Usage:</strong> Constraint for <code>decidable_</code> assertion function
-                      <br />
-                      <strong>Purpose:</strong> Ensures only valid verdict types are accepted by assertion functions
-                    </div>
-                    
-                    <div className="mt-4 p-4 bg-orange-50 border border-orange-200 rounded-lg">
-                      <h5 className="font-semibold text-orange-900 mb-2">Usage in Constraints</h5>
+                    <div className="mt-4">
+                      <h5 className="font-semibold text-gray-900 mb-2">Constraint Usage</h5>
                       <Code language="typescript">{`// decidable_ accepts any valid verdict
 decidable_<$Equal<string, string>>()     // ✓ Accepts $Yes
 decidable_<$Equal<string, number>>()     // ✓ Accepts $No<...>  
-decidable_<$Extends<'hi', string>>()     // ✓ Accepts $Yes
 
-// Used to verify that comparisons produce decidable results
-function testComparison<T extends $Maybe>(verdict: T) {
-  decidable_<T>()  // ✓ Ensures T is a valid verdict
+// Ensures type operations produce valid verdicts
+function verifyComparison<T extends $Maybe>(result: T) {
+  decidable_<T>()  // ✓ T is a valid verdict type
 }`}</Code>
                     </div>
                   </div>
@@ -313,246 +292,245 @@ function testComparison<T extends $Maybe>(verdict: T) {
               </div>
             </section>
 
-            {/* Integration Examples */}
+            {/* Key Patterns */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Integration Usage Examples</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Patterns</h2>
               
-              <div className="space-y-8">
-                {/* Complete Verdict Flow */}
+              <p className="text-lg text-gray-600 mb-8">
+                Master these essential verdict patterns to build robust type testing and debugging workflows. 
+                Each pattern demonstrates practical techniques that leverage verdict structure for maximum effectiveness.
+              </p>
+
+              <div className="space-y-10">
+                {/* Pattern 1: Basic Verdict Testing */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Complete Verdict Flow</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Demonstrate the full pipeline from comparisons to verdicts to assertions.
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Verdict Testing</h3>
+                  <p className="text-gray-600 mb-4">
+                    Test verdict results from comparisons using assertion functions. This is the fundamental 
+                    pattern for verifying type relationships and catching type-level logical errors.
                   </p>
-                  
                   <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, test_ } from '@typefirst/typist'
 
-test_('Verdict Flow Demonstration', () => {
-  // Step 1: Comparators produce verdicts
-  type StringEquality = $Equal<string, string>           // → $Yes
-  type NumberEquality = $Equal<string, number>           // → $No<'not-equal', [string, number]>
-  type LiteralExtends = $Extends<'hello', string>        // → $Yes  
-  type InvalidExtends = $Extends<string, 'hello'>        // → $No<'right-does-not-extend-left', [string, 'hello']>
-  
-  // Step 2: Assertions test verdicts
-  yes_<StringEquality>()    // ✓ Test successful equality
-  no_<NumberEquality>()     // ✓ Test failed equality
-  yes_<LiteralExtends>()    // ✓ Test successful extension
-  no_<InvalidExtends>()     // ✓ Test failed extension
-  
-  // Step 3: Verdict metadata appears in errors
-  // If you accidentally write:
-  // yes_<NumberEquality>()  // ✗ Error shows: '$No<'not-equal', [string, number]>' 
-  //                         //   does not satisfy the constraint '$Yes'
+test_('Basic verdict testing', () => {
+  // Test successful comparisons
+  yes_<$Equal<string, string>>()           // ✓ Same types are equal
+  yes_<$Extends<'hello', string>>()        // ✓ Literal extends general type
+  yes_<$Extends<{ a: 1, b: 2 }, { a: 1 }>>()  // ✓ More props extend fewer
+
+  // Test failed comparisons  
+  no_<$Equal<string, number>>()            // ✓ Different types not equal
+  no_<$Extends<string, 'hello'>>()         // ✓ General doesn't extend literal
+  no_<$Extends<{ a: 1 }, { a: 1, b: 2 }>>()   // ✓ Fewer props don't extend more
 })`}</Code>
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Link 
+                      href="/typescape/typist-type-comparisons"
+                      className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 font-medium"
+                    >
+                      🔍 Explore in Type Comparisons Typescape
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Verdict-Based Conditional Types */}
+                {/* Pattern 2: Verdict-Based Conditional Logic */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Verdict-Based Conditional Types</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Use verdicts to build sophisticated conditional type logic with error handling.
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Verdict-Based Conditional Logic</h3>
+                  <p className="text-gray-600 mb-4">
+                    Use verdicts in conditional types to create sophisticated type utilities that provide 
+                    different behaviors based on comparison results, with proper error handling.
                   </p>
+                  <Code language="typescript">{`import { $Equal, $Extends, $Yes, $No, is_, no_, test_ } from '@typefirst/typist'
 
-                  <Code language="typescript">{`import { $Equal, $Extends, $Yes, $No, yes_, no_, test_ } from '@typefirst/typist'
-
-// Utility type that uses verdicts for conditional logic
-type SafePropertyAccess<T, K> = 
-  $Extends<K, keyof T> extends $Yes 
-    ? T[K & keyof T]
-    : $No<'property-does-not-exist', [T, K]>
-
-// Another utility that checks for exact type matches
+// Conditional utility based on type equality
 type StrictAssign<TTarget, TSource> =
   $Equal<TTarget, TSource> extends $Yes
-    ? TSource
-    : $No<'types-not-identical', [TTarget, TSource]>
+    ? TSource                                        // ✓ Types match exactly
+    : $No<'types-not-identical', [TTarget, TSource]> // ✗ Different types
 
-test_('Verdict-Based Utilities', () => {
-  interface User {
-    id: number
-    name: string
-    email: string
-  }
+// Conditional utility based on extension relationships  
+type SafePropertyAccess<T, K> = 
+  $Extends<K, keyof T> extends $Yes 
+    ? T[K & keyof T]                               // ✓ Property exists
+    : $No<'property-does-not-exist', [T, K]>       // ✗ Property missing
+
+test_('Verdict-based conditional logic', () => {
+  interface User { name: string; age: number }
   
-  // Test property access utility
-  type ValidAccess = SafePropertyAccess<User, 'name'>     // → string
-  type InvalidAccess = SafePropertyAccess<User, 'age'>    // → $No<'property-does-not-exist', [User, 'age']>
-  
-  // Verify the results
-  is_<string>(t_<ValidAccess>())                          // ✓ Valid access returns property type
-  no_<InvalidAccess>()                                    // ✓ Invalid access returns error verdict
-  
-  // Test strict assignment utility  
+  // Test strict assignment utility
   type ValidAssign = StrictAssign<string, string>         // → string
   type InvalidAssign = StrictAssign<string, number>       // → $No<'types-not-identical', [string, number]>
   
-  is_<string>(t_<ValidAssign>())                          // ✓ Matching types pass through
-  no_<InvalidAssign>()                                    // ✓ Non-matching types produce error verdict
+  is_<string>(t_<ValidAssign>())          // ✓ Matching types pass through
+  no_<InvalidAssign>()                    // ✓ Different types produce error verdict
+  
+  // Test safe property access utility
+  type ValidAccess = SafePropertyAccess<User, 'name'>     // → string  
+  type InvalidAccess = SafePropertyAccess<User, 'email'>  // → $No<'property-does-not-exist', [User, 'email']>
+  
+  is_<string>(t_<ValidAccess>())          // ✓ Valid property access returns type
+  no_<InvalidAccess>()                    // ✓ Invalid access produces error verdict
 })`}</Code>
+                  <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <Link 
+                      href="/typescape/typist-advanced-patterns"
+                      className="inline-flex items-center gap-2 text-green-700 hover:text-green-900 font-medium"
+                    >
+                      🚀 Explore in Advanced Patterns Typescape
+                    </Link>
+                  </div>
                 </div>
 
-                {/* Error Handling and Debugging */}
+                {/* Pattern 3: Custom Verdict Producers */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Error Handling and Debugging</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Leverage verdict error information for debugging complex type relationships.
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Custom Verdict Producers</h3>
+                  <p className="text-gray-600 mb-4">
+                    Create custom comparison utilities that produce verdict types following the same patterns 
+                    as built-in comparators. This enables domain-specific type validations with consistent error reporting.
                   </p>
-
-                  <Code language="typescript">{`import { $Equal, $Extends, $No, yes_, no_, never_, test_ } from '@typefirst/typist'
-
-// Utility to extract error information from failed verdicts
-type ExtractErrorKey<T> = 
-  T extends $No<infer K, any> ? K : never
-
-type ExtractErrorDump<T> = 
-  T extends $No<any, infer D> ? D : never
-
-test_('Verdict Error Inspection', () => {
-  // Create some failed comparisons
-  type FailedEqual = $Equal<{ a: string }, { a: number }>
-  type FailedExtends = $Extends<{ a: 1, b: 2 }, { a: 1, b: 2, c: 3 }>
-  
-  // Extract error information
-  type EqualError = ExtractErrorKey<FailedEqual>          // → 'not-equal'
-  type ExtendsError = ExtractErrorKey<FailedExtends>      // → 'right-does-not-extend-left'
-  
-  // Extract type dumps
-  type EqualDump = ExtractErrorDump<FailedEqual>          // → [{ a: string }, { a: number }]
-  type ExtendsDump = ExtractErrorDump<FailedExtends>      // → [{ a: 1, b: 2 }, { a: 1, b: 2, c: 3 }]
-  
-  // Verify error extraction
-  is_<'not-equal'>(t_<EqualError>())                     // ✓ Correct error key extracted
-  is_<'right-does-not-extend-left'>(t_<ExtendsError>())  // ✓ Correct error key extracted
-  
-  // Test that successful verdicts produce never for error extraction
-  type SuccessfulEqual = $Equal<string, string>
-  type NoError = ExtractErrorKey<SuccessfulEqual>         // → never
-  never_<NoError>()                                       // ✓ Successful verdicts have no error key
-})`}</Code>
-                </div>
-
-                {/* Custom Verdict Types */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Custom Verdict Types</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Build custom comparison utilities that produce verdict types following the same patterns.
-                  </p>
-
                   <Code language="typescript">{`import { $Yes, $No, yes_, no_, test_ } from '@typefirst/typist'
 
-// Custom comparator that checks if a type has specific properties
-type $HasProperties<T, Props extends readonly string[]> = 
+// Custom comparator for required properties
+type $HasRequiredProperties<T, Props extends readonly string[]> = 
   Props extends readonly [infer First, ...infer Rest]
     ? First extends string
       ? Rest extends readonly string[]
         ? First extends keyof T
-          ? $HasProperties<T, Rest>  // Recurse if property exists
-          : $No<'missing-property', [T, First]>  // Fail if property missing
-        : $No<'invalid-props-array', [Props]>
+          ? $HasRequiredProperties<T, Rest>          // Continue checking
+          : $No<'missing-required-property', [T, First]>  // Property missing
+        : $No<'invalid-properties-spec', [Props]>
       : $No<'invalid-property-name', [First]>
-    : $Yes  // All properties checked successfully
+    : $Yes  // All properties verified successfully
 
-// Custom comparator for array length constraints  
+// Custom comparator for array constraints
 type $HasMinLength<T, N extends number> =
   T extends readonly any[]
     ? T['length'] extends number
-      ? N extends T['length']
-        ? $Yes
-        : T['length'] extends N
-          ? $Yes  
+      ? N extends 0
+        ? $Yes                                       // Zero minimum always satisfied
+        : T['length'] extends N | infer Longer
+          ? Longer extends N
+            ? $Yes                                   // Length sufficient
+            : $No<'insufficient-length', [T, N]>     // Array too short
           : $No<'insufficient-length', [T, N]>
-      : $No<'dynamic-length-array', [T]>
-    : $No<'not-an-array', [T]>
+      : $No<'dynamic-length-array', [T]>             // Can't verify runtime length
+    : $No<'not-an-array', [T]>                       // Not an array type
 
-test_('Custom Verdict Types', () => {
-  interface User {
-    id: number
-    name: string
-    email: string
-  }
+test_('Custom verdict producers', () => {
+  interface User { id: number; name: string; email: string }
+  interface PartialUser { name: string }
   
-  interface PartialUser {
-    name: string
-  }
+  // Test property requirements comparator
+  type UserHasProps = $HasRequiredProperties<User, ['id', 'name']>          // → $Yes
+  type PartialMissingId = $HasRequiredProperties<PartialUser, ['id']>       // → $No<'missing-required-property', [PartialUser, 'id']>
   
-  // Test property checking comparator
-  type UserHasProps = $HasProperties<User, ['id', 'name']>        // → $Yes
-  type PartialMissingProp = $HasProperties<PartialUser, ['id']>   // → $No<'missing-property', [PartialUser, 'id']>
-  
-  yes_<UserHasProps>()                                            // ✓ User has required properties
-  no_<PartialMissingProp>()                                       // ✓ PartialUser missing 'id'
+  yes_<UserHasProps>()                  // ✓ User has required properties
+  no_<PartialMissingId>()               // ✓ PartialUser missing required property
   
   // Test array length comparator
-  type ValidArray = $HasMinLength<[1, 2, 3], 2>                  // → $Yes  
-  type TooShort = $HasMinLength<[1], 3>                           // → $No<'insufficient-length', [[1], 3]>
-  type NotArray = $HasMinLength<string, 5>                        // → $No<'not-an-array', [string]>
+  type ValidArray = $HasMinLength<[1, 2, 3], 2>          // → $Yes
+  type TooShort = $HasMinLength<[1], 3>                   // → $No<'insufficient-length', [[1], 3]>
+  type NotArray = $HasMinLength<string, 5>                // → $No<'not-an-array', [string]>
   
-  yes_<ValidArray>()                                              // ✓ Array meets minimum length
-  no_<TooShort>()                                                 // ✓ Array too short
-  no_<NotArray>()                                                 // ✓ String is not array
+  yes_<ValidArray>()                    // ✓ Array meets minimum length
+  no_<TooShort>()                       // ✓ Array below minimum length
+  no_<NotArray>()                       // ✓ String is not an array
 })`}</Code>
+                  <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    <Link 
+                      href="/typescape/typist-registry-patterns"
+                      className="inline-flex items-center gap-2 text-amber-700 hover:text-amber-900 font-medium"
+                    >
+                      📋 Explore in Registry Patterns Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                {/* Pattern 4: TypeScript Error Integration */}
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">TypeScript Error Integration</h3>
+                  <p className="text-gray-600 mb-4">
+                    Leverage how verdicts appear in TypeScript error messages to create informative 
+                    debugging experiences. Verdict structure provides rich context when assertions fail.
+                  </p>
+                  <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, decidable_, test_ } from '@typefirst/typist'
+
+test_('TypeScript error integration', () => {
+  interface User { name: string; age: number }
+  interface Admin { name: string; age: number; permissions: string[] }
+  
+  // When assertions fail, TypeScript shows the full verdict type
+  
+  // This would show error: 
+  // Argument of type '$No<"not-equal", [User, Admin]>' 
+  // is not assignable to parameter of type '$Yes'
+  // yes_<$Equal<User, Admin>>()  // ✗ Uncommenting shows detailed error
+  
+  // This would show error:
+  // Argument of type '$No<"right-does-not-extend-left", [User, Admin]>'
+  // is not assignable to parameter of type '$Yes'  
+  // yes_<$Extends<User, Admin>>()  // ✗ Uncommenting shows detailed error
+  
+  // Correct assertions that pass
+  no_<$Equal<User, Admin>>()       // ✓ User and Admin are different types
+  yes_<$Extends<Admin, User>>()    // ✓ Admin has all User properties + more
+  
+  // decidable_ shows verdict information in generic constraints
+  decidable_<$Equal<User, Admin>>()    // ✓ Accepts any verdict, shows debugging info
+  decidable_<$Extends<Admin, User>>()  // ✓ Shows successful verdict structure
+  
+  // Use @ts-expect-error to document expected failures
+  // @ts-expect-error - Admin has additional properties, not equal to User
+  yes_<$Equal<User, Admin>>()
+  
+  // @ts-expect-error - User lacks Admin permissions property  
+  yes_<$Extends<User, Admin>>()
+})`}</Code>
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center gap-2 text-blue-700 hover:text-blue-900 font-medium"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
                 </div>
               </div>
             </section>
 
-            {/* Integration Notes */}
+            {/* Related Functional Groups */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Integration with Other Typist Components</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Functional Groups</h2>
               
-              <div className="space-y-6">
-                <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-3">
-                    <Link href="/docs/typist/comparators" className="hover:underline">Comparators Integration</Link>
+              <p className="text-gray-600 mb-6">
+                Verdicts work closely with other typist functional groups to provide complete type testing capabilities:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <Link href="/docs/typist/comparators" className="group block p-6 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3 group-hover:text-blue-700">
+                    Comparators <ExternalLink className="inline h-4 w-4 ml-1" />
                   </h3>
                   <p className="text-blue-800 mb-3">
-                    Comparators like <code>$Equal</code> and <code>$Extends</code> are designed to 
-                    produce verdict types as their results. The specific error keys and dump formats 
-                    are determined by each comparator's implementation.
+                    Type-level comparison utilities that produce verdict types. Every comparator evaluation 
+                    results in either a <code>$Yes</code> or <code>$No</code> verdict.
                   </p>
-                  <Code language="typescript">{`// Comparators produce specific verdict types
-type EqualResult = $Equal<A, B>     // → $Yes | $No<'not-equal', [A, B]>
-type ExtendsResult = $Extends<L, R> // → $Yes | $No<'right-does-not-extend-left', [L, R]>`}</Code>
-                </div>
+                  <div className="text-sm text-blue-600">
+                    <strong>Key Types:</strong> $Equal, $Extends
+                  </div>
+                </Link>
 
-                <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-green-900 mb-3">
-                    <Link href="/docs/typist/assertions" className="hover:underline">Assertions Integration</Link>
+                <Link href="/docs/typist/assertions" className="group block p-6 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 transition-colors">
+                  <h3 className="text-lg font-semibold text-green-900 mb-3 group-hover:text-green-700">
+                    Assertions <ExternalLink className="inline h-4 w-4 ml-1" />
                   </h3>
                   <p className="text-green-800 mb-3">
-                    Assertion functions are designed to test specific verdict types. The constraints 
-                    ensure that only appropriate verdicts are accepted by each assertion function.
+                    Functions that test verdict types and provide compile-time verification. 
+                    Assertions consume verdicts and validate expected comparison outcomes.
                   </p>
-                  <Code language="typescript">{`// Assertions test specific verdict constraints
-yes_<T extends $Yes>()           // Only accepts success verdicts
-no_<T extends $No<any, any>>()   // Only accepts failure verdicts  
-decidable_<T extends $Maybe>()   // Accepts any valid verdict`}</Code>
-                </div>
-
-                <div className="p-6 bg-purple-50 border border-purple-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-purple-900 mb-3">TypeScript Error Messages</h3>
-                  <p className="text-purple-800 mb-3">
-                    When assertions fail, TypeScript error messages include the full verdict type 
-                    information, making the error keys and type dumps visible in IDE feedback.
-                  </p>
-                  <Code language="typescript">{`// Failed assertion shows full verdict in error
-yes_<$Equal<string, number>>()
-// Error: Argument of type '$No<"not-equal", [string, number]>' 
-// is not assignable to parameter of type '$Yes'`}</Code>
-                </div>
-
-                <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-yellow-900 mb-3">Test Block Organization</h3>
-                  <p className="text-yellow-800 mb-3">
-                    Organize verdict-based tests using test blocks to group related comparisons 
-                    and create clear documentation of expected behaviors.
-                  </p>
-                  <Code language="typescript">{`test_('User type relationships', () => {
-  yes_<$Equal<User['id'], number>>()
-  yes_<$Extends<AdminUser, User>>()
-  no_<$Equal<User, AdminUser>>()
-})`}</Code>
-                </div>
+                  <div className="text-sm text-green-600">
+                    <strong>Key Functions:</strong> yes_, no_, decidable_
+                  </div>
+                </Link>
               </div>
             </section>
           </div>
