@@ -701,6 +701,7 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
             tabSize: 2,
             hover: { enabled: true, delay: 200, sticky: true },
             renderValidationDecorations: 'on',
+            wordWrap: 'on',
           }}
           onChange={onChangeContent}
           onMount={onMount}
