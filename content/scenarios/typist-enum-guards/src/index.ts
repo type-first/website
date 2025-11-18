@@ -1,4 +1,4 @@
-import { t_, is_, test_ } from '@typefirst/typist'
+import { t_, is_, test_ } from './typist'
 
 export const isUnd 
   = (value:unknown): value is undefined => 

@@ -33,7 +33,7 @@ async function loadScenarioFiles(): Promise<ExplorerFile[]> {
       } else if (/\.(tsx?|d\.ts)$/.test(e.name)) {
         const rel = path.relative(baseDir, full).split(path.sep).join('/');
         const content = await fs.readFile(full, 'utf8');
-        out.push({ path: 'file:///' + rel, content });
+        out.push({ path: 'file:///src/' + rel, content });
       }
     }
   }
@@ -43,45 +43,8 @@ async function loadScenarioFiles(): Promise<ExplorerFile[]> {
   return out;
 }
 
-// Scenario intro component
-function ScenarioIntro() {
-  return (
-    <div className="mb-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        {typistIntroScenario.name}
-      </h1>
-      <p className="text-lg text-gray-600 mb-6">
-        {typistIntroScenario.blurb}
-      </p>
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="p-4 bg-blue-50 rounded-lg">
-          <h3 className="text-sm font-semibold text-blue-900 mb-2">Learning Goals:</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
-            {typistIntroScenario.learningGoals.map((goal, index) => (
-              <li key={index}>• {goal}</li>
-            ))}
-          </ul>
-        </div>
-        <div className="p-4 bg-amber-50 rounded-lg">
-          <h3 className="text-sm font-semibold text-amber-900 mb-2">Prerequisites:</h3>
-          <ul className="text-sm text-amber-800 space-y-1">
-            {typistIntroScenario.prerequisites.map((prereq, index) => (
-              <li key={index}>• {prereq}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </div>
-  );
-}
+import { TypescapePlayground } from "@/modules/playground/typescape-playground"
 
-export default async function TypistIntroScenarioPage() {
-  const files = await loadScenarioFiles();
-  
-  return (
-    <div className="max-w-7xl mx-auto px-6 py-8">
-      <ScenarioIntro />
-      <TypeExplorer initialFiles={files} />
-    </div>
-  );
+export default function TypistIntroPage() {
+  return <TypescapePlayground scenarioId="typist-intro" />
 }

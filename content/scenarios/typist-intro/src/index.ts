@@ -1,4 +1,4 @@
-import { is_, extends_, has_, t_ } from '@typefirst/typist'
+import { is_, extends_, has_, t_ } from './typist'
 
 /* 
 # typist

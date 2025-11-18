@@ -87,29 +87,29 @@ export default function AssertionsApiPage() {
 
                 <p>
                   Assertions work with both type identifiers and runtime values through <code>typeof</code> 
-                  and <code>t_</code> conversions. This flexibility lets you use the same assertion 
-                  patterns whether you start with types or runtime values:
+                  and <code>t_</code> conversions. See the interactive examples in our typescape scenarios:
                 </p>
 
-                <Code language="typescript">{`// Starting with runtime values - extract types with typeof
-const user = { id: 1, name: 'Alice' } as const
+                <div className="flex gap-4 mt-4 mb-6">
+                  <Link 
+                    href="/scenarios/typist-intro"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    🔭 Domain Modeling Example
+                  </Link>
+                  <Link 
+                    href="/scenarios/typist-enum-guards"
+                    className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    🛡️ Runtime Guards Example
+                  </Link>
+                </div>
 
-// Test runtime value against extracted type
-is_<typeof user>({ id: 1, name: 'Alice' })        // ✓ 
-extends_<typeof user, { id: number }>()           // ✓ Extract and test
-
-// Starting with types - create phantoms with t_
-type User = { id: number; name: string }
-type Hand = '👍' | '👎' | '👌'
-
-// Test phantom values with type arguments
-is_<User>(t_<User>())                             // ✓ 
-extends_<Hand, string>()                          // ✓ Pure type-level
-
-// Mix both approaches seamlessly
-const hand = '👍' as const
-extends_(hand, t_<Hand>())                        // Runtime value, phantom type
-is_<typeof hand>(t_<'👍'>())                      // Both as type arguments`}</Code>
+                <Code language="typescript">{`// From typist-intro scenario - basic assertion patterns
+is_<RegularUser>(user)
+has_<'premiumSince', Date>(premiumUser)
+// @ts-expect-error:✔︎
+is_<AdminPermission>('invalid-permission')`}</Code>
 
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Functional Categories</h3>
 
@@ -359,252 +359,115 @@ is_<typeof hand>(t_<'👍'>())                      // Both as type arguments`}<
 
             {/* Examples Section */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Compositional Usage Examples</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Interactive Examples</h2>
               
               <div className="space-y-8">
-                {/* Basic Assertion Composition */}
+                {/* Interactive Scenarios */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Assertion Composition</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Combine multiple assertions to validate complex type relationships and object structures.
-                    Use <code>@ts-expect-error</code> to test negative cases and ensure type safety.
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Explore Assertions in Action</h3>
+                  <p className="text-lg text-gray-600 mb-6">
+                    Experience assertions through our interactive typescape scenarios. Each scenario demonstrates 
+                    real-world usage patterns with working TypeScript code you can explore and modify.
                   </p>
                   
-                  <Code language="typescript">{`import { is_, has_, extends_, yes_, no_, $Equal, $Extends } from '@typefirst/typist'
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 transition-colors">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Domain Modeling</h4>
+                      <p className="text-gray-600 mb-4">
+                        User/Admin type systems with permission validation and sophisticated assertion patterns.
+                      </p>
+                      <Link 
+                        href="/scenarios/typist-intro"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                      >
+                        🔭 Explore Scenario
+                      </Link>
+                    </div>
 
-// Define domain types
-type User = { id: number; name: string; role: 'admin' | 'user' }
-type AdminUser = User & { permissions: string[] }
+                    <div className="border border-gray-200 rounded-lg p-6 hover:border-purple-300 transition-colors">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Runtime Type Guards</h4>
+                      <p className="text-gray-600 mb-4">
+                        Enum patterns with runtime validation and integration between compile-time and runtime checks.
+                      </p>
+                      <Link 
+                        href="/scenarios/typist-enum-guards"
+                        className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                      >
+                        🛡️ Explore Scenario
+                      </Link>
+                    </div>
 
-// Test type hierarchy and structure
-const user: User = { id: 1, name: 'Alice', role: 'admin' }
-const admin: AdminUser = { ...user, permissions: ['read', 'write'] }
+                    <div className="border border-gray-200 rounded-lg p-6 hover:border-green-300 transition-colors">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Object Manipulation</h4>
+                      <p className="text-gray-600 mb-4">
+                        Advanced omit patterns and utility type creation with comprehensive property validation.
+                      </p>
+                      <Link 
+                        href="/scenarios/typist-omit-utilities"
+                        className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+                      >
+                        🔧 Explore Scenario
+                      </Link>
+                    </div>
 
-// Basic structure validation
-is_<User>(user)                    // ✓ User object structure
-has_<'id', number>(user)           // ✓ Has required id property  
-has_<'role', User['role']>(user)   // ✓ Role property with correct type
-
-// Type relationship verification
-extends_<AdminUser, User>()        // ✓ AdminUser extends User
-extends_<typeof admin, User>()     // ✓ Runtime admin extends User type
-
-// Verdict-based comparisons
-yes_<$Equal<User['id'], number>>()           // ✓ id property is number
-yes_<$Extends<'admin', User['role']>>()     // ✓ 'admin' extends role union
-no_<$Equal<User, AdminUser>>()              // ✓ These are different types
-
-// Test negative cases with @ts-expect-error
-// @ts-expect-error ✓ 
-// Property 'permissions' missing in type 'User'
-has_<'permissions', string[]>(user)
-
-// @ts-expect-error ✓
-// Type 'string' is not assignable to type 'number'  
-is_<number>(user.name)
-
-// @ts-expect-error ✓
-// Type 'User' does not satisfy the constraint 'AdminUser'
-extends_<User, AdminUser>()`}</Code>
+                    <div className="border border-gray-200 rounded-lg p-6 hover:border-orange-300 transition-colors">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Registry Systems</h4>
+                      <p className="text-gray-600 mb-4">
+                        Complex type indexing and lookup patterns with sophisticated compile-time guarantees.
+                      </p>
+                      <Link 
+                        href="/scenarios/typist-registry-patterns"
+                        className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
+                      >
+                        📚 Explore Scenario
+                      </Link>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Domain Modeling with Type Guards */}
+                {/* Key Pattern Snippets */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Domain Modeling with Type Guards</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Patterns</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    Build sophisticated domain models that combine runtime type guards with compile-time assertions 
-                    to prove type relationships in different execution contexts.
+                    These snippets are extracted from the interactive scenarios above. Explore the full 
+                    working examples to see them in context.
                   </p>
+                  
+                  <div className="space-y-6">
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Basic Type Testing</h4>
+                      <Code language="typescript">{`// From typist-intro scenario
+is_<RegularUser>(user)
+has_<'premiumSince', Date>(premiumUser)
+extends_<AdminUser, RegularUser>()`}</Code>
+                    </div>
 
-                  <Code language="typescript">{`import { test_, is_, has_, never_, extends_, t_ } from '@typefirst/typist'
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Negative Testing with @ts-expect-error</h4>
+                      <Code language="typescript">{`// From typist-enum-guards scenario  
+// @ts-expect-error
+is_<typeof sports[0]>(string)
+// @ts-expect-error
+Sport.is_('cooking')`}</Code>
+                    </div>
 
-// Define domain types with inheritance
-type RegularUser = { name: string }
-type PremiumUser = RegularUser & { premiumSince: Date }
-type User = RegularUser | PremiumUser
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Object Structure Validation</h4>
+                      <Code language="typescript">{`// From typist-omit-utilities scenario
+const result = omit(o, ['a', 'c'])
+has_< 'b', 2 >(result)
+// @ts-expect-error:✔︎
+has_< 'a', 1 >(result)`}</Code>
+                    </div>
 
-type ExclusiveReaction = '💎' | '🐸'  // Premium-only reactions
-type Reaction = '👍' | '👎' | '👌' | '🎉' | '😊' | '😢'
-
-type PremiumFeedback = {
-  user: PremiumUser
-  reaction: Reaction | ExclusiveReaction
-  text: string
-}
-
-type RegularFeedback = {
-  user: RegularUser
-  reaction: Reaction
-  text: string  
-}
-
-type Feedback = RegularFeedback | PremiumFeedback
-
-test_('Domain Type Validation', () => {
-  // Test base type relationships
-  extends_<PremiumUser, User>()                   // ✓ Premium extends User
-  extends_<RegularUser, User>()                   // ✓ Regular extends User
-  has_<'name', string>(t_<User>())                // ✓ All users have name
-  
-  // @ts-expect-error ✓
-  // Property 'premiumSince' missing in type 'RegularUser'
-  has_<'premiumSince', Date>(t_<User>())          // Union doesn't guarantee property
-  
-  // Runtime type guards with compile-time validation
-  const isPremiumUser = (user: User): user is PremiumUser => 
-    'premiumSince' in user
-  
-  const isPremiumFeedback = (feedback: Feedback): feedback is PremiumFeedback => 
-    isPremiumUser(feedback.user)
-  
-  // Simulate feedback processing with type narrowing
-  const feedback = t_<Feedback>()
-  
-  if (isPremiumFeedback(feedback)) {
-    // In premium context - all assertions should pass
-    is_<PremiumUser>(feedback.user)              // ✓ Narrowed to premium
-    has_<'premiumSince', Date>(feedback.user)    // ✓ Premium has property
-    extends_<ExclusiveReaction, typeof feedback.reaction>() // ✓ Can use exclusive reactions
-  } else {
-    // In regular context - test limitations  
-    is_<RegularUser>(feedback.user)              // ✓ Narrowed to regular
-    
-    // @ts-expect-error ✓
-    // Property 'premiumSince' does not exist
-    has_<'premiumSince', Date>(feedback.user)
-    
-    // @ts-expect-error ✓ 
-    // Type 'ExclusiveReaction' not assignable to 'Reaction'
-    extends_<ExclusiveReaction, typeof feedback.reaction>()
-  }
-})`}</Code>
-                </div>
-
-                {/* Utility Function Design */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Utility Function Design</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Design type-safe utility functions with comprehensive validation and error testing.
-                  </p>
-
-                  <Code language="typescript">{`import { is_, has_, never_, test_, yes_, $Equal } from '@typefirst/typist'
-
-// Type-safe object property omission
-export const omit = <
-  const T extends Record<string, any>,
-  const K extends readonly (keyof T)[]
->(obj: T, keys: K): Omit<T, K[number]> => {
-  const result = { ...obj }
-  keys.forEach(key => delete result[key])
-  return result as Omit<T, K[number]>
-}
-
-test_('Utility Function Validation', () => {
-  const user = { id: 1, name: 'Alice', email: 'alice@example.com', age: 30 } as const
-  
-  // Test successful omission
-  const publicUser = omit(user, ['email', 'age'])
-  
-  has_<'id', 1>(publicUser)                       // ✓ Preserved properties
-  has_<'name', 'Alice'>(publicUser)               // ✓ Preserved properties
-  
-  // @ts-expect-error ✓
-  // Property 'email' does not exist
-  has_<'email', string>(publicUser)
-  
-  // @ts-expect-error ✓  
-  // Property 'age' does not exist
-  has_<'age', number>(publicUser)
-  
-  // Test type-level correctness
-  type ExpectedType = { readonly id: 1; readonly name: 'Alice' }
-  yes_<$Equal<typeof publicUser, ExpectedType>>() // ✓ Exact type match
-  
-  // Test constraint validation
-  // @ts-expect-error ✓
-  // Argument 'nonexistent' not assignable to parameter of type keyof T
-  const invalid = omit(user, ['nonexistent'])
-  
-  // Test with empty omission  
-  const unchanged = omit(user, [])
-  yes_<$Equal<typeof unchanged, typeof user>>()   // ✓ No change when no keys omitted
-})`}</Code>
-                </div>
-
-                {/* Advanced Type System Design */}
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Advanced Type System Design</h3>
-                  <p className="text-lg text-gray-600 mb-4">
-                    Design sophisticated type systems that combine runtime functionality with compile-time guarantees.
-                  </p>
-
-                  <Code language="typescript">{`import { instance_, is_, extends_, has_, test_, yes_, $Equal, t_ } from '@typefirst/typist'
-
-// Registry system with type-level indexing
-type ObjectWithKey = { key: string } & { [k: string]: any }
-
-type RTuple<E extends ObjectWithKey> = readonly E[]
-
-type RIndex<E extends ObjectWithKey, D extends RTuple<E>> = 
-  D extends readonly [infer Head, ...infer Tail]
-    ? Head extends { key: infer K } & E
-      ? K extends string
-        ? Tail extends RTuple<E>
-          ? { [P in K]: Head } & RIndex<E, Tail>
-          : never
-        : never
-      : never
-    : {}
-
-class Registry<const T extends ObjectWithKey, const Entries extends RTuple<T>> {
-  constructor(public entries: Entries) {}
-  
-  get index(): RIndex<T, Entries> {
-    return this.entries.reduce(
-      (acc, entry) => ({ ...acc, [entry.key]: entry }), 
-      {} as RIndex<T, Entries>
-    )
-  }
-}
-
-test_('Registry Type System', () => {
-  // Define domain model
-  type Person = { key: string; age: number; active: boolean }
-  
-  const people = [
-    { key: 'alice', age: 30, active: true },
-    { key: 'bob', age: 40, active: false },
-    { key: 'carol', age: 35, active: true }
-  ] as const satisfies RTuple<Person>
-  
-  const registry = new Registry<Person, typeof people>(people)
-  
-  // Test type-level indexing
-  type ExpectedIndex = {
-    alice: { key: 'alice'; age: 30; active: true }
-    bob: { key: 'bob'; age: 40; active: false } 
-    carol: { key: 'carol'; age: 35; active: true }
-  }
-  
-  yes_<$Equal<typeof registry.index, ExpectedIndex>>() // ✓ Perfect type-level mapping
-  
-  // Test individual entries
-  const alice = registry.index.alice
-  is_<{ key: 'alice'; age: 30; active: true }>(alice) // ✓ Exact literal types preserved
-  has_<'key', 'alice'>(alice)                         // ✓ Specific key type
-  has_<'age', 30>(alice)                              // ✓ Literal age preserved
-  
-  // Test constraint enforcement  
-  // @ts-expect-error ✓
-  // Property 'david' does not exist
-  const david = registry.index.david
-  
-  // @ts-expect-error ✓ 
-  // Type '{ key: "invalid" }' is not assignable to type 'Person'
-  const invalidPeople = [
-    { key: 'invalid' }
-  ] as const satisfies RTuple<Person>
-})`}</Code>
+                    <div>
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">Registry Type Validation</h4>
+                      <Code language="typescript">{`// From typist-registry-patterns scenario
+is_<RKeys<typeof registry.$def.entries>>(t_<'alice' | 'bob' | 'carol'>())
+const p0 = registry.get('alice')
+is_<typeof p0>({ key:'alice', age:30, active:true })`}</Code>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>

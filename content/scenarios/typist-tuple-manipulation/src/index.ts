@@ -1,4 +1,4 @@
-import { is_, t, test_, yes_, $Equal, example_ } from '@typefirst/typist'
+import { is_, t, test_, yes_, $Equal, example_ } from './typist'
 
 export const tuple 
   = <const T extends readonly string[]>

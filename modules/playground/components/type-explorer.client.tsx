@@ -527,20 +527,22 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-      {/* Sidepane: files */}
-      <aside className="rounded-lg overflow-hidden border border-gray-200 bg-white">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-gray-50">
-          <div className="text-sm font-medium text-gray-900">Files</div>
-          <button
-            onClick={addNewFile}
-            title="Create new file"
-            className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
-          >
-            +
-          </button>
-        </div>
-        <ul className="max-h-[70vh] overflow-auto divide-y divide-gray-100">
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Left sidebar: Files + Type + Errors */}
+      <div className="lg:order-1 space-y-6">
+        {/* Files */}
+        <aside className="rounded-lg overflow-hidden border border-gray-200 bg-white">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-gray-200 bg-gray-50">
+            <div className="text-sm font-medium text-gray-900">Files</div>
+            <button
+              onClick={addNewFile}
+              title="Create new file"
+              className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
+            >
+              +
+            </button>
+          </div>
+        <ul className="overflow-auto divide-y divide-gray-100">
           {files.map((f) => {
             const isActive = (editorRef.current?.getModel()?.uri.toString() ?? activePath) === f.path;
             const rel = toRel(f.path);
@@ -599,47 +601,9 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
             );
           })}
         </ul>
-      </aside>
+        </aside>
 
-      {/* Editor */}
-      <div className="lg:col-span-2 min-h-[520px] rounded-lg overflow-hidden border border-gray-200">
-        <Editor
-          height={editorHeight}
-          defaultLanguage="typescript"
-          path={activePath}
-          beforeMount={beforeMount}
-          theme={getMonacoTheme(mode)}
-          options={{
-            minimap: { enabled: false },
-            fontSize: 14,
-            scrollBeyondLastLine: false,
-            // Let the page handle scrolling; no internal vertical scroll
-            scrollbar: { vertical: 'hidden', horizontal: 'auto', handleMouseWheel: false, alwaysConsumeMouseWheel: false },
-            automaticLayout: true,
-            tabSize: 2,
-            hover: { enabled: true, delay: 200, sticky: true },
-            renderValidationDecorations: 'on',
-          }}
-          onChange={onChangeContent}
-          onMount={onMount}
-          onValidate={handleValidate}
-        />
-        {/* Hover tooltip (fallback) */}
-        {hoverTip.visible && (
-          <div
-            className="pointer-events-none fixed z-50 rounded border border-gray-300 bg-white shadow px-2 py-1 text-xs text-gray-900 max-w-[360px]"
-            style={{ left: hoverTip.x, top: hoverTip.y }}
-          >
-            <div className="whitespace-pre-wrap break-words">{hoverTip.message}</div>
-            {hoverTip.code ? (
-              <div className="text-gray-600 mt-1">Code: {String(hoverTip.code)}</div>
-            ) : null}
-          </div>
-        )}
-      </div>
-
-      {/* Right panel: type + errors */}
-      <div className="space-y-6">
+        {/* Type panel */}
         <section className="border border-gray-200 rounded-lg p-4">
           <h2 className="font-medium text-gray-900 mb-2">Type</h2>
           {typeInfo.text ? (
@@ -678,6 +642,7 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
           )}
         </section>
 
+        {/* Errors panel */}
         <section className="border border-gray-200 rounded-lg p-4">
           <h2 className="font-medium text-gray-900 mb-2">
             Errors {markers.length ? <span className="text-gray-500">({markers.length})</span> : null}
@@ -688,34 +653,71 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
             <ul className="space-y-2">
               {markers.map((m, idx) => (
                 <li key={idx} className="text-sm">
-                  <button
-                    onClick={() => jumpTo(m)}
-                    className="text-left w-full hover:bg-gray-50 rounded p-2 border border-gray-100"
-                  >
+                  <div className="hover:bg-gray-50 rounded p-2 border border-gray-100">
                     <div className="flex items-start gap-2">
                       <span
                         className={`mt-1 h-2 w-2 rounded-full ${
                           m.severity >= 8 ? "bg-red-500" : "bg-amber-500"
                         }`}
                       />
-                      <div>
-                        <div className="text-gray-900 flex items-center gap-2">
+                      <div className="flex-1">
+                        <button
+                          onClick={() => jumpTo(m)}
+                          className="text-gray-900 flex items-center gap-2 hover:text-blue-600 transition-colors"
+                        >
                           <span className="px-1.5 py-0.5 text-xs rounded bg-gray-100 text-gray-700">
                             {(m as any).resource?.split('/').pop?.() ?? 'file'}
                           </span>
                           L{m.startLineNumber}:{m.startColumn}
-                        </div>
-                        <div className="text-gray-700 break-words">
+                        </button>
+                        <div className="text-gray-700 break-words select-text cursor-text">
                           {m.message}
                         </div>
                       </div>
                     </div>
-                  </button>
+                  </div>
                 </li>
               ))}
             </ul>
           )}
         </section>
+      </div>
+
+      {/* Editor - takes up remaining space */}
+      <div className="lg:col-span-2 lg:order-2 min-h-[520px] rounded-lg overflow-hidden border border-gray-200">
+        <Editor
+          height={editorHeight}
+          defaultLanguage="typescript"
+          path={activePath}
+          beforeMount={beforeMount}
+          theme={getMonacoTheme(mode)}
+          options={{
+            minimap: { enabled: false },
+            fontSize: 14,
+            scrollBeyondLastLine: false,
+            // Let the page handle scrolling; no internal vertical scroll
+            scrollbar: { vertical: 'hidden', horizontal: 'auto', handleMouseWheel: false, alwaysConsumeMouseWheel: false },
+            automaticLayout: true,
+            tabSize: 2,
+            hover: { enabled: true, delay: 200, sticky: true },
+            renderValidationDecorations: 'on',
+          }}
+          onChange={onChangeContent}
+          onMount={onMount}
+          onValidate={handleValidate}
+        />
+        {/* Hover tooltip (fallback) */}
+        {hoverTip.visible && (
+          <div
+            className="pointer-events-none fixed z-50 rounded border border-gray-300 bg-white shadow px-2 py-1 text-xs text-gray-900 max-w-[360px]"
+            style={{ left: hoverTip.x, top: hoverTip.y }}
+          >
+            <div className="whitespace-pre-wrap break-words">{hoverTip.message}</div>
+            {hoverTip.code ? (
+              <div className="text-gray-600 mt-1">Code: {String(hoverTip.code)}</div>
+            ) : null}
+          </div>
+        )}
       </div>
     </div>
   );

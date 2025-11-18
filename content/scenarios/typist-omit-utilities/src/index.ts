@@ -1,4 +1,4 @@
-import { has_, test_, yes_, $Equal } from '@typefirst/typist'
+import { has_, test_, yes_, $Equal } from './typist'
 
 export type Rec<T> = Record<string, T>
 export type Key<T> = keyof T & string

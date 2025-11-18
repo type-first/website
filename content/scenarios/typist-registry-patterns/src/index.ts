@@ -1,4 +1,4 @@
-import { __, example_, is_, t_ } from '@typefirst/typist'
+import { __, example_, is_, t_ } from './typist'
 
 export const join  
   = < const A extends readonly any[], 
