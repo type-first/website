@@ -86,21 +86,30 @@ export default function AssertionsApiPage() {
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Type-Level and Value-Level Flexibility</h3>
 
                 <p>
-                  Assertions work with both type identifiers and runtime values through <code>typeof </code> 
-                  and <code>t_</code> conversions. This allows flexible usage patterns:
+                  Assertions work with both type identifiers and runtime values through <code>typeof</code> 
+                  and <code>t_</code> conversions. This flexibility lets you use the same assertion 
+                  patterns whether you start with types or runtime values:
                 </p>
 
-                <Code language="typescript">{`// Use runtime values as type arguments
-const user = { id: 1, name: 'Alice' }
-extends_<typeof user, { id: number }>()     // Extract type from value
+                <Code language="typescript">{`// Starting with runtime values - extract types with typeof
+const user = { id: 1, name: 'Alice' } as const
 
-// Use type identifiers as phantom arguments  
+// Test runtime value against extracted type
+is_<typeof user>({ id: 1, name: 'Alice' })        // ✓ 
+extends_<typeof user, { id: number }>()           // ✓ Extract and test
+
+// Starting with types - create phantoms with t_
 type User = { id: number; name: string }
-extends_(user, t_<User>())                   // Create phantom from type
+type Hand = '👍' | '👎' | '👌'
 
-// Both patterns work identically
-is_<User>(user)           // Type argument + runtime value
-is_<typeof user>(t_<User>())  // Both as type arguments`}</Code>
+// Test phantom values with type arguments
+is_<User>(t_<User>())                             // ✓ 
+extends_<Hand, string>()                          // ✓ Pure type-level
+
+// Mix both approaches seamlessly
+const hand = '👍' as const
+extends_(hand, t_<Hand>())                        // Runtime value, phantom type
+is_<typeof hand>(t_<'👍'>())                      // Both as type arguments`}</Code>
 
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Functional Categories</h3>
 
@@ -358,6 +367,7 @@ is_<typeof user>(t_<User>())  // Both as type arguments`}</Code>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Basic Assertion Composition</h3>
                   <p className="text-lg text-gray-600 mb-4">
                     Combine multiple assertions to validate complex type relationships and object structures.
+                    Use <code>@ts-expect-error</code> to test negative cases and ensure type safety.
                   </p>
                   
                   <Code language="typescript">{`import { is_, has_, extends_, yes_, no_, $Equal, $Extends } from '@typefirst/typist'
@@ -382,176 +392,218 @@ extends_<typeof admin, User>()     // ✓ Runtime admin extends User type
 // Verdict-based comparisons
 yes_<$Equal<User['id'], number>>()           // ✓ id property is number
 yes_<$Extends<'admin', User['role']>>()     // ✓ 'admin' extends role union
-no_<$Equal<User, AdminUser>>()              // ✓ These are different types`}</Code>
+no_<$Equal<User, AdminUser>>()              // ✓ These are different types
+
+// Test negative cases with @ts-expect-error
+// @ts-expect-error ✓ 
+// Property 'permissions' missing in type 'User'
+has_<'permissions', string[]>(user)
+
+// @ts-expect-error ✓
+// Type 'string' is not assignable to type 'number'  
+is_<number>(user.name)
+
+// @ts-expect-error ✓
+// Type 'User' does not satisfy the constraint 'AdminUser'
+extends_<User, AdminUser>()`}</Code>
                 </div>
 
-                {/* Advanced Type Testing Pipeline */}
+                {/* Domain Modeling with Type Guards */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Type Testing Pipeline</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Domain Modeling with Type Guards</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    Build comprehensive type validation pipelines that test multiple aspects of type safety.
+                    Build sophisticated domain models that combine runtime type guards with compile-time assertions 
+                    to prove type relationships in different execution contexts.
                   </p>
 
-                  <Code language="typescript">{`import { test_, is_, has_, never_, extends_, instance_ } from '@typefirst/typist'
+                  <Code language="typescript">{`import { test_, is_, has_, never_, extends_, t_ } from '@typefirst/typist'
 
-// Define a type-safe API response system
-interface ApiResponse<TData> {
-  success: boolean
-  data: TData
-  timestamp: Date
+// Define domain types with inheritance
+type RegularUser = { name: string }
+type PremiumUser = RegularUser & { premiumSince: Date }
+type User = RegularUser | PremiumUser
+
+type ExclusiveReaction = '💎' | '🐸'  // Premium-only reactions
+type Reaction = '👍' | '👎' | '👌' | '🎉' | '😊' | '😢'
+
+type PremiumFeedback = {
+  user: PremiumUser
+  reaction: Reaction | ExclusiveReaction
+  text: string
 }
 
-interface ValidationError {
-  field: string
-  message: string
+type RegularFeedback = {
+  user: RegularUser
+  reaction: Reaction
+  text: string  
 }
 
-type ApiResult<TData> = 
-  | ApiResponse<TData> 
-  | { success: false; errors: ValidationError[] }
+type Feedback = RegularFeedback | PremiumFeedback
 
-// Create comprehensive type tests
-test_('API Response Type Safety', () => {
-  // Test successful response structure
-  const successResponse: ApiResponse<User> = {
-    success: true,
-    data: { id: 1, name: 'Alice', role: 'admin' },
-    timestamp: new Date()
+test_('Domain Type Validation', () => {
+  // Test base type relationships
+  extends_<PremiumUser, User>()                   // ✓ Premium extends User
+  extends_<RegularUser, User>()                   // ✓ Regular extends User
+  has_<'name', string>(t_<User>())                // ✓ All users have name
+  
+  // @ts-expect-error ✓
+  // Property 'premiumSince' missing in type 'RegularUser'
+  has_<'premiumSince', Date>(t_<User>())          // Union doesn't guarantee property
+  
+  // Runtime type guards with compile-time validation
+  const isPremiumUser = (user: User): user is PremiumUser => 
+    'premiumSince' in user
+  
+  const isPremiumFeedback = (feedback: Feedback): feedback is PremiumFeedback => 
+    isPremiumUser(feedback.user)
+  
+  // Simulate feedback processing with type narrowing
+  const feedback = t_<Feedback>()
+  
+  if (isPremiumFeedback(feedback)) {
+    // In premium context - all assertions should pass
+    is_<PremiumUser>(feedback.user)              // ✓ Narrowed to premium
+    has_<'premiumSince', Date>(feedback.user)    // ✓ Premium has property
+    extends_<ExclusiveReaction, typeof feedback.reaction>() // ✓ Can use exclusive reactions
+  } else {
+    // In regular context - test limitations  
+    is_<RegularUser>(feedback.user)              // ✓ Narrowed to regular
+    
+    // @ts-expect-error ✓
+    // Property 'premiumSince' does not exist
+    has_<'premiumSince', Date>(feedback.user)
+    
+    // @ts-expect-error ✓ 
+    // Type 'ExclusiveReaction' not assignable to 'Reaction'
+    extends_<ExclusiveReaction, typeof feedback.reaction>()
   }
-  
-  is_<ApiResponse<User>>(successResponse)
-  has_<'success', boolean>(successResponse)
-  has_<'data', User>(successResponse)
-  has_<'timestamp', Date>(successResponse)
-  
-  // Test error response structure  
-  const errorResponse: ApiResult<User> = {
-    success: false,
-    errors: [{ field: 'email', message: 'Invalid email' }]
-  }
-  
-  is_<ApiResult<User>>(errorResponse)
-  has_<'success', false>(errorResponse)
-  has_<'errors', ValidationError[]>(errorResponse)
-  
-  // Verify type relationships
-  extends_<ApiResponse<User>, ApiResult<User>>()    // ✓ Success case extends result
-  extends_<typeof errorResponse, ApiResult<User>>() // ✓ Error case extends result
-  
-  // Test impossibility cases
-  never_<ApiResponse<User> & { success: false }>() // ✓ Cannot be both success=true and false
 })`}</Code>
                 </div>
 
-                {/* Generic Type Validation */}
+                {/* Utility Function Design */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Generic Type Validation</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Utility Function Design</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    Use assertions within generic contexts to validate type parameter relationships and constraints.
+                    Design type-safe utility functions with comprehensive validation and error testing.
                   </p>
 
-                  <Code language="typescript">{`import { is_, extends_, has_, never_, yes_, $Equal } from '@typefirst/typist'
+                  <Code language="typescript">{`import { is_, has_, never_, test_, yes_, $Equal } from '@typefirst/typist'
 
-// Generic validation function that proves type relationships
-function validateGenericConstraints<
-  TEntity extends { id: string },
-  TUpdate extends Partial<TEntity>
->(entity: TEntity, update: TUpdate) {
-  // Prove constraint satisfaction
-  extends_<TEntity, { id: string }>()     // ✓ Entity has required id
-  extends_<TUpdate, Partial<TEntity>>()   // ✓ Update is partial of entity
-  
-  // Test structural properties
-  has_<'id', string>(entity)              // ✓ Entity has string id
-  is_<string>(entity.id)                  // ✓ Direct id validation
-  is_<Partial<TEntity>>(update)           // ✓ Update matches expected type
-  
-  // Verify type operations
-  type MergedType = TEntity & TUpdate
-  is_<MergedType>({ ...entity, ...update })  // ✓ Merge operation type-safe
-  
-  // Test impossibility of invalid operations
-  never_<TEntity & never>()               // ✓ Cannot intersect with never
-  never_<string & number>()               // ✓ No overlap between primitives
-  
-  return { ...entity, ...update }
+// Type-safe object property omission
+export const omit = <
+  const T extends Record<string, any>,
+  const K extends readonly (keyof T)[]
+>(obj: T, keys: K): Omit<T, K[number]> => {
+  const result = { ...obj }
+  keys.forEach(key => delete result[key])
+  return result as Omit<T, K[number]>
 }
 
-// Usage with specific types
-interface Product {
-  id: string
-  name: string
-  price: number
-}
-
-const product: Product = { id: '123', name: 'Widget', price: 10 }
-const update = { price: 15 } // Type inferred as { price: number }
-
-// The function call itself validates all generic constraints
-const updated = validateGenericConstraints(product, update)
-is_<Product>(updated)                    // ✓ Result maintains Product type`}</Code>
+test_('Utility Function Validation', () => {
+  const user = { id: 1, name: 'Alice', email: 'alice@example.com', age: 30 } as const
+  
+  // Test successful omission
+  const publicUser = omit(user, ['email', 'age'])
+  
+  has_<'id', 1>(publicUser)                       // ✓ Preserved properties
+  has_<'name', 'Alice'>(publicUser)               // ✓ Preserved properties
+  
+  // @ts-expect-error ✓
+  // Property 'email' does not exist
+  has_<'email', string>(publicUser)
+  
+  // @ts-expect-error ✓  
+  // Property 'age' does not exist
+  has_<'age', number>(publicUser)
+  
+  // Test type-level correctness
+  type ExpectedType = { readonly id: 1; readonly name: 'Alice' }
+  yes_<$Equal<typeof publicUser, ExpectedType>>() // ✓ Exact type match
+  
+  // Test constraint validation
+  // @ts-expect-error ✓
+  // Argument 'nonexistent' not assignable to parameter of type keyof T
+  const invalid = omit(user, ['nonexistent'])
+  
+  // Test with empty omission  
+  const unchanged = omit(user, [])
+  yes_<$Equal<typeof unchanged, typeof user>>()   // ✓ No change when no keys omitted
+})`}</Code>
                 </div>
 
-                {/* Class and Instance Validation */}
+                {/* Advanced Type System Design */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Class and Instance Validation</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Advanced Type System Design</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    Combine instance assertions with structural validation for complete class-based type testing.
+                    Design sophisticated type systems that combine runtime functionality with compile-time guarantees.
                   </p>
 
-                  <Code language="typescript">{`import { instance_, is_, extends_, has_, test_ } from '@typefirst/typist'
+                  <Code language="typescript">{`import { instance_, is_, extends_, has_, test_, yes_, $Equal, t_ } from '@typefirst/typist'
 
-// Define class hierarchy
-abstract class Animal {
-  abstract name: string
-  abstract speak(): string
+// Registry system with type-level indexing
+type ObjectWithKey = { key: string } & { [k: string]: any }
+
+type RTuple<E extends ObjectWithKey> = readonly E[]
+
+type RIndex<E extends ObjectWithKey, D extends RTuple<E>> = 
+  D extends readonly [infer Head, ...infer Tail]
+    ? Head extends { key: infer K } & E
+      ? K extends string
+        ? Tail extends RTuple<E>
+          ? { [P in K]: Head } & RIndex<E, Tail>
+          : never
+        : never
+      : never
+    : {}
+
+class Registry<const T extends ObjectWithKey, const Entries extends RTuple<T>> {
+  constructor(public entries: Entries) {}
+  
+  get index(): RIndex<T, Entries> {
+    return this.entries.reduce(
+      (acc, entry) => ({ ...acc, [entry.key]: entry }), 
+      {} as RIndex<T, Entries>
+    )
+  }
 }
 
-class Dog extends Animal {
-  constructor(public name: string) {
-    super()
+test_('Registry Type System', () => {
+  // Define domain model
+  type Person = { key: string; age: number; active: boolean }
+  
+  const people = [
+    { key: 'alice', age: 30, active: true },
+    { key: 'bob', age: 40, active: false },
+    { key: 'carol', age: 35, active: true }
+  ] as const satisfies RTuple<Person>
+  
+  const registry = new Registry<Person, typeof people>(people)
+  
+  // Test type-level indexing
+  type ExpectedIndex = {
+    alice: { key: 'alice'; age: 30; active: true }
+    bob: { key: 'bob'; age: 40; active: false } 
+    carol: { key: 'carol'; age: 35; active: true }
   }
   
-  speak() {
-    return "Woof!"
-  }
-}
-
-class Cat extends Animal {
-  constructor(public name: string) {
-    super()
-  }
+  yes_<$Equal<typeof registry.index, ExpectedIndex>>() // ✓ Perfect type-level mapping
   
-  speak() {
-    return "Meow!"
-  }
-}
-
-test_('Class Instance Validation', () => {
-  const dog = new Dog('Buddy')
-  const cat = new Cat('Whiskers')
+  // Test individual entries
+  const alice = registry.index.alice
+  is_<{ key: 'alice'; age: 30; active: true }>(alice) // ✓ Exact literal types preserved
+  has_<'key', 'alice'>(alice)                         // ✓ Specific key type
+  has_<'age', 30>(alice)                              // ✓ Literal age preserved
   
-  // Validate instance relationships
-  instance_<typeof Dog>(dog)              // ✓ dog is Dog instance
-  instance_<typeof Cat>(cat)              // ✓ cat is Cat instance
-  instance_<typeof Animal>(dog)           // ✓ dog is also Animal instance
-  instance_<typeof Animal>(cat)           // ✓ cat is also Animal instance
+  // Test constraint enforcement  
+  // @ts-expect-error ✓
+  // Property 'david' does not exist
+  const david = registry.index.david
   
-  // Structural validation
-  has_<'name', string>(dog)               // ✓ Has name property
-  has_<'speak', () => string>(dog)        // ✓ Has speak method
-  is_<string>(dog.name)                   // ✓ Name is string
-  is_<string>(dog.speak())                // ✓ speak() returns string
-  
-  // Type hierarchy validation
-  extends_<Dog, Animal>()                 // ✓ Dog extends Animal
-  extends_<Cat, Animal>()                 // ✓ Cat extends Animal
-  extends_<typeof dog, Animal>()          // ✓ Instance type extends base
-  
-  // Test method return types
-  is_<"Woof!">(dog.speak())              // ✓ Literal return type
-  is_<"Meow!">(cat.speak())              // ✓ Literal return type
-  is_<string>(dog.speak())               // ✓ Also satisfies string
+  // @ts-expect-error ✓ 
+  // Type '{ key: "invalid" }' is not assignable to type 'Person'
+  const invalidPeople = [
+    { key: 'invalid' }
+  ] as const satisfies RTuple<Person>
 })`}</Code>
                 </div>
               </div>

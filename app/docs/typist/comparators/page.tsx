@@ -337,108 +337,111 @@ test_('Generic Type Constraints', () => {
 })`}</Code>
                 </div>
 
-                {/* Generic Function Constraints */}
+                {/* Runtime Type Guard Validation */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Generic Function Constraints</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Runtime Type Guard Validation</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    Use comparators to verify that generic constraints work as expected.
+                    Validate that runtime type guard implementations correctly match their compile-time type relationships.
                   </p>
 
-                  <Code language="typescript">{`import { $Equal, $Extends, yes_, test_ } from '@typefirst/typist'
+                  <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, test_, t_ } from '@typefirst/typist'
 
-// Generic repository pattern
-interface Repository<T extends { id: string }> {
-  findById(id: string): Promise<T>
-  save(entity: T): Promise<T>
-  delete(id: string): Promise<void>
+// Enum-like pattern with runtime validation
+class Enum<const V extends readonly string[]> {
+  constructor(public readonly values: V) {}
+  
+  // Runtime type guard
+  is(x: unknown): x is V[number] {
+    return typeof x === 'string' && this.values.includes(x)
+  }
+  
+  // Phantom type for compile-time usage
+  get _() { return t_<V[number]>() }
 }
 
-// Test constraint satisfaction
-test_('Repository Generic Constraints', () => {
-  interface Book {
-    id: string
-    title: string
-    author: string
+test_('Enum Type Guard Validation', () => {
+  const Sport = new Enum(['hockey', 'soccer', 'squash'] as const)
+  
+  // Verify type-level relationships
+  yes_<$Equal<typeof Sport._, 'hockey' | 'soccer' | 'squash'>>()  // ✓ Correct union type
+  yes_<$Extends<'hockey', typeof Sport._>>()                      // ✓ Members extend union
+  yes_<$Extends<'soccer', typeof Sport._>>()                      // ✓ Members extend union
+  no_<$Extends<'tennis', typeof Sport._>>()                       // ✓ Non-members don't extend
+  
+  // Test compile-time constraints
+  const validSport: typeof Sport._ = 'hockey'                     // ✓ Valid assignment
+  
+  // @ts-expect-error ✓
+  // Type '"tennis"' is not assignable to type union
+  const invalidSport: typeof Sport._ = 'tennis'
+  
+  // Verify that our type matches what the runtime guard accepts
+  if (Sport.is('hockey')) {
+    // TypeScript knows this is typeof Sport._
+    yes_<$Equal<'hockey', typeof Sport._>>()                      // ✓ Literal extends union
   }
   
-  interface InvalidEntity {
-    name: string  // Missing required id field
+  // Test negative cases
+  if (Sport.is('invalid')) {
+    // This branch is unreachable due to type constraints
+    // @ts-expect-error ✓
+    // This would be a type error if reached
+    no_<$Extends<'invalid', typeof Sport._>>()
   }
-  
-  // Verify constraint satisfaction
-  yes_<$Extends<Book, { id: string }>>()         // ✓ Book satisfies constraint
-  no_<$Extends<InvalidEntity, { id: string }>>() // ✓ InvalidEntity violates constraint
-  
-  // Test with repository types
-  type BookRepository = Repository<Book>
-  type FindByIdMethod = BookRepository['findById']
-  type SaveMethod = BookRepository['save']
-  
-  // Verify method signatures
-  yes_<$Equal<
-    FindByIdMethod, 
-    (id: string) => Promise<Book>
-  >>()                                            // ✓ Correct findById signature
-  
-  yes_<$Equal<
-    SaveMethod,
-    (entity: Book) => Promise<Book>  
-  >>()                                            // ✓ Correct save signature
-  
-  // Test constraint propagation
-  type RepositoryEntity<R> = R extends Repository<infer T> ? T : never
-  type ExtractedBook = RepositoryEntity<BookRepository>
-  
-  yes_<$Equal<ExtractedBook, Book>>()            // ✓ Type extraction works
 })`}</Code>
                 </div>
 
-                {/* Conditional Type Testing */}
+                {/* Advanced Type-Level Programming */}
                 <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Conditional Type Testing</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-4">Advanced Type-Level Programming</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    Test complex conditional type logic with comparator chains.
+                    Use comparators to validate sophisticated type-level algorithms like tuple manipulation and union operations.
                   </p>
 
-                  <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, test_ } from '@typefirst/typist'
+                  <Code language="typescript">{`import { $Equal, $Extends, yes_, no_, test_, t_ } from '@typefirst/typist'
 
-// Utility type that extracts array element type
-type ArrayElement<T> = T extends readonly (infer E)[] ? E : never
+// Advanced tuple splitting algorithm
+type Split<
+  T extends readonly any[],
+  N extends number,
+  A extends readonly any[] = [],
+  B extends readonly any[] = T
+> = A['length'] extends N
+  ? [A, B]
+  : B extends readonly [infer H, ...infer R]
+    ? Split<T, N, readonly [...A, H], R>
+    : [A, readonly []]
 
-// Utility type that makes properties optional if they're nullable
-type OptionalIfNullable<T> = {
-  [K in keyof T]: null extends T[K] ? T[K] | undefined : T[K]
-}
+// Union explosion utility
+type ExplodeUnion<U> = 
+  (U extends any ? (k: () => U) => void : never) extends
+  (k: infer I) => void
+    ? I extends () => infer V
+      ? readonly [...ExplodeUnion<Exclude<U, V>>, V]
+      : readonly []
+    : readonly []
 
-test_('Conditional Type Behavior', () => {
-  // Test array element extraction
-  type StringArray = string[]
-  type NumberArray = readonly number[]
-  type MixedTuple = readonly [string, number, boolean]
+test_('Type-Level Algorithm Validation', () => {
+  // Test tuple splitting at various indices
+  type TestTuple = readonly ['a', 'b', 'c', 'd']
   
-  yes_<$Equal<ArrayElement<StringArray>, string>>()      // ✓ Extract string from string[]
-  yes_<$Equal<ArrayElement<NumberArray>, number>>()      // ✓ Extract number from readonly number[]
-  yes_<$Equal<ArrayElement<MixedTuple>, string | number | boolean>>() // ✓ Extract union from tuple
-  yes_<$Equal<ArrayElement<string>, never>>()            // ✓ Non-array returns never
+  yes_<$Equal<Split<TestTuple, 0>, [readonly [], TestTuple]>>()       // ✓ Split at start
+  yes_<$Equal<Split<TestTuple, 2>, [readonly ['a', 'b'], readonly ['c', 'd']]>>() // ✓ Split in middle  
+  yes_<$Equal<Split<TestTuple, 4>, [TestTuple, readonly []]>>()       // ✓ Split at end
   
-  // Test nullable property transformation
-  interface UserWithNullables {
-    id: string
-    name: string | null
-    email: string
-    age: number | null
-  }
+  // Test union explosion (order may vary but all elements present)
+  type TestUnion = 'x' | 'y' | 'z'
+  type ExplodedTuple = ExplodeUnion<TestUnion>
   
-  type TransformedUser = OptionalIfNullable<UserWithNullables>
+  // Verify all union members are captured
+  yes_<$Extends<'x', ExplodedTuple[number]>>()                        // ✓ x is in result
+  yes_<$Extends<'y', ExplodedTuple[number]>>()                        // ✓ y is in result  
+  yes_<$Extends<'z', ExplodedTuple[number]>>()                        // ✓ z is in result
+  yes_<$Equal<ExplodedTuple[number], TestUnion>>()                    // ✓ Complete round-trip
   
-  // Verify transformation behavior
-  yes_<$Extends<{ id: string }, TransformedUser>>()      // ✓ Non-nullable stays required
-  yes_<$Extends<{ email: string }, TransformedUser>>()   // ✓ Non-nullable stays required
-  yes_<$Extends<{ name?: string | null | undefined }, TransformedUser>>() // ✓ Nullable becomes optional
-  yes_<$Extends<{ age?: number | null | undefined }, TransformedUser>>()  // ✓ Nullable becomes optional
-  
-  // Test that transformation preserves structure
-  no_<$Equal<TransformedUser, UserWithNullables>>()      // ✓ Types are different after transformation
+  // Test edge cases
+  yes_<$Equal<Split<readonly [], 0>, [readonly [], readonly []]>>()   // ✓ Empty tuple
+  yes_<$Equal<ExplodeUnion<never>, readonly []>>()                    // ✓ Never union
 })`}</Code>
                 </div>
               </div>
