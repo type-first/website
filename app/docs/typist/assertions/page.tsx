@@ -604,44 +604,47 @@ is_<typeof person>({ key: 'alice', age: 30, active: true }) // ✓`}</Code>
               </div>
             </section>
 
-            {/* Integration Notes */}
+            {/* Related Functional Groups */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Integration with Other Typist Components</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Functional Groups</h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Explore other typist functional groups that complement assertions in building comprehensive type-safe applications.
+              </p>
               
-              <div className="space-y-6">
-                <div className="p-6 bg-blue-50 border border-blue-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-blue-900 mb-3">Verdicts Integration</h3>
-                  <p className="text-blue-800 mb-3">
-                    Assertions work seamlessly with the verdicts system through <code>yes_</code>, 
-                    <code>no_</code>, and <code>decidable_</code> functions that test comparator results.
-                  </p>
-                  <Code language="typescript">{`// Assertions test comparator verdicts
-yes_<$Equal<string, string>>()    // ✓ Assert equality
-no_<$Equal<string, number>>()     // ✓ Assert inequality
-decidable_<$Equal<any, any>>()    // ✓ Assert decidability`}</Code>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Link href="/docs/typist/comparators" className="group">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <span className="text-blue-600 text-xl">⚖️</span>
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900">Comparators</h3>
+                    </div>
+                    <p className="text-gray-600">
+                      Type-level comparison utilities like <code>$Equal</code> and <code>$Extends</code> that resolve to verdicts for decidable type evaluations.
+                    </p>
+                  </div>
+                </Link>
 
-                <div className="p-6 bg-green-50 border border-green-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-green-900 mb-3">Test Blocks Integration</h3>
-                  <p className="text-green-800 mb-3">
-                    Use with <code>test_</code>, <code>example_</code>, and <code>proof_</code> 
-                    blocks to organize assertions into logical groupings.
-                  </p>
-                  <Code language="typescript">{`test_('Type relationships', () => {
-  extends_<'literal', string>()
-  is_<string>('any string')
-  never_<string & never>()
-})`}</Code>
-                </div>
-
-                                <div className="p-6 bg-purple-50 border border-purple-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-purple-900 mb-3">Phantom Types Integration</h3>
-                  <p className="text-purple-800 mb-3">
-                    Assertions work with phantom type utilities to test type relationships 
-                    without requiring actual runtime values. Use <code>t_&lt;Type&gt;()</code> to create phantom values.
-                  </p>
-                  <Code language="typescript">{`// Test with phantom values from typist-intro typescape\nhas_<'name', string>(t_<User>()) // ✓\n\n// Mix phantom and runtime values\nconst hand = random(['👍','👎','👌'] as const)\nextends_(hand, t_<Reaction>()) // ✓\nis_<typeof hand>(t_<Hand>()) // ✓`}</Code>
-                </div>
+                <Link href="/docs/typist/verdicts" className="group">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-green-300 hover:bg-green-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                        <span className="text-green-600 text-xl">✅</span>
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-900">Verdicts</h3>
+                    </div>
+                    <p className="text-gray-600">
+                      Boolean-like types (<code>$Yes</code>, <code>$No</code>) that represent the results of type-level computations and comparisons.
+                    </p>
+                  </div>
+                </Link>
+              </div>
+              
+              <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <p className="text-sm text-gray-600">
+                  💡 <strong>Tip:</strong> Use assertions with comparators to test complex type relationships, then validate the results with verdict assertions like <code>yes_</code> and <code>no_</code>.
+                </p>
               </div>
             </section>
           </div>
