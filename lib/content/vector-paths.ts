@@ -29,10 +29,10 @@ export function createLabVectorPath(labSlug: string, filename: string): string {
 }
 
 /**
- * Create vector path for scenario chunks
+ * Create vector path for typescape chunks
  */
-export function createScenarioVectorPath(scenarioSlug: string, filename: string): string {
-  return createVectorPath(`content/scenarios/${scenarioSlug}`, filename)
+export function createTypescapeVectorPath(typescapeSlug: string, filename: string): string {
+  return createVectorPath(`content/typescape/${typescapeSlug}`, filename)
 }
 
 /**

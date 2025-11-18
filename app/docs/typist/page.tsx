@@ -251,7 +251,7 @@ is_<Positive>('👎') `}</Code>
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Interactive Learning</h2>
               <p className="text-gray-600 mb-6">
-                Master typist concepts through hands-on practice with our interactive scenarios in the Type Explorer:
+                Master typist concepts through hands-on practice with our interactive typescapes in the Type Explorer:
               </p>
               
               <div className="grid gap-4">

@@ -1,6 +1,6 @@
 /**
  * Scenario-specific content model
- * Types, constructors, and guards for TypeScript scenarios
+ * Types, constructors, and guards for TypeScript typescapes
  */
 
 import type { ContentMeta, ContentChunk } from './content.model'

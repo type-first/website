@@ -12,7 +12,7 @@ interface CodeExploreProps {
 export function CodeExplorerLink({ slug, name, description, className = '' }: CodeExploreProps) {
   return (
     <Link 
-      href={`/scenarios/${slug}`}
+      href={`/typescape/${slug}`}
       className={`
         block p-4 border border-gray-200 rounded-lg hover:border-gray-300 
         hover:shadow-md transition-all duration-200 group ${className}

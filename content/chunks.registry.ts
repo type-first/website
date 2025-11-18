@@ -6,7 +6,7 @@
 import { chunks as advancedTypescriptChunks } from './articles/advanced-typescript-patterns-react';
 import { chunks as searchTestLabChunks } from './labs/search-test/chunks';
 import { chunks as typeExplorerLabChunks } from './labs/type-explorer/chunks';
-import { chunks as basicTypesAndFunctionsScenarioChunks } from './scenarios/basic-types-and-functions';
+import { chunks as basicTypesAndFunctionsScenarioChunks } from './typescape/basic-types-and-functions';
 import { chunks as typistDocChunks } from './docs/typist';
 import type { ContentChunk } from '@/lib/content/content.model';
 

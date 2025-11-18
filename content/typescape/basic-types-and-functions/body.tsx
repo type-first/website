@@ -16,7 +16,7 @@ import { Plain } from '@/lib/content/rich-text/components/plain'
 // --- File Loading Utilities
 
 export async function loadScenarioFiles() {
-  const scenarioDir = path.join(process.cwd(), 'content/scenarios/basic-types-and-functions/src')
+  const scenarioDir = path.join(process.cwd(), 'content/typescape/basic-types-and-functions/src')
   
   try {
     const indexContent = await fs.readFile(path.join(scenarioDir, 'index.ts'), 'utf-8')

@@ -92,7 +92,7 @@ export default function SearchDialog({ open, onClose }: { open: boolean; onClose
                 case 'lab':
                   return `/labs/${slug}`;
                 case 'scenario':
-                  return `/scenarios/${slug}`;
+                  return `/typescape/${slug}`;
                 case 'doc-library':
                   return `/docs/${slug}`;
                 default:

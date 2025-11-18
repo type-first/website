@@ -41,7 +41,7 @@ const scenarioMeta = {
 } as const;
 
 async function loadScenarioFiles(scenarioId: string): Promise<ExplorerFile[]> {
-  const baseDir = path.join(process.cwd(), `content/scenarios/${scenarioId}/src`);
+  const baseDir = path.join(process.cwd(), `content/typescape/${scenarioId}/src`);
   
   async function exists(p: string) {
     try { 

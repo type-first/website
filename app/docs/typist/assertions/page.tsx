@@ -92,13 +92,13 @@ export default function AssertionsApiPage() {
 
                 <div className="flex gap-4 mt-4 mb-6">
                   <Link 
-                    href="/scenarios/typist-intro"
+                    href="/typescape/typist-intro"
                     className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     🔭 Domain Modeling Example
                   </Link>
                   <Link 
-                    href="/scenarios/typist-enum-guards"
+                    href="/typescape/typist-enum-guards"
                     className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                   >
                     🛡️ Runtime Guards Example
@@ -362,11 +362,11 @@ is_<AdminPermission>('invalid-permission')`}</Code>
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Interactive Examples</h2>
               
               <div className="space-y-8">
-                {/* Interactive Scenarios */}
+                {/* Interactive Typescapes */}
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Explore Assertions in Action</h3>
                   <p className="text-lg text-gray-600 mb-6">
-                    Experience assertions through our interactive typescape scenarios. Each scenario demonstrates 
+                    Experience assertions through our interactive typescapes. Each typescape demonstrates 
                     real-world usage patterns with working TypeScript code you can explore and modify.
                   </p>
                   
@@ -377,7 +377,7 @@ is_<AdminPermission>('invalid-permission')`}</Code>
                         User/Admin type systems with permission validation and sophisticated assertion patterns.
                       </p>
                       <Link 
-                        href="/scenarios/typist-intro"
+                        href="/typescape/typist-intro"
                         className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                       >
                         🔭 Explore Scenario
@@ -390,7 +390,7 @@ is_<AdminPermission>('invalid-permission')`}</Code>
                         Enum patterns with runtime validation and integration between compile-time and runtime checks.
                       </p>
                       <Link 
-                        href="/scenarios/typist-enum-guards"
+                        href="/typescape/typist-enum-guards"
                         className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
                       >
                         🛡️ Explore Scenario
@@ -403,7 +403,7 @@ is_<AdminPermission>('invalid-permission')`}</Code>
                         Advanced omit patterns and utility type creation with comprehensive property validation.
                       </p>
                       <Link 
-                        href="/scenarios/typist-omit-utilities"
+                        href="/typescape/typist-omit-utilities"
                         className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
                       >
                         🔧 Explore Scenario
@@ -416,7 +416,7 @@ is_<AdminPermission>('invalid-permission')`}</Code>
                         Complex type indexing and lookup patterns with sophisticated compile-time guarantees.
                       </p>
                       <Link 
-                        href="/scenarios/typist-registry-patterns"
+                        href="/typescape/typist-registry-patterns"
                         className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors"
                       >
                         📚 Explore Scenario
@@ -429,7 +429,7 @@ is_<AdminPermission>('invalid-permission')`}</Code>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Patterns</h3>
                   <p className="text-lg text-gray-600 mb-4">
-                    These snippets are extracted from the interactive scenarios above. Explore the full 
+                    These snippets are extracted from the interactive typescapes above. Explore the full 
                     working examples to see them in context.
                   </p>
                   

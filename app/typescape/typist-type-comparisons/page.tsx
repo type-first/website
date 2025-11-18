@@ -1,15 +1,15 @@
 import fs from 'fs/promises';
 import path from 'path';
 import TypeExplorer, { type ExplorerFile } from '@/modules/playground/components/type-explorer.client';
-import { typistPhantomTypesBasicsScenario } from '@/content/scenarios/typist-phantom-types-basics/meta';
+import { typistTypeComparisonsScenario } from '@/content/typescape/typist-type-comparisons/meta';
 
 export const metadata = {
-  title: `${typistPhantomTypesBasicsScenario.name} - TypeScript Scenario`,
-  description: typistPhantomTypesBasicsScenario.blurb,
+  title: `${typistTypeComparisonsScenario.name} - TypeScript Scenario`,
+  description: typistTypeComparisonsScenario.blurb,
 };
 
 async function loadScenarioFiles(): Promise<ExplorerFile[]> {
-  const baseDir = path.join(process.cwd(), 'content/scenarios/typist-phantom-types-basics/src');
+  const baseDir = path.join(process.cwd(), 'content/typescape/typist-type-comparisons/src');
   
   async function exists(p: string) {
     try { 
@@ -48,16 +48,16 @@ function ScenarioIntro() {
   return (
     <div className="mb-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        {typistPhantomTypesBasicsScenario.name}
+        {typistTypeComparisonsScenario.name}
       </h1>
       <p className="text-lg text-gray-600 mb-6">
-        {typistPhantomTypesBasicsScenario.blurb}
+        {typistTypeComparisonsScenario.blurb}
       </p>
       <div className="grid md:grid-cols-2 gap-6">
         <div className="p-4 bg-blue-50 rounded-lg">
           <h3 className="text-sm font-semibold text-blue-900 mb-2">Learning Goals:</h3>
           <ul className="text-sm text-blue-800 space-y-1">
-            {typistPhantomTypesBasicsScenario.learningGoals.map((goal, index) => (
+            {typistTypeComparisonsScenario.learningGoals.map((goal, index) => (
               <li key={index}>• {goal}</li>
             ))}
           </ul>
@@ -65,7 +65,7 @@ function ScenarioIntro() {
         <div className="p-4 bg-amber-50 rounded-lg">
           <h3 className="text-sm font-semibold text-amber-900 mb-2">Prerequisites:</h3>
           <ul className="text-sm text-amber-800 space-y-1">
-            {typistPhantomTypesBasicsScenario.prerequisites.map((prereq, index) => (
+            {typistTypeComparisonsScenario.prerequisites.map((prereq, index) => (
               <li key={index}>• {prereq}</li>
             ))}
           </ul>
@@ -75,7 +75,7 @@ function ScenarioIntro() {
   );
 }
 
-export default async function TypistPhantomTypesBasicsScenarioPage() {
+export default async function TypistTypeComparisonsScenarioPage() {
   const files = await loadScenarioFiles();
   
   return (

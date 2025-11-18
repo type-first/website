@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import TypeExplorer, { type ExplorerFile } from '@/modules/playground/components/type-explorer.client';
-import { typistAdvancedPatternsScenario } from '@/content/scenarios/typist-advanced-patterns/meta';
+import { typistAdvancedPatternsScenario } from '@/content/typescape/typist-advanced-patterns/meta';
 
 export const metadata = {
   title: `${typistAdvancedPatternsScenario.name} - TypeScript Scenario`,
@@ -9,7 +9,7 @@ export const metadata = {
 };
 
 async function loadScenarioFiles(): Promise<ExplorerFile[]> {
-  const baseDir = path.join(process.cwd(), 'content/scenarios/typist-advanced-patterns/src');
+  const baseDir = path.join(process.cwd(), 'content/typescape/typist-advanced-patterns/src');
   
   async function exists(p: string) {
     try { 

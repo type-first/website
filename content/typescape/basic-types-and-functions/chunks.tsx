@@ -6,7 +6,7 @@
 import React from 'react'
 import { chunker } from '@/lib/content/content.model'
 import { extractPlainText } from '@/lib/content/rich-text/extract-text'
-import { createScenarioVectorPath } from '@/lib/content/vector-paths'
+import { createTypescapeVectorPath } from '@/lib/content/vector-paths'
 import { basicTypesAndFunctionsScenario } from './meta'
 import { 
   OverviewContent,
@@ -24,7 +24,7 @@ const createChunk = chunker(basicTypesAndFunctionsScenario)
 
 // Helper to create vector file paths
 const vectorPath = (filename: string) => 
-  createScenarioVectorPath('basic-types-and-functions', filename)
+  createTypescapeVectorPath('basic-types-and-functions', filename)
 
 export const chunks = [
   // Scenario overview chunk
