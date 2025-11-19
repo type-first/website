@@ -43,13 +43,13 @@ export default function TypistNewHomePage() {
         <main className="lg:col-span-3">
           <div className="max-w-4xl">
             {/* Header */}
-            <header className="mb-12">
+            <header className="mb-8">
               {library.coverImgUrl && (
                 <div className="mb-6 rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-100">
                   <img 
                     src={library.coverImgUrl} 
                     alt={library.name}
-                    className="w-full h-48 object-cover"
+                    className="w-full h-32 object-contain p-4"
                   />
                 </div>
               )}
@@ -74,7 +74,7 @@ export default function TypistNewHomePage() {
                       href={library.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 text-sm bg-gray-900 text-white hover:bg-gray-800 rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                     >
                       <ExternalLink className="h-4 w-4" strokeWidth={1.8} />
                       GitHub
@@ -85,7 +85,7 @@ export default function TypistNewHomePage() {
                       href={`https://www.npmjs.com/package/${library.npmPackage}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 px-4 py-2 text-sm bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                     >
                       <Package className="h-4 w-4" strokeWidth={1.8} />
                       npm
@@ -95,116 +95,69 @@ export default function TypistNewHomePage() {
               </div>
               
               <p className="text-xl text-gray-600 mb-6">
-                A minimal, composable toolkit for type-level programming in TypeScript. Encode static proofs, 
-                assertions, and symbolic computations with zero runtime overhead through phantom types and 
-                compile-time validation.
+                Toolkit for static analysis, symbolic testing, and phantom operations. Build type-safe applications with confidence using composable constraints and static proofs.
               </p>
               
-              {/* Quick install */}
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
-                <h3 className="text-sm font-semibold text-gray-900 mb-2">Installation</h3>
-                <Code language="bash">npm install @typefirst/typist</Code>
+              {/* Metadata */}
+              <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-6">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" strokeWidth={1.8} />
+                  santiago elustondo
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" strokeWidth={1.8} />
+                  Updated {new Date('2025-11-18').toLocaleDateString()}
+                </div>
+                {library.version && (
+                  <div className="flex items-center gap-2">
+                    <Package className="h-4 w-4" strokeWidth={1.8} />
+                    v{library.version}
+                  </div>
+                )}
               </div>
             </header>
 
-            {/* Introduction */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">What is Typist?</h2>
-              
-              <p className="text-lg text-gray-700 mb-6">
-                Typist is a type-level programming toolkit that enables building sophisticated static analysis, 
-                symbolic testing, and compile-time validation systems in TypeScript. It treats types as first-class 
-                values through phantom type patterns, allowing complex type relationships and constraints to be 
-                expressed and verified entirely at compile-time.
-              </p>
-              
-              <p className="text-lg text-gray-700 mb-8">
-                The library provides atomic operators for creating phantom values, type assertions for testing 
-                relationships, and organizational patterns for building comprehensive type-level test suites. 
-                Every utility operates with zero runtime cost, making typist suitable for production applications 
-                where type safety cannot compromise performance.
-              </p>
-              
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-                <h3 className="text-lg font-semibold text-blue-900 mb-3">Core Philosophy</h3>
-                <p className="text-blue-800">
-                  Typist enables "lying to the compiler" in a controlled, systematic way. By creating phantom values 
-                  that exist only at compile-time, complex type computations and validations become possible without 
-                  any runtime overhead or complexity.
+            {/* Quick Start */}
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Installation
+              </h2>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <Code language="bash">npm install @typefirst/typist</Code>
+              </div>
+            </section>
+
+            {/* What is Typist */}
+            <section className="mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                Show what your types are made of.
+              </h2>
+              <div className="prose prose-gray max-w-none mb-6">
+                <p className="text-lg text-gray-700">
+                  typist is a minimal suite for compilable static proofs at the type level. It provides atomic type-level 
+                  operators that let you encode assertions and validations with zero runtime overhead.
+                </p>
+                <p className="text-gray-700">
+                  Whether you're building type-safe APIs, enforcing domain constraints, or creating self-documenting 
+                  interfaces, typist gives you the tools to write highly expressive code that the TypeScript compiler can 
+                  verify for correctness.
                 </p>
               </div>
 
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Key Capabilities</h3>
-              
-              <div className="grid md:grid-cols-2 gap-6 mb-8">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Static Type Proofs</h4>
-                  <p className="text-gray-600 text-sm">
-                    Build compile-time proofs of type relationships and properties using assertion utilities 
-                    that verify correctness without runtime execution.
-                  </p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Phantom Value Programming</h4>
-                  <p className="text-gray-600 text-sm">
-                    Create symbolic values that carry rich type information while maintaining zero runtime 
-                    cost, enabling sophisticated type-level computations.
-                  </p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Symbolic Testing Framework</h4>
-                  <p className="text-gray-600 text-sm">
-                    Organize type-level tests with block patterns that provide scoped environments for 
-                    testing complex type systems and domain constraints.
-                  </p>
-                </div>
-                
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Verdict System</h4>
-                  <p className="text-gray-600 text-sm">
-                    Encode comparison results as structured types that provide clear feedback about 
-                    type relationships and enable conditional type logic.
-                  </p>
-                </div>
+              {/* Code Example */}
+              <div className="bg-gray-900 text-gray-100 rounded-lg p-6 mb-6">
+                <Code language="typescript">{`import { is_, extends_, yes_, no_, $Equal, $Extends, test_ } from '@typefirst/typist'
+type Positive = number
+type UserID = string & { readonly brand: 'UserID' }
+
+// Create phantom types
+const userId = is_<UserID>('user123')
+const isPositive = is_<Positive>(42)
+
+// Verify phantom types are distinct  
+no_<$Equal<UserID, string>>()  // ✓ Different types
+yes_<$Extends<UserID, string>>()  // ✓ Runtime compatible`}</Code>
               </div>
-
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Example Usage</h3>
-              
-              <Code language="typescript">{`import { t_, is_, extends_, yes_, no_, $Equal, $Extends, test_ } from '@typefirst/typist'
-
-// Create phantom types for domain modeling
-type UserId = string & { readonly __brand: 'UserId' }
-type EmailAddress = string & { readonly __brand: 'EmailAddress' }
-
-// Test phantom type relationships
-const userId = t_<UserId>()
-const email = t_<EmailAddress>()
-
-// Verify phantom types are distinct
-no_<$Equal<UserId, EmailAddress>>()  // ✓ Different brands
-yes_<$Extends<UserId, string>>()     // ✓ Runtime compatibility
-
-// Organize tests with blocks
-test_('User type system validation', () => {
-  // Test type structure
-  is_<string>(userId)                // ✓ Can use as string
-  extends_(userId, t_<string>())     // ✓ Phantom-based test
-  
-  // Test domain constraints
-  interface User {
-    id: UserId
-    email: EmailAddress
-    name: string
-  }
-  
-  const user = t_<User>()
-  is_<User>(user)                    // ✓ Type validation
-  extends_(user, t_<{ id: string }>()) // ✓ Property testing
-  
-  return user
-})`}</Code>
             </section>
 
             {/* Functional Groups */}
