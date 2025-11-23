@@ -51,6 +51,20 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   const monacoRef = React.useRef<typeof MonacoNS | null>(null);
   const hoverProviderRef = React.useRef<{ dispose: () => void } | null>(null);
 
+  // Navigation bug fix: detect if we came from browse page and need to reset TS service
+  const [navigationBugDetected, setNavigationBugDetected] = React.useState(false);
+  const hasResetTSService = React.useRef(false);
+
+  React.useEffect(() => {
+    // Check if we navigated from the typescape browse page
+    const fromBrowse = window.history?.state?.from === 'typescape-browse';
+    const isRefresh = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+    
+    if (fromBrowse && !isRefresh && !hasResetTSService.current) {
+      setNavigationBugDetected(true);
+    }
+  }, []);
+
   // Multi-file state
   const [files, setFiles] = React.useState<ExplorerFile[]>(
     () => initialFiles && initialFiles.length ? initialFiles : DEFAULT_MULTI_FILES
@@ -88,6 +102,23 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   } | null>(null);
 
   const beforeMount: BeforeMount = (monaco) => {
+    // Navigation bug fix: Reset TypeScript service if we detect navigation corruption
+    if (navigationBugDetected && !hasResetTSService.current) {
+      console.log('[TypeExplorer] Navigation bug detected - resetting TypeScript service...');
+      
+      // Clear any existing models to force a fresh TypeScript worker
+      monaco.editor.getModels().forEach(model => {
+        if (model.getLanguageId() === 'typescript') {
+          model.dispose();
+        }
+      });
+
+      // Reset TypeScript configuration completely
+      monaco.languages.typescript.typescriptDefaults.setCompilerOptions({});
+      
+      hasResetTSService.current = true;
+    }
+
     // Configure TS before any model is created or the editor mounts
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
@@ -407,42 +438,76 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   const kickDiagnostics = async () => {
     const monaco = monacoRef.current as typeof MonacoNS | null;
     if (!monaco) return;
+
+    // Navigation bug fix: If we detected navigation corruption, add retry logic
+    if (navigationBugDetected && hasResetTSService.current) {
+      console.log('[TypeExplorer] Running diagnostics with navigation bug recovery...');
+      setNavigationBugDetected(false); // Clear the flag after handling
+    }
+
     try {
       const getter = await (monaco.languages as any).typescript.getTypeScriptWorker();
       const tsModels = monaco.editor
         .getModels()
         .filter((m) => m.getLanguageId() === 'typescript');
       const byUri = new Map<string, MonacoNS.editor.IMarkerData[]>();
+
       for (const m of tsModels) {
-        const worker = await getter(m.uri);
-        const file = m.uri.toString();
-        const [syn, sem] = await Promise.all([
-          worker.getSyntacticDiagnostics(file),
-          worker.getSemanticDiagnostics(file),
-        ]);
-        const diags = [...(syn || []), ...(sem || [])];
-        const markers: MonacoNS.editor.IMarkerData[] = diags.map((d: any) => {
-          const start = Math.max(0, d.start ?? 0);
-          const len = Math.max(0, d.length ?? 0);
-          const startPos = m.getPositionAt(start);
-          const endPos = m.getPositionAt(start + len);
-          const severity = d.category === 1
-            ? monaco.MarkerSeverity.Error
-            : d.category === 0
-            ? monaco.MarkerSeverity.Warning
-            : monaco.MarkerSeverity.Info;
-          const code = d.code ? String(d.code) : undefined;
-          return {
-            startLineNumber: startPos.lineNumber,
-            startColumn: startPos.column,
-            endLineNumber: endPos.lineNumber,
-            endColumn: endPos.column,
-            message: flattenMessage(d.messageText ?? d.message ?? ''),
-            severity,
-            code,
-          };
-        });
-        byUri.set(file, markers);
+        try {
+          const worker = await getter(m.uri);
+          const file = m.uri.toString();
+          
+          // Navigation bug fix: Add retry logic for worker operations
+          let retries = 0;
+          let diags: any[] = [];
+          
+          while (retries < 3) {
+            try {
+              const [syn, sem] = await Promise.all([
+                worker.getSyntacticDiagnostics(file),
+                worker.getSemanticDiagnostics(file),
+              ]);
+              diags = [...(syn || []), ...(sem || [])];
+              break; // Success, exit retry loop
+            } catch (workerError) {
+              retries++;
+              console.log(`[TypeExplorer] Worker error (attempt ${retries}), retrying...`, workerError);
+              if (retries >= 3) {
+                console.warn('[TypeExplorer] Worker failed after 3 retries, skipping file:', file);
+                diags = [];
+              } else {
+                // Wait a bit before retry
+                await new Promise(resolve => setTimeout(resolve, 100));
+              }
+            }
+          }
+
+          const markers: MonacoNS.editor.IMarkerData[] = diags.map((d: any) => {
+            const start = Math.max(0, d.start ?? 0);
+            const len = Math.max(0, d.length ?? 0);
+            const startPos = m.getPositionAt(start);
+            const endPos = m.getPositionAt(start + len);
+            const severity = d.category === 1
+              ? monaco.MarkerSeverity.Error
+              : d.category === 0
+              ? monaco.MarkerSeverity.Warning
+              : monaco.MarkerSeverity.Info;
+            const code = d.code ? String(d.code) : undefined;
+            return {
+              startLineNumber: startPos.lineNumber,
+              startColumn: startPos.column,
+              endLineNumber: endPos.lineNumber,
+              endColumn: endPos.column,
+              message: flattenMessage(d.messageText ?? d.message ?? ''),
+              severity,
+              code,
+            };
+          });
+          byUri.set(file, markers);
+        } catch (modelError) {
+          console.warn('[TypeExplorer] Failed to process model:', m.uri.toString(), modelError);
+          byUri.set(m.uri.toString(), []); // Set empty markers for failed models
+        }
       }
       for (const m of tsModels) {
         const list = byUri.get(m.uri.toString()) || [];
