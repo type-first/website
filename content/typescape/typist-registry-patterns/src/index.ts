@@ -73,7 +73,7 @@ export class Registry
       .reduce((acc, e) => ({ ...acc, [e.key]:e }),  
         {} as RIndex<$['model_'],$['entries']> )
     add<const E extends T>(entry:E): Registry<T, { model_:T, entries:readonly[...$['entries'], E] }>
-      { const entries = join(t_<$['entries']>(this.$def.entries), [ entry ] as const)
+      { const entries = join(this.$def.entries as $['entries'], [ entry ] as const)
         const updated = { model_:this.model_, entries } as const
         return new Registry(updated) } 
     get<const K extends typeof this.key_>(k:K):typeof this.index[K]

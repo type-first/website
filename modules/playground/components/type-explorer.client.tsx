@@ -186,7 +186,16 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       module: monaco.languages.typescript.ModuleKind.ESNext,
       moduleResolution: (monaco.languages.typescript as any).ModuleResolutionKind?.NodeJs ?? 2,
-      strict: true,
+      strict: false, // Disable strict mode to avoid property initialization issues
+      noImplicitAny: true, // Re-enable specific strict checks we want
+      noImplicitThis: true,
+      noImplicitReturns: true,
+      noFallthroughCasesInSwitch: true,
+      noUncheckedIndexedAccess: false,
+      strictNullChecks: true,
+      strictFunctionTypes: true,
+      strictPropertyInitialization: false, // Specifically allow property initialization patterns
+      useDefineForClassFields: false, // Use legacy class field behavior for better compatibility
       noEmit: true,
       allowNonTsExtensions: true,
       lib: ["es2020", "dom"],
