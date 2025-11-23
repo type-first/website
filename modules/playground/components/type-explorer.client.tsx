@@ -51,6 +51,12 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   const monacoRef = React.useRef<typeof MonacoNS | null>(null);
   const hoverProviderRef = React.useRef<{ dispose: () => void } | null>(null);
 
+  // Multi-file state (declare early before other effects)
+  const [files, setFiles] = React.useState<ExplorerFile[]>(
+    () => initialFiles && initialFiles.length ? initialFiles : DEFAULT_MULTI_FILES
+  );
+  const [activePath, setActivePath] = React.useState<string>((initialFiles && initialFiles[0]?.path) || DEFAULT_MULTI_FILES[0].path);
+
   // Navigation bug fix: detect if we came from browse page and need to reset TS service
   const [navigationBugDetected, setNavigationBugDetected] = React.useState(false);
   const hasResetTSService = React.useRef(false);
@@ -59,17 +65,49 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
     // Check if we navigated from the typescape browse page
     const fromBrowse = window.history?.state?.from === 'typescape-browse';
     const isRefresh = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+    const currentPath = window.location.pathname;
     
-    if (fromBrowse && !isRefresh && !hasResetTSService.current) {
+    console.log('[TypeExplorer] Navigation check:', { 
+      fromBrowse, 
+      isRefresh, 
+      hasReset: hasResetTSService.current,
+      currentPath,
+      historyState: window.history?.state
+    });
+    
+    // Always reset on navigation from browse page, regardless of previous resets
+    if (fromBrowse && !isRefresh) {
+      console.log('[TypeExplorer] Navigation from browse page detected - will reset TS service');
       setNavigationBugDetected(true);
+      // Allow reset for each new navigation
+      hasResetTSService.current = false;
+    } else {
+      console.log('[TypeExplorer] Direct navigation or refresh - no TS service reset needed');
     }
   }, []);
 
-  // Multi-file state
-  const [files, setFiles] = React.useState<ExplorerFile[]>(
-    () => initialFiles && initialFiles.length ? initialFiles : DEFAULT_MULTI_FILES
-  );
-  const [activePath, setActivePath] = React.useState<string>((initialFiles && initialFiles[0]?.path) || DEFAULT_MULTI_FILES[0].path);
+  // Cleanup effect: Dispose models when navigating away to prevent cross-contamination
+  React.useEffect(() => {
+    return () => {
+      console.log('[TypeExplorer] Component unmounting - cleaning up TypeScript models...');
+      const monaco = monacoRef.current;
+      if (monaco && files.length > 0) {
+        // Dispose only our models (based on file paths we created)
+        files.forEach(file => {
+          const uri = monaco.Uri.parse(file.path);
+          const model = monaco.editor.getModel(uri);
+          if (model) {
+            try {
+              model.dispose();
+              console.log('[TypeExplorer] Disposed model:', file.path);
+            } catch (e) {
+              console.warn('[TypeExplorer] Error disposing model:', file.path, e);
+            }
+          }
+        });
+      }
+    };
+  }, [files]);
 
   // Diagnostics across all models
   const [markers, setMarkers] = React.useState<(Marker & { resource: string })[]>([]);
@@ -102,24 +140,48 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   } | null>(null);
 
   const beforeMount: BeforeMount = (monaco) => {
-    // Navigation bug fix: Reset TypeScript service if we detect navigation corruption
+    // Navigation bug fix: Force complete TypeScript service isolation
     if (navigationBugDetected && !hasResetTSService.current) {
-      console.log('[TypeExplorer] Navigation bug detected - resetting TypeScript service...');
+      console.log('[TypeExplorer] Navigation bug detected - completely isolating TypeScript service...');
       
-      // Clear any existing models to force a fresh TypeScript worker
+      // Step 1: Dispose ALL existing models to clear global state
       monaco.editor.getModels().forEach(model => {
-        if (model.getLanguageId() === 'typescript') {
+        try {
           model.dispose();
+        } catch (e) {
+          console.warn('[TypeExplorer] Error disposing model:', e);
         }
       });
 
-      // Reset TypeScript configuration completely
-      monaco.languages.typescript.typescriptDefaults.setCompilerOptions({});
+      // Step 2: Force TypeScript worker restart by clearing all defaults
+      try {
+        // Clear all extra libraries and type definitions
+        monaco.languages.typescript.typescriptDefaults.setExtraLibs([]);
+        
+        // Reset diagnostics options completely
+        monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+          noSemanticValidation: false,
+          noSyntaxValidation: false,
+        });
+
+        // Force worker termination and restart by changing a dummy compiler option
+        monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+          allowJs: Math.random() > 0.5 // Force worker restart with random change
+        });
+        
+        // Small delay to ensure worker restart
+        setTimeout(() => {
+          console.log('[TypeExplorer] TypeScript worker should be restarted, applying real config...');
+        }, 50);
+        
+      } catch (e) {
+        console.warn('[TypeExplorer] Error during TS service reset:', e);
+      }
       
       hasResetTSService.current = true;
     }
 
-    // Configure TS before any model is created or the editor mounts
+    // Configure TS (this will create new worker if we reset above)
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       module: monaco.languages.typescript.ModuleKind.ESNext,
@@ -131,9 +193,11 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
       baseUrl: "file:///src",
       rootDir: "file:///src",
     });
+    
     if (typeof (monaco.languages.typescript.typescriptDefaults as any).setEagerModelSync === 'function') {
       (monaco.languages.typescript.typescriptDefaults as any).setEagerModelSync(true);
     }
+    
     // We'll manage diagnostics manually to ensure dependent files update immediately
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
       noSemanticValidation: true,
