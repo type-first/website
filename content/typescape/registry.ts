@@ -3,7 +3,6 @@
  * Central registry for all TypeScript learning typescapes with example file backing
  */
 
-import { basicTypesAndFunctionsScenario } from './basic-types-and-functions/meta';
 import { typistIntroScenario } from './typist-intro/meta';
 import { typistTupleManipulationScenario } from './typist-tuple-manipulation/meta';
 import type { ScenarioMeta } from '@/lib/content/scenario.model';
@@ -12,9 +11,6 @@ import type { ScenarioMeta } from '@/lib/content/scenario.model';
 // These will be updated to use the proper createScenario format
 
 export const typescapeRegistry = [
-  // Foundation scenario
-  basicTypesAndFunctionsScenario,
-  
   // Example-based typescapes (backed by tmp/examples/)
   typistIntroScenario,                    // tmp/examples/intro.ts
   typistTupleManipulationScenario,        // tmp/examples/tuple.ts

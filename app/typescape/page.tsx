@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Target, Users, Zap } from 'lucide-react'
 import { typescapeRegistry } from '@/content/typescape/registry'
@@ -81,12 +84,53 @@ function TypescapeCard({ scenario }: { scenario: ScenarioMeta }) {
 }
 
 export default function TypescapeBrowsePage() {
-  // Filter valid scenarios and group by difficulty
-  const validScenarios = typescapeRegistry.filter(s => s?.name && s?.slug && s?.difficulty)
-  const beginnerScenarios = validScenarios.filter(s => s.difficulty === 'beginner')
-  const intermediateScenarios = validScenarios.filter(s => s.difficulty === 'intermediate')
-  const advancedScenarios = validScenarios.filter(s => s.difficulty === 'advanced')
-  const otherScenarios = validScenarios.filter(s => !['beginner', 'intermediate', 'advanced'].includes(s.difficulty))
+  // Filter valid scenarios and prepare metadata for filters
+  const validScenarios = typescapeRegistry.filter(
+    (scenario) => scenario?.name && scenario?.slug && scenario?.difficulty && scenario?.tags
+  )
+
+  const allTags = Array.from(
+    new Set(validScenarios.flatMap((scenario) => scenario.tags))
+  ).sort((a, b) => a.localeCompare(b))
+
+  const [difficultyFilter, setDifficultyFilter] = useState<'all' | ScenarioMeta['difficulty']>('all')
+  const [tagFilter, setTagFilter] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredScenarios = validScenarios.filter((scenario) => {
+    if (difficultyFilter !== 'all' && scenario.difficulty !== difficultyFilter) {
+      return false
+    }
+
+    if (tagFilter && !scenario.tags.includes(tagFilter)) {
+      return false
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      const text = `${scenario.name} ${scenario.blurb} ${scenario.tags.join(' ')}`.toLowerCase()
+      return text.includes(query)
+    }
+
+    return true
+  })
+
+  const totalLearningGoals = validScenarios.reduce(
+    (total, scenario) => total + scenario.learningGoals.length,
+    0
+  )
+
+  const hasBeginner = validScenarios.some((scenario) => scenario.difficulty === 'beginner')
+  const hasIntermediate = validScenarios.some((scenario) => scenario.difficulty === 'intermediate')
+  const hasAdvanced = validScenarios.some((scenario) => scenario.difficulty === 'advanced')
+
+  const difficultySummary = [
+    hasBeginner && 'Beginner',
+    hasIntermediate && 'Intermediate',
+    hasAdvanced && 'Advanced',
+  ]
+    .filter(Boolean)
+    .join(' • ')
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -122,7 +166,7 @@ export default function TypescapeBrowsePage() {
         {/* Stats */}
         <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 justify-between">
               <BookOpen className="h-8 w-8 text-blue-600" />
               <div>
                 <div className="text-2xl font-bold text-gray-900">{validScenarios.length}</div>
@@ -132,129 +176,146 @@ export default function TypescapeBrowsePage() {
           </div>
           
           <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 justify-between">
               <Users className="h-8 w-8 text-green-600" />
               <div>
-                <div className="text-2xl font-bold text-gray-900">{beginnerScenarios.length}</div>
-                <div className="text-gray-600 text-sm">Beginner Friendly</div>
+                <div className="text-2xl font-bold text-gray-900">{allTags.length}</div>
+                <div className="text-gray-600 text-sm">Unique Tags</div>
               </div>
             </div>
           </div>
           
           <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 justify-between">
               <Target className="h-8 w-8 text-yellow-600" />
               <div>
-                <div className="text-2xl font-bold text-gray-900">{intermediateScenarios.length}</div>
-                <div className="text-gray-600 text-sm">Intermediate</div>
+                <div className="text-xl font-semibold text-gray-900">
+                  {difficultySummary || 'No difficulty data'}
+                </div>
+                <div className="text-gray-600 text-sm">Skill Levels</div>
               </div>
             </div>
           </div>
           
           <div className="bg-white p-6 rounded-lg border border-gray-200">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 justify-between">
               <Zap className="h-8 w-8 text-red-600" />
               <div>
-                <div className="text-2xl font-bold text-gray-900">{advancedScenarios.length}</div>
-                <div className="text-gray-600 text-sm">Advanced</div>
+                <div className="text-2xl font-bold text-gray-900">{totalLearningGoals}</div>
+                <div className="text-gray-600 text-sm">Learning Goals</div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Learning Path Recommendation */}
-        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-8 mb-12">
-          <h2 className="text-xl font-semibold text-blue-900 mb-3">
-            🎯 Recommended Learning Path
-          </h2>
-          <p className="text-blue-800 mb-4">
-            Start with foundation concepts, then progress through practical patterns, and finally tackle 
-            advanced type-level programming techniques. Each typescape builds on previous knowledge.
-          </p>
-          <div className="flex flex-wrap gap-3">
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-              Start with Beginner
-            </span>
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-              Practice with Examples
-            </span>
-            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-              Experiment & Build
-            </span>
+        {/* Filters */}
+        <section className="mb-10 bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="w-full md:w-1/2">
+              <label
+                htmlFor="typescape-search"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Search typescapes
+              </label>
+              <input
+                id="typescape-search"
+                type="text"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search by name, description, or tag..."
+                className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+            </div>
+
+            <div className="flex flex-1 flex-col gap-4 md:flex-row md:justify-end">
+              <div>
+                <div className="text-sm font-medium text-gray-700 mb-2">Difficulty</div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { value: 'all', label: 'All levels' },
+                    { value: 'beginner', label: 'Beginner' },
+                    { value: 'intermediate', label: 'Intermediate' },
+                    { value: 'advanced', label: 'Advanced' },
+                  ].map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      onClick={() =>
+                        setDifficultyFilter(option.value as 'all' | ScenarioMeta['difficulty'])
+                      }
+                      className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                        difficultyFilter === option.value
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {allTags.length > 0 && (
+                <div className="md:min-w-[14rem]">
+                  <div className="text-sm font-medium text-gray-700 mb-2">Tags</div>
+                  <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto">
+                    <button
+                      type="button"
+                      onClick={() => setTagFilter(null)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                        tagFilter === null
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                      }`}
+                    >
+                      All tags
+                    </button>
+                    {allTags.map((tag) => (
+                      <button
+                        key={tag}
+                        type="button"
+                        onClick={() =>
+                          setTagFilter((current) => (current === tag ? null : tag))
+                        }
+                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+                          tagFilter === tag
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
+                        }`}
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
 
-        {/* Beginner Typescapes */}
-        {beginnerScenarios.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Users className="h-6 w-6 text-green-600" />
-              Beginner Typescapes
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Perfect for getting started with TypeScript and typist fundamentals.
+        {/* Typescape list */}
+        <section className="mb-12" aria-label="Typescape list">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Browse Typescapes</h2>
+            <p className="text-sm text-gray-500">
+              Showing {filteredScenarios.length} of {validScenarios.length} typescapes
             </p>
-            <div className="grid gap-6 md:grid-cols-2">
-              {beginnerScenarios.map((scenario) => (
-                <TypescapeCard key={scenario.slug} scenario={scenario} />
-              ))}
-            </div>
-          </section>
-        )}
+          </div>
 
-        {/* Intermediate Typescapes */}
-        {intermediateScenarios.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Target className="h-6 w-6 text-yellow-600" />
-              Intermediate Typescapes
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Build on foundational knowledge with practical patterns and real-world applications.
+          {filteredScenarios.length === 0 ? (
+            <p className="text-sm text-gray-600">
+              No typescapes match your filters. Try adjusting the difficulty, tags, or search
+              query.
             </p>
+          ) : (
             <div className="grid gap-6 md:grid-cols-2">
-              {intermediateScenarios.map((scenario) => (
+              {filteredScenarios.map((scenario) => (
                 <TypescapeCard key={scenario.slug} scenario={scenario} />
               ))}
             </div>
-          </section>
-        )}
-
-        {/* Advanced Typescapes */}
-        {advancedScenarios.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <Zap className="h-6 w-6 text-red-600" />
-              Advanced Typescapes
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Master sophisticated type-level programming and complex computational patterns.
-            </p>
-            <div className="grid gap-6 md:grid-cols-2">
-              {advancedScenarios.map((scenario) => (
-                <TypescapeCard key={scenario.slug} scenario={scenario} />
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Other Typescapes */}
-        {otherScenarios.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-              <BookOpen className="h-6 w-6 text-gray-600" />
-              Foundation Typescapes
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Essential TypeScript concepts and foundational patterns.
-            </p>
-            <div className="grid gap-6 md:grid-cols-2">
-              {otherScenarios.map((scenario) => (
-                <TypescapeCard key={scenario.slug} scenario={scenario} />
-              ))}
-            </div>
-          </section>
-        )}
+          )}
+        </section>
 
         {/* Footer */}
         <footer className="border-t border-gray-200 pt-12 mt-16">

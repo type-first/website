@@ -1,0 +1,30 @@
+{
+  "testEnvironment": "jsdom",
+  "setupFilesAfterEnv": ["<rootDir>/jest.setup.js"],
+  "moduleNameMapper": {
+    "^@/(.*)$": "<rootDir>/$1"
+  },
+  "testMatch": [
+    "**/__tests__/**/*.(js|jsx|ts|tsx)",
+    "**/*.(test|spec).(js|jsx|ts|tsx)"
+  ],
+  "collectCoverageFrom": [
+    "app/**/*.{js,jsx,ts,tsx}",
+    "modules/**/*.{js,jsx,ts,tsx}",
+    "content/**/*.{js,jsx,ts,tsx}",
+    "!**/*.d.ts",
+    "!**/node_modules/**"
+  ],
+  "transform": {
+    "^.+\\.(js|jsx|ts|tsx)$": ["@swc/jest", {
+      "jsc": {
+        "transform": {
+          "react": {
+            "runtime": "automatic"
+          }
+        }
+      }
+    }]
+  },
+  "testTimeout": 10000
+}
