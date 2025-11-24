@@ -76,7 +76,7 @@ is_<Positive>('👎') // type '👎' is not assignable to type 'Positive'
                 <div className="flex gap-4 mt-4 mb-6">
                   <Link 
                     href="/typescape/typist-intro"
-                    className="inline-flex items-center font-semibold px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                   >
                     🔭 Explore in Typist Introduction Typescape
                   </Link>
