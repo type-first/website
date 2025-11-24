@@ -95,7 +95,7 @@ export default function TypistNewHomePage() {
               </div>
               
               <p className="text-xl text-gray-600 mb-6">
-                Toolkit for static analysis, symbolic testing, and phantom operations. Build type-safe applications with confidence using composable constraints and static proofs.
+                A minimal toolkit for static analysis, symbolic testing, and phantom operations. Build type-safe APIs with confidence using compilable static proofs.
               </p>
               
               {/* Metadata */}
@@ -119,12 +119,7 @@ export default function TypistNewHomePage() {
 
             {/* Quick Start */}
             <section className="mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                Installation
-              </h2>
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <Code language="bash">npm install @typefirst/typist</Code>
-              </div>
+              <Code language="sh">npm install @typefirst/typist</Code>
             </section>
 
             {/* What is Typist */}
@@ -134,18 +129,20 @@ export default function TypistNewHomePage() {
               </h2>
               <div className="prose prose-gray max-w-none mb-6">
                 <p className="text-lg text-gray-700">
-                  typist is a minimal suite for compilable static proofs at the type level. It provides atomic type-level 
+                  <code>typist</code> is a minimal suite for compilable static proofs at the type level. It provides atomic type-level 
                   operators that let you encode assertions and validations with zero runtime overhead.
                 </p>
-                <p className="text-gray-700">
+              </div>
+              <div className="prose prose-gray max-w-none mb-6">
+                <p className="text-lg text-gray-700">
                   Whether you're building type-safe APIs, enforcing domain constraints, or creating self-documenting 
-                  interfaces, typist gives you the tools to write highly expressive code that the TypeScript compiler can 
+                  interfaces, <code>typist</code> gives you the tools to write highly expressive code that the TypeScript compiler can 
                   verify for correctness.
                 </p>
               </div>
 
               {/* Code Example */}
-              <div className="bg-gray-900 text-gray-100 rounded-lg p-6 mb-6">
+              
                 <Code language="typescript">{`import { is_, extends_, yes_, no_, $Equal, $Extends, test_ } from '@typefirst/typist'
 type Positive = number
 type UserID = string & { readonly brand: 'UserID' }
@@ -157,7 +154,7 @@ const isPositive = is_<Positive>(42)
 // Verify phantom types are distinct  
 no_<$Equal<UserID, string>>()  // ✓ Different types
 yes_<$Extends<UserID, string>>()  // ✓ Runtime compatible`}</Code>
-              </div>
+              
             </section>
 
             {/* Functional Groups */}

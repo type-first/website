@@ -83,12 +83,6 @@ export default function ComparatorsApiPage() {
                   both the result and debugging information for failed comparisons.
                 </p>
 
-                <p>
-                  Whether you're validating type-level algorithms, testing complex generic constraints, 
-                  or building type-safe APIs with runtime guarantees, comparators provide the foundation 
-                  for decidable type evaluation with comprehensive error reporting.
-                </p>
-
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Verdict Resolution Pattern</h3>
 
                 <p>
