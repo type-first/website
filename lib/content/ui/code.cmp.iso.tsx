@@ -18,7 +18,8 @@ export async function Code({ children, className = '', language, title }: CodePr
     try {
       highlightedCode = await codeToHtml(code, {
         lang: language,
-        theme: 'github-dark'
+        theme: 'github-dark',
+        
       });
     } catch (error) {
       // Fallback to plain code if highlighting fails
@@ -27,9 +28,9 @@ export async function Code({ children, className = '', language, title }: CodePr
   }
 
   return (
-    <div className={`not-prose mb-6 ${className}`}>
+    <div className={`not-prose mb-6 rounded overflow-hidden ${className}`}>
       {(title || language) && (
-        <div className="bg-gray-800 text-gray-300 px-4 py-2 text-sm font-medium rounded-t-lg flex items-center justify-between">
+        <div style={{ backgroundColor:'#24292e' }} className="text-gray-300 px-4 py-2 text-sm font-medium flex items-center justify-between">
           <span>{title || (language ? language.toUpperCase() : 'CODE')}</span>
           <button className="text-gray-400 hover:text-gray-200 transition-colors">
             <Copy className="h-4 w-4" strokeWidth={1.8} />
@@ -37,12 +38,10 @@ export async function Code({ children, className = '', language, title }: CodePr
         </div>
       )}
       {language ? (
-        <div className={`overflow-x-auto ${title || language ? 'rounded-t-none' : 'rounded-lg'}`}
+        <div style={{ backgroundColor:'#24292e' }} className={`overflow-x-auto p-2`}
              dangerouslySetInnerHTML={{ __html: highlightedCode }} />
       ) : (
-        <pre className={`bg-gray-900 text-gray-100 p-4 overflow-x-auto text-sm leading-relaxed ${
-          title || language ? 'rounded-t-none' : 'rounded-lg'
-        }`}>
+        <pre style={{ backgroundColor:'#24292e' }} className={` text-gray-100 p-2 overflow-x-auto text-sm leading-relaxed`}>
           <code>{code}</code>
         </pre>
       )}

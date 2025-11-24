@@ -112,7 +112,7 @@ export default function NavSidebar() {
                 </div>
                 {!collapsed && (
                   <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-                    Apps
+                    apps
                   </div>
                 )}
               </Link>
@@ -129,7 +129,7 @@ export default function NavSidebar() {
                 </div>
                 {!collapsed && (
                   <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-                    Docs
+                    docs
                   </div>
                 )}
               </Link>
@@ -146,7 +146,7 @@ export default function NavSidebar() {
                 </div>
                 {!collapsed && (
                   <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-                    Community
+                    community
                   </div>
                 )}
               </Link>
@@ -163,7 +163,7 @@ export default function NavSidebar() {
                 </div>
                 {!collapsed && (
                   <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
-                    Articles
+                    articles
                   </div>
                 )}
               </Link>

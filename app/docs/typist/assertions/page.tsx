@@ -66,6 +66,22 @@ export default function AssertionsApiPage() {
               </p>
             </header>
 
+                            <Code language="typescript">{`
+type Positive = '👍' | '👌' | '🎉' | '😊'
+is_<Positive>('🎉') // ✓
+// @ts-expect-error ✓
+is_<Positive>('👎') // type '👎' is not assignable to type 'Positive'
+`}</Code>
+
+                <div className="flex gap-4 mt-4 mb-6">
+                  <Link 
+                    href="/typescape/typist-intro"
+                    className="inline-flex items-center font-semibold px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    🔭 Explore in Typist Introduction Typescape
+                  </Link>
+                </div>
+
             {/* Introductory Exposition */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Overview</h2>
@@ -80,108 +96,38 @@ export default function AssertionsApiPage() {
                 <p>
                   Assertions work by leveraging TypeScript's constraint system to trigger compilation errors when 
                   invalid type relationships are tested. They accept values for type extraction or phantom 
-                  parameters created with <code>t_&lt;Type&gt;()</code> for pure type-level operations.
+                  parameters created with <code>t_&lt;Type&gt;()</code> for pure type-level operations. 
+                  All functions follow consistent design principles: they use generic constraints to enforce 
+                  valid relationships at compile time, have empty implementations for zero runtime overhead, 
+                  and work seamlessly with TypeScript's type narrowing in conditional blocks.
                 </p>
 
                 <p>
                   Whether you're building domain models with user hierarchies, validating API contracts, 
                   or creating type-safe utility functions, assertions provide compile-time guarantees that 
-                  your type relationships are correct before your code ever runs.
+                  your type relationships are correct before your code ever runs. Multiple assertions can 
+                  be composed in sequence to build complex type proofs and validate sophisticated domain logic.
                 </p>
 
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Type-Level and Value-Level Flexibility</h3>
 
                 <p>
-                  Assertions work seamlessly with both concrete values and phantom types. Use <code>typeof</code> 
+                  Assertions work seamlessly with both concrete values and phantom types. Use <code>typeof </code> 
                   to extract types from runtime values, or <code>t_&lt;Type&gt;()</code> to create phantom values 
-                  for pure type-level testing. See the interactive examples in our typescape scenarios:
+                  for pure type-level testing. This flexible approach means you can use any identifier (const, type, interface) 
+                  as either a type argument <code>&lt;T&gt;</code> or function parameter, mixing and matching value-level 
+                  and type-level inputs as needed. See the interactive examples in our typescape scenarios:
                 </p>
 
-                <div className="flex gap-4 mt-4 mb-6">
-                  <Link 
-                    href="/typescape/typist-intro"
-                    className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    🔭 Domain Modeling Example
-                  </Link>
-                  <Link 
-                    href="/typescape/typist-enum-guards"
-                    className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                  >
-                    🛡️ Runtime Guards Example
-                  </Link>
-                </div>
-
-                <Code language="typescript">{`// From typist-intro scenario - basic assertion patterns
-type Positive = '👍' | '👌' | '🎉' | '😊'
-is_<Positive>('🎉') // ✓
-
-// @ts-expect-error ✓
-is_<Positive>('👎') // type '👎' is not assignable to type 'Positive'
-
-// User system with domain modeling
-type PremiumUser = RegularUser & { premiumSince: Date }
-has_<'premiumSince', Date>(premiumUser) // ✓
-extends_<PremiumUser, RegularUser>() // ✓`}</Code>
-
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Functional Categories</h3>
-
-                <div className="grid gap-4 mt-6">
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-green-600" />
-                      Assignment Assertions
-                    </h4>
-                    <p className="text-gray-600">Test value assignability to types (<code>is_</code>, <code>assignable_</code>)</p>
-                  </div>
-
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-blue-600" />
-                      Structural Assertions
-                    </h4>
-                    <p className="text-gray-600">Verify object properties and structure (<code>has_</code>)</p>
-                  </div>
-
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <CheckCircle className="h-5 w-5 text-purple-600" />
-                      Relationship Assertions  
-                    </h4>
-                    <p className="text-gray-600">Test type extension and instance relationships (<code>extends_</code>, <code>instance_</code>)</p>
-                  </div>
-
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <XCircle className="h-5 w-5 text-red-600" />
-                      Impossibility Assertions
-                    </h4>
-                    <p className="text-gray-600">Verify type contradictions and unreachable states (<code>never_</code>)</p>
-                  </div>
-
-                  <div className="border border-gray-200 rounded-lg p-4">
-                    <h4 className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                      <AlertCircle className="h-5 w-5 text-orange-600" />
-                      Verdict Assertions
-                    </h4>
-                    <p className="text-gray-600">Test comparator results (<code>yes_</code>, <code>no_</code>, <code>decidable_</code>)</p>
-                  </div>
-                </div>
-
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Core Patterns</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Negative Testing with @ts-expect-error</h3>
 
                 <p>
-                  All assertion functions follow consistent design principles for maximum flexibility and type safety:
+                  A crucial aspect of type-safe development is validating that invalid operations correctly fail. 
+                  TypeScript's <code>@ts-expect-error</code> directive allows you to write negative tests that verify 
+                  compilation errors occur when they should. This enables comprehensive testing of type constraints 
+                  and ensures your type system correctly rejects invalid states, providing complete validation 
+                  coverage for both positive and negative cases.
                 </p>
-
-                <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Generic constraints</strong> enforce valid relationships at compile time, triggering errors for invalid type combinations</li>
-                  <li><strong>Value or phantom parameters</strong> accept both runtime values and phantom types created with <code>t_&lt;Type&gt;()</code></li>
-                  <li><strong>Empty implementations</strong> with all behavior happening at the type level for zero runtime overhead</li>
-                  <li><strong>Negative testing support</strong> using <code>@ts-expect-error</code> to validate that invalid relationships correctly fail</li>
-                  <li><strong>Control flow integration</strong> work seamlessly with TypeScript's type narrowing in conditional blocks</li>
-                  <li><strong>Composable design</strong> allowing multiple assertions in sequence to build complex type proofs</li>
-                </ul>
               </div>
             </section>
 
@@ -189,195 +135,139 @@ extends_<PremiumUser, RegularUser>() // ✓`}</Code>
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">API Reference</h2>
               
-              <div className="space-y-8">
-                {/* Assignment Assertions */}
+              <div className="space-y-6">
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                    Assignment Assertions
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>is_&lt;T&gt;(x: T): void</code>
                   </h3>
-
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>is_&lt;T&gt;(x: T): void</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Core type assertion function. Tests that a value is assignable to type T. 
-                        Provides immediate compile-time feedback if the assignment is invalid.
-                      </p>
-                      <Code language="typescript">{`export const is_ = <T>(x:T) => {}`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Usage:</strong> Direct type compatibility testing, runtime value validation against type constraints
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>assignable_&lt;T&gt;(x: T): void</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Alias for <code>is_</code>. Provides identical functionality with more explicit naming 
-                        that emphasizes the assignability testing aspect.
-                      </p>
-                      <Code language="typescript">{`export const assignable_ = is_`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Relationship:</strong> Exact alias of <code>is_</code> - use interchangeably based on naming preference
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-gray-600 mb-3">
+                    Core type assertion function. Tests that a value is assignable to type T. 
+                    Provides immediate compile-time feedback if the assignment is invalid.
+                  </p>
+                  <Code language="typescript">{`export const is_ 
+  = <T>(x:T) => {}
+is_<string>('hello') // ✓
+is_<number>(42) // ✓`}</Code>
                 </div>
 
-                {/* Structural Assertions */}
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <CheckCircle className="h-6 w-6 text-blue-600" />
-                    Structural Assertions
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>assignable_&lt;T&gt;(x: T): void</code>
                   </h3>
-
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                      <code>has_&lt;P, V&gt;(x: &#123;[k in P]: V&#125;): void</code>
-                    </h4>
-                    <p className="text-gray-600 mb-3">
-                      Verifies that an object has a property <code>P</code> with value type <code>V</code>. 
-                      Uses mapped types to enforce property existence and type constraints simultaneously.
-                      The property name <code>P</code> is constrained to <code>string</code> and marked as <code>const</code>.
-                    </p>
-                    <Code language="typescript">{`export const has_ = <const P extends string, const V = any>(x: { [k in P]: V }) => {}`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Type Parameters:</strong> <code>P extends string</code> (property name), <code>V</code> (value type, defaults to any)
-                      <br />
-                      <strong>Usage:</strong> Object structure validation, property existence testing, runtime value property checks
-                      <br />
-                      <strong>Example:</strong> <code>has_&lt;'premiumSince', Date&gt;(user)</code> ensures user has premiumSince property of type Date
-                    </div>
-                  </div>
+                  <p className="text-gray-600 mb-3">
+                    Alias for <code>is_</code>. Provides identical functionality with more explicit naming 
+                    that emphasizes the assignability testing aspect.
+                  </p>
+                  <Code language="typescript">{`export const assignable_ = is_
+assignable_<'red' | 'blue'>('red') // ✓`}</Code>
                 </div>
 
-                {/* Relationship Assertions */}
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <CheckCircle className="h-6 w-6 text-purple-600" />
-                    Relationship Assertions
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>has_&lt;P, V&gt;(x: &#123;[k in P]: V&#125;): void</code>
                   </h3>
-
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>extends_&lt;E extends T, T&gt;(y?: E, x?: T): void</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Tests subtype relationships by constraining <code>E</code> to extend <code>T</code>. 
-                        Can be used with phantom parameters or with actual runtime values for type extraction.
-                      </p>
-                      <Code language="typescript">{`export const extends_ = <E extends T,T>(y?:E, x?:T) => {}`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Constraint:</strong> <code>E extends T</code> enforced at compile time
-                        <br />
-                        <strong>Usage:</strong> Type hierarchy verification, subtype relationship testing
-                      </div>
-                    </div>
-
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>instance_&lt;T&gt;(x?: InstanceType&lt;T&gt;): void</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Verifies constructor/class instance relationships. Tests that a value is an instance 
-                        of a class or constructor function type.
-                      </p>
-                      <Code language="typescript">{`export const instance_ = <T extends abstract new (...args:any[]) => any>(x?:InstanceType<T>) => {}`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Constraint:</strong> <code>{'T extends abstract new (...args:any[]) => any'}</code>
-                        <br />
-                        <strong>Usage:</strong> Class instance validation, constructor type verification
-                      </div>
-                    </div>
-                  </div>
+                  <p className="text-gray-600 mb-3">
+                    Verifies that an object has a property <code>P</code> with value type <code>V</code>. 
+                    Uses mapped types to enforce property existence and type constraints simultaneously.
+                  </p>
+                  <Code language="typescript">{`export const has_ 
+  = <const P extends string, const V = any>(x: { [k in P]: V }) => {}
+const user = { name: 'alice', age: 30 }
+has_<'name', string>(user) // ✓
+has_<'age', number>(user) // ✓`}</Code>
                 </div>
 
-                {/* Impossibility Assertions */}
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <XCircle className="h-6 w-6 text-red-600" />
-                    Impossibility Assertions
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>extends_&lt;E extends T, T&gt;(y?: E, x?: T): void</code>
                   </h3>
-
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                      <code>never_&lt;T extends never&gt;(x?: T): never</code>
-                    </h4>
-                    <p className="text-gray-600 mb-3">
-                      Asserts type impossibility by constraining the type parameter to <code>never</code>. 
-                      Useful for proving that certain type combinations are invalid or unreachable.
-                    </p>
-                    <Code language="typescript">{`export const never_ = <T extends never>(x?: T): never => x as never`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Constraint:</strong> <code>T extends never</code> - only never type satisfies this constraint
-                      <br />
-                      <strong>Usage:</strong> Proof of impossibility, contradiction verification, unreachable code paths
-                    </div>
-                  </div>
+                  <p className="text-gray-600 mb-3">
+                    Tests subtype relationships by constraining <code>E</code> to extend <code>T</code>. 
+                    Can be used with phantom parameters or with actual runtime values for type extraction.
+                  </p>
+                  <Code language="typescript">{`export const extends_ 
+  = <E extends T,T>(y?:E, x?:T) => {}
+type Animal = { name: string }
+type Dog = Animal & { breed: string }
+extends_<Dog, Animal>() // ✓`}</Code>
                 </div>
 
-                {/* Verdict Assertions */}
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <AlertCircle className="h-6 w-6 text-orange-600" />
-                    Verdict Assertions
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>instance_&lt;T&gt;(x?: InstanceType&lt;T&gt;): void</code>
                   </h3>
+                  <p className="text-gray-600 mb-3">
+                    Verifies constructor/class instance relationships. Tests that a value is an instance 
+                    of a class or constructor function type.
+                  </p>
+                  <Code language="typescript">{`export const instance_ 
+  = <T extends abstract new (...args:any[]) => any>(x?:InstanceType<T>) => {}
+class User { constructor(public name: string) {} }
+const alice = new User('alice')
+instance_<typeof User>(alice) // ✓`}</Code>
+                </div>
 
-                  <div className="space-y-6">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>yes_&lt;T extends $Yes&gt;(t?: T): true</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Asserts positive verdicts from comparator types. Used to verify that type 
-                        comparisons resolve to <code>$Yes</code>, indicating successful matches.
-                      </p>
-                      <Code language="typescript">{`export const yes_ = <T extends $Yes>(t?:T) => true`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Integration:</strong> Works with comparators like <code>$Equal</code>, <code>$Extends</code>
-                      </div>
-                    </div>
+                <div className="border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>never_&lt;T extends never&gt;(x?: T): never</code>
+                  </h3>
+                  <p className="text-gray-600 mb-3">
+                    Asserts type impossibility by constraining the type parameter to <code>never</code>. 
+                    Useful for proving that certain type combinations are invalid or unreachable.
+                  </p>
+                  <Code language="typescript">{`export const never_ 
+  = <T extends never>(x?: T): never => x as never
+type Impossible = string & number
+never_<Impossible>() // ✓ - string & number is never`}</Code>
+                </div>
 
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>no_&lt;T extends $No&lt;any, any&gt;&gt;(t?: T): void</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Asserts negative verdicts from comparator types. Used to verify that type 
-                        comparisons correctly fail and produce <code>$No</code> verdicts.
-                      </p>
-                      <Code language="typescript">{`export const no_ = <T extends $No<any, any>>(t?:T) => {}`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Integration:</strong> Verifies expected failure cases in type comparisons
-                      </div>
-                    </div>
+                <div className="border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>yes_&lt;T extends $Yes&gt;(t?: T): true</code>
+                  </h3>
+                  <p className="text-gray-600 mb-3">
+                    Asserts positive verdicts from comparator types. Used to verify that type 
+                    comparisons resolve to <code>$Yes</code>, indicating successful matches.
+                  </p>
+                  <Code language="typescript">{`export const yes_ 
+  = <T extends $Yes>(t?:T) => true
+type AreEqual = $Equal<string, string>
+yes_<AreEqual>() // ✓ - strings are equal`}</Code>
+                </div>
 
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                        <code>decidable_&lt;T extends $Maybe&gt;(t?: T): void</code>
-                      </h4>
-                      <p className="text-gray-600 mb-3">
-                        Asserts that a type comparison is decidable (either <code>$Yes</code> or <code>$No</code>). 
-                        Used to verify that comparisons don't produce undefined or ambiguous results.
-                      </p>
-                      <Code language="typescript">{`export const decidable_ = <T extends $Maybe>(t?:T) => {}`}</Code>
-                      <div className="mt-2 text-sm text-gray-500">
-                        <strong>Usage:</strong> Meta-level verification of comparison decidability
-                      </div>
-                    </div>
-                  </div>
+                <div className="border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>no_&lt;T extends $No&lt;any, any&gt;&gt;(t?: T): void</code>
+                  </h3>
+                  <p className="text-gray-600 mb-3">
+                    Asserts negative verdicts from comparator types. Used to verify that type 
+                    comparisons correctly fail and produce <code>$No</code> verdicts.
+                  </p>
+                  <Code language="typescript">{`export const no_ 
+  = <T extends $No<any, any>>(t?:T) => {}
+type AreNotEqual = $Equal<string, number>
+no_<AreNotEqual>() // ✓ - string ≠ number`}</Code>
+                </div>
+
+                <div className="border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>decidable_&lt;T extends $Maybe&gt;(t?: T): void</code>
+                  </h3>
+                  <p className="text-gray-600 mb-3">
+                    Asserts that a type comparison is decidable (either <code>$Yes</code> or <code>$No</code>). 
+                    Used to verify that comparisons don't produce undefined or ambiguous results.
+                  </p>
+                  <Code language="typescript">{`export const decidable_ 
+  = <T extends $Maybe>(t?:T) => {}
+type ComparisonResult = $Equal<string, string>
+decidable_<ComparisonResult>() // ✓ - $Yes or $No`}</Code>
                 </div>
               </div>
             </section>
 
             {/* Examples Section */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Patterns</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Examples</h2>
               
               <div className="space-y-10">
                 <div>
@@ -387,17 +277,18 @@ extends_<PremiumUser, RegularUser>() // ✓`}</Code>
                     Use <code>is_</code> for direct assignability testing and leverage <code>@ts-expect-error</code> 
                     to validate that invalid assignments correctly fail at compile time.
                   </p>
-                  <Code language="typescript">{`// From typist-intro typescape - emoji type system
-type Positive = '👍' | '👌' | '🎉' | '😊'
+                  <Code language="typescript">{`type Positive = '👍' | '👌' | '🎉' | '😊'
+
 is_<Positive>('🎉') // ✓
-
 // @ts-expect-error ✓
-is_<Positive>('👎') // type '👎' is not assignable to type 'Positive'
+is_<Positive>('👎')
 
-// Runtime value testing
 const smile = '😊'
+
 is_<Positive>(smile) // ✓
-is_<string>(smile) // ✓`}</Code>
+is_<string>(smile) // ✓
+// @ts-expect-error ✓
+is_<'🎉'>(smile)`}</Code>
                   <div className="mt-4">
                     <Link 
                       href="/typescape/typist-intro"
@@ -415,13 +306,10 @@ is_<string>(smile) // ✓`}</Code>
                     This pattern is essential for testing that more specific types properly extend 
                     their broader counterparts, enabling safe type narrowing and polymorphism.
                   </p>
-                  <Code language="typescript">{`// From typist-intro typescape - hierarchy validation
-type Reaction = '👍' | '👎' | '👌' | '🎉' | '😊' | '😢' | '❓' | '💡'
-extends_<Positive, Reaction>() // ✓
-
+                  <Code language="typescript">{`extends_<PositiveReaction, Reaction>() // ✓
 // @ts-expect-error ✓
 // type 'Reaction' does not satisfy the constraint 'Positive'
-extends_<Reaction, Positive>()`}</Code>
+extends_<Reaction, PositiveReaction>()`}</Code>
                   <div className="mt-4">
                     <Link 
                       href="/typescape/typist-intro"
@@ -439,14 +327,7 @@ extends_<Reaction, Positive>()`}</Code>
                     crucial for domain modeling where you need to ensure objects contain specific 
                     properties with correct types, especially in user systems and data validation.
                   </p>
-                  <Code language="typescript">{`// From typist-intro typescape - user system modeling
-type PremiumUser = RegularUser & { premiumSince: Date }
-
-const bob = { name: 'bob', premiumSince: new Date('2022-01-01') }
-has_<'name', string>(bob) // ✓
-has_<'premiumSince', Date>(bob) // ✓
-
-// @ts-expect-error ✓
+                  <Code language="typescript">{`// @ts-expect-error ✓
 // property 'premiumSince' missing in type 'RegularUser'
 has_<'premiumSince', Date>(alice)`}</Code>
                   <div className="mt-4">
@@ -466,16 +347,14 @@ has_<'premiumSince', Date>(alice)`}</Code>
                     conditional branches. This pattern enables sophisticated domain logic where different 
                     code paths have different type guarantees based on runtime conditions.
                   </p>
-                  <Code language="typescript">{`// From typist-intro typescape - contextual validation
-if (isPremiumFeedback(feedback0)) {
-  extends_<ExclusiveReaction, typeof feedback0.reaction>() // ✓
-  is_<PremiumUser>(feedback0.user) // ✓
-  has_<'premiumSince'>(feedback0.user) // ✓
-} else {
-  // @ts-expect-error ✓
+                  <Code language="typescript">{`if (isPremiumFeedback(feedback0)) 
+{ extends_<ExclusiveReaction, typeof feedback0.reaction>()
+  is_<PremiumUser>(feedback0.user)
+  has_<'premiumSince'>(feedback0.user) } 
+else 
+{ // @ts-expect-error - only premium users can use exclusive reactions
   extends_<ExclusiveReaction, typeof feedback0.reaction>()
-  is_<RegularUser>(feedback0.user) // ✓
-}`}</Code>
+  is_<RegularUser>(feedback0.user) }`}</Code>
                   <div className="mt-4">
                     <Link 
                       href="/typescape/typist-intro"
@@ -493,16 +372,13 @@ if (isPremiumFeedback(feedback0)) {
                     and <code>t_</code>. This pattern provides maximum flexibility, allowing you to test 
                     types extracted from runtime values or create phantom values for pure type-level testing.
                   </p>
-                  <Code language="typescript">{`// From typist-intro typescape - type/value flexibility
-type Hand = '👍' | '👎' | '👌'
-const hand = random(['👍','👎','👌'] as const)
-
-// Using typeof to extract runtime types
-is_<typeof hand>('👍') // ✓
-
-// Using t_ to create phantom values
-extends_(hand, t_<Reaction>()) // ✓
-is_<typeof hand>(t_<Hand>()) // ✓`}</Code>
+                  <Code language="typescript">{`const hands = ['👍','👎','👌'] as const
+const hand = random(hands)
+is_<typeof hands[number]>(hand) // ✓ - it could be any hand type (union)
+is_<typeof hand>('👍') // ✓ - one possible hand
+is_<Reaction>(hand) // ✓ - hands are reactions
+extends_(hand, t_<Reaction>()) // ✓ - use t_ to use pure type as value argument
+extends_<typeof hand, Reaction>() // ✓ - use typeof to use value's type as type argument`}</Code>
                   <div className="mt-4">
                     <Link 
                       href="/typescape/typist-intro"

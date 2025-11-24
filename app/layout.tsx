@@ -73,21 +73,21 @@ export default function RootLayout({
             <MobileTopBar 
               menu={
                 <nav className="space-y-1">
-                  <Link href="/labs" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
-                    <FlaskConical className="h-5 w-5" strokeWidth={1.8} />
-                    Labs
-                  </Link>
                   <Link href="/docs" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
                     <BookOpen className="h-5 w-5" strokeWidth={1.8} />
-                    Docs
+                    docs
                   </Link>
                   <Link href="/articles" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
                     <FileText className="h-5 w-5" strokeWidth={1.8} />
-                    Articles
+                    blog
                   </Link>
                   <Link href="/community" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
                     <Users className="h-5 w-5" strokeWidth={1.8} />
-                    Community
+                    community
+                  </Link>
+                  <Link href="/labs" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
+                    <FlaskConical className="h-5 w-5" strokeWidth={1.8} />
+                    labs
                   </Link>
                 </nav>
               }
