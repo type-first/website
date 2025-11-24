@@ -131,6 +131,130 @@ is_<Positive>('👎') // type '👎' is not assignable to type 'Positive'
               </div>
             </section>
 
+                        {/* Examples Section */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Examples</h2>
+              
+              <div className="space-y-10">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Basic Type Testing</h3>
+                  <p className="text-gray-600 mb-4">
+                    The foundation of typist assertions - testing whether values belong to specific types. 
+                    Use <code>is_</code> for direct assignability testing and leverage <code>@ts-expect-error</code> 
+                    to validate that invalid assignments correctly fail at compile time.
+                  </p>
+                  <Code language="typescript">{`type Positive = '👍' | '👌' | '🎉' | '😊'
+is_<Positive>('🎉') // ✓
+// @ts-expect-error ✓
+is_<Positive>('👎')
+
+const smile = '😊'
+is_<Positive>(smile) // ✓
+is_<string>(smile) // ✓
+// @ts-expect-error ✓
+is_<'🎉'>(smile)`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Type Relationship Testing</h3>
+                  <p className="text-gray-600 mb-4">
+                    Verify type hierarchies and subtype relationships using <code>extends_</code>. 
+                    This pattern is essential for testing that more specific types properly extend 
+                    their broader counterparts, enabling safe type narrowing and polymorphism.
+                  </p>
+                  <Code language="typescript">{`extends_<PositiveReaction, Reaction>() // ✓
+// @ts-expect-error ✓
+// type 'Reaction' does not satisfy the constraint 'Positive'
+extends_<Reaction, PositiveReaction>()`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Object Structure Validation</h3>
+                  <p className="text-gray-600 mb-4">
+                    Test object shapes and property existence with <code>has_</code>. This pattern is 
+                    crucial for domain modeling where you need to ensure objects contain specific 
+                    properties with correct types, especially in user systems and data validation.
+                  </p>
+                  <Code language="typescript">{`// @ts-expect-error ✓
+// property 'premiumSince' missing in type 'RegularUser'
+has_<'premiumSince', Date>(alice)`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Control Flow with Type Guards</h3>
+                  <p className="text-gray-600 mb-4">
+                    Combine assertions with TypeScript's control flow analysis to validate types within 
+                    conditional branches. This pattern enables sophisticated domain logic where different 
+                    code paths have different type guarantees based on runtime conditions.
+                  </p>
+                  <Code language="typescript">{`if (isPremiumFeedback(feedback0)) 
+{ extends_<ExclusiveReaction, typeof feedback0.reaction>()
+  is_<PremiumUser>(feedback0.user)
+  has_<'premiumSince'>(feedback0.user) } 
+else 
+{ // @ts-expect-error - only premium users can use exclusive reactions
+  extends_<ExclusiveReaction, typeof feedback0.reaction>()
+  is_<RegularUser>(feedback0.user) }`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Phantom Type Conversions</h3>
+                  <p className="text-gray-600 mb-4">
+                    Bridge the gap between runtime values and compile-time types using <code>typeof</code> 
+                    and <code>t_</code>. This pattern provides maximum flexibility, allowing you to test 
+                    types extracted from runtime values or create phantom values for pure type-level testing.
+                  </p>
+                  <Code language="typescript">{`const hands = ['👍','👎','👌'] as const
+const hand = random(hands)
+is_<typeof hands[number]>(hand) // ✓ - it could be any hand type (union)
+is_<typeof hand>('👍') // ✓ - one possible hand
+is_<Reaction>(hand) // ✓ - hands are reactions
+extends_(hand, t_<Reaction>()) // ✓ - use t_ to use pure type as value argument
+extends_<typeof hand, Reaction>() // ✓ - use typeof to use value's type as type argument`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* Canonical API List */}
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">API Reference</h2>
@@ -265,224 +389,9 @@ decidable_<ComparisonResult>() // ✓ - $Yes or $No`}</Code>
               </div>
             </section>
 
-            {/* Examples Section */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Examples</h2>
-              
-              <div className="space-y-10">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Basic Type Testing</h3>
-                  <p className="text-gray-600 mb-4">
-                    The foundation of typist assertions - testing whether values belong to specific types. 
-                    Use <code>is_</code> for direct assignability testing and leverage <code>@ts-expect-error</code> 
-                    to validate that invalid assignments correctly fail at compile time.
-                  </p>
-                  <Code language="typescript">{`type Positive = '👍' | '👌' | '🎉' | '😊'
-
-is_<Positive>('🎉') // ✓
-// @ts-expect-error ✓
-is_<Positive>('👎')
-
-const smile = '😊'
-
-is_<Positive>(smile) // ✓
-is_<string>(smile) // ✓
-// @ts-expect-error ✓
-is_<'🎉'>(smile)`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-intro"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      🔭 Explore in Typist Introduction Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Type Relationship Testing</h3>
-                  <p className="text-gray-600 mb-4">
-                    Verify type hierarchies and subtype relationships using <code>extends_</code>. 
-                    This pattern is essential for testing that more specific types properly extend 
-                    their broader counterparts, enabling safe type narrowing and polymorphism.
-                  </p>
-                  <Code language="typescript">{`extends_<PositiveReaction, Reaction>() // ✓
-// @ts-expect-error ✓
-// type 'Reaction' does not satisfy the constraint 'Positive'
-extends_<Reaction, PositiveReaction>()`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-intro"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      🔭 Explore in Typist Introduction Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Object Structure Validation</h3>
-                  <p className="text-gray-600 mb-4">
-                    Test object shapes and property existence with <code>has_</code>. This pattern is 
-                    crucial for domain modeling where you need to ensure objects contain specific 
-                    properties with correct types, especially in user systems and data validation.
-                  </p>
-                  <Code language="typescript">{`// @ts-expect-error ✓
-// property 'premiumSince' missing in type 'RegularUser'
-has_<'premiumSince', Date>(alice)`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-intro"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      🔭 Explore in Typist Introduction Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Control Flow with Type Guards</h3>
-                  <p className="text-gray-600 mb-4">
-                    Combine assertions with TypeScript's control flow analysis to validate types within 
-                    conditional branches. This pattern enables sophisticated domain logic where different 
-                    code paths have different type guarantees based on runtime conditions.
-                  </p>
-                  <Code language="typescript">{`if (isPremiumFeedback(feedback0)) 
-{ extends_<ExclusiveReaction, typeof feedback0.reaction>()
-  is_<PremiumUser>(feedback0.user)
-  has_<'premiumSince'>(feedback0.user) } 
-else 
-{ // @ts-expect-error - only premium users can use exclusive reactions
-  extends_<ExclusiveReaction, typeof feedback0.reaction>()
-  is_<RegularUser>(feedback0.user) }`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-intro"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      🔭 Explore in Typist Introduction Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Phantom Type Conversions</h3>
-                  <p className="text-gray-600 mb-4">
-                    Bridge the gap between runtime values and compile-time types using <code>typeof</code> 
-                    and <code>t_</code>. This pattern provides maximum flexibility, allowing you to test 
-                    types extracted from runtime values or create phantom values for pure type-level testing.
-                  </p>
-                  <Code language="typescript">{`const hands = ['👍','👎','👌'] as const
-const hand = random(hands)
-is_<typeof hands[number]>(hand) // ✓ - it could be any hand type (union)
-is_<typeof hand>('👍') // ✓ - one possible hand
-is_<Reaction>(hand) // ✓ - hands are reactions
-extends_(hand, t_<Reaction>()) // ✓ - use t_ to use pure type as value argument
-extends_<typeof hand, Reaction>() // ✓ - use typeof to use value's type as type argument`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-intro"
-                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      🔭 Explore in Typist Introduction Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Runtime Enum Guards</h3>
-                  <p className="text-gray-600 mb-4">
-                    Create robust enum-like structures that provide both compile-time type safety and 
-                    runtime validation. This pattern bridges static typing with dynamic data validation, 
-                    essential for handling external data sources.
-                  </p>
-                  <Code language="typescript">{`// From typist-enum-guards typescape - enum validation
-class Enum<T extends readonly string[]> {
-  constructor(private values: T) {}
-  
-  is(value: unknown): value is T[number] {
-    return typeof value === 'string' && this.values.includes(value as T[number])
-  }
-  
-  is_<V extends T[number]>(value: V): void {
-    is_<T[number]>(value)
-  }
-}
-
-const Sport = new Enum(['football', 'tennis', 'basketball'] as const)
-// @ts-expect-error ✓
-Sport.is_('cooking') // Compile-time error for invalid sports`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-enum-guards"
-                      className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                    >
-                      🛡️ Explore in Enum Guards Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Object Manipulation Validation</h3>
-                  <p className="text-gray-600 mb-4">
-                    Validate the results of object transformation operations like omit, pick, and merge. 
-                    This pattern ensures that utility functions produce objects with the correct shape 
-                    and type constraints, essential for type-safe object manipulation libraries.
-                  </p>
-                  <Code language="typescript">{`// From typist-omit-utilities typescape - transformation validation  
-const original = { a: 1, b: 2, c: 3 }
-const result = omit(original, ['a', 'c'])
-
-// Validate the transformation worked correctly
-has_<'b', 2>(result) // ✓ - property 'b' remains
-never_<'a' extends keyof typeof result ? true : false>() // ✓ - property 'a' removed
-
-// @ts-expect-error ✓
-has_<'a', 1>(result) // property 'a' should not exist`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-omit-utilities"
-                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      🔧 Explore in Omit Utilities Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Registry Type Indexing</h3>
-                  <p className="text-gray-600 mb-4">
-                    Build type-safe registries where adding entries automatically updates the type system. 
-                    This advanced pattern enables plugin systems and configuration management where the 
-                    registry's type grows dynamically while maintaining compile-time safety.
-                  </p>
-                  <Code language="typescript">{`// From typist-registry-patterns typescape - dynamic type indexing
-const registry = new Registry()
-  .add('alice', { age: 30, active: true })
-  .add('bob', { age: 25, active: false })
-  .add('carol', { age: 35, active: true })
-
-// Validate registry keys are correctly inferred
-is_<RKeys<typeof registry.$def.entries>>(t_<'alice' | 'bob' | 'carol'>()) // ✓
-
-// Validate entry retrieval maintains type safety
-const person = registry.get('alice')
-is_<typeof person>({ key: 'alice', age: 30, active: true }) // ✓`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-registry-patterns"
-                      className="inline-flex items-center px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-                    >
-                      📚 Explore in Registry Patterns Typescape
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </section>
-
             {/* Related Functional Groups */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Functional Groups</h2>
+              
               <p className="text-lg text-gray-600 mb-6">
                 Explore other typist functional groups that complement assertions in building comprehensive type-safe applications.
               </p>
@@ -515,12 +424,6 @@ is_<typeof person>({ key: 'alice', age: 30, active: true }) // ✓`}</Code>
                     </p>
                   </div>
                 </Link>
-              </div>
-              
-              <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  💡 <strong>Tip:</strong> Use assertions with comparators to test complex type relationships, then validate the results with verdict assertions like <code>yes_</code> and <code>no_</code>.
-                </p>
               </div>
             </section>
           </div>
