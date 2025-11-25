@@ -268,22 +268,17 @@ extends_<typeof hand, Reaction>() // ✓ - use typeof to use value's type as typ
                     Core type assertion function. Tests that a value is assignable to type T. 
                     Provides immediate compile-time feedback if the assignment is invalid.
                   </p>
-                  <Code language="typescript">{`export const is_ 
-  = <T>(x:T) => {}
-is_<string>('hello') // ✓
-is_<number>(42) // ✓`}</Code>
-                </div>
-
-                <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                    <code>assignable_&lt;T&gt;(x: T): void</code>
-                  </h3>
-                  <p className="text-gray-600 mb-3">
-                    Alias for <code>is_</code>. Provides identical functionality with more explicit naming 
-                    that emphasizes the assignability testing aspect.
-                  </p>
-                  <Code language="typescript">{`export const assignable_ = is_
-assignable_<'red' | 'blue'>('red') // ✓`}</Code>
+                  <div className="mb-3 p-2 bg-gray-50 rounded text-sm text-gray-600">
+                    <strong>Alias:</strong> <code>assignable_&lt;T&gt;(x: T): void</code> - Identical functionality with more explicit naming
+                  </div>
+                  <Code language="typescript">{`is_<string>('hello') // ✓
+// @ts-expect-error ✓
+is_<number>('hello') 
+is_<number>(42) // ✓
+type AcceptableColor = 'black' | 'blue'
+assignable_<AcceptableColor>('blue') // ✓
+// @ts-expect-error ✓
+assignable_<AcceptableColor>('red')`}</Code>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -291,14 +286,16 @@ assignable_<'red' | 'blue'>('red') // ✓`}</Code>
                     <code>has_&lt;P, V&gt;(x: &#123;[k in P]: V&#125;): void</code>
                   </h3>
                   <p className="text-gray-600 mb-3">
-                    Verifies that an object has a property <code>P</code> with value type <code>V</code>. 
-                    Uses mapped types to enforce property existence and type constraints simultaneously.
+                    Verifies that an object has a property <code>P</code>, optionally also verifying it's type as being <code>V</code> when given. 
                   </p>
-                  <Code language="typescript">{`export const has_ 
-  = <const P extends string, const V = any>(x: { [k in P]: V }) => {}
-const user = { name: 'alice', age: 30 }
-has_<'name', string>(user) // ✓
-has_<'age', number>(user) // ✓`}</Code>
+                  <Code language="typescript">{`const user = { name: 'alice', age: 30 }
+has_<'name'>(user) // ✓
+// @ts-expect-error ✓
+has_<'email'>(user)
+has_<'age', number>(user) // ✓
+// @ts-expect-error ✓
+has_<'age', string>(user)
+`}</Code>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -307,13 +304,19 @@ has_<'age', number>(user) // ✓`}</Code>
                   </h3>
                   <p className="text-gray-600 mb-3">
                     Tests subtype relationships by constraining <code>E</code> to extend <code>T</code>. 
-                    Can be used with phantom parameters or with actual runtime values for type extraction.
                   </p>
-                  <Code language="typescript">{`export const extends_ 
-  = <E extends T,T>(y?:E, x?:T) => {}
-type Animal = { name: string }
+                  <Code language="typescript">{`type Animal = { name: string }
 type Dog = Animal & { breed: string }
-extends_<Dog, Animal>() // ✓`}</Code>
+extends_<Dog, Animal>() // ✓
+extends_<t_<Dog>(), t_<Animal>()>() // ✓
+// @ts-expect-error ✓
+extends_<Animal, Dog>()
+const fido = { name: 'Fido', breed: 'Labrador' }
+extends_(fido, t_<Dog>()) // ✓
+extends_<typeof fido, Animal>() // ✓
+// @ts-expect-error ✓
+extends_<Dog, typeof fido>()
+`}</Code>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -324,11 +327,12 @@ extends_<Dog, Animal>() // ✓`}</Code>
                     Verifies constructor/class instance relationships. Tests that a value is an instance 
                     of a class or constructor function type.
                   </p>
-                  <Code language="typescript">{`export const instance_ 
-  = <T extends abstract new (...args:any[]) => any>(x?:InstanceType<T>) => {}
-class User { constructor(public name: string) {} }
+                  <Code language="typescript">{`class User { constructor(public name: string) {} }
 const alice = new User('alice')
-instance_<typeof User>(alice) // ✓`}</Code>
+instance_<typeof User>(alice) // ✓
+const bob = { name: 'bob' }
+// @ts-expect-error ✓
+instance_<typeof User>(bob)`}</Code>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -339,10 +343,11 @@ instance_<typeof User>(alice) // ✓`}</Code>
                     Asserts type impossibility by constraining the type parameter to <code>never</code>. 
                     Useful for proving that certain type combinations are invalid or unreachable.
                   </p>
-                  <Code language="typescript">{`export const never_ 
-  = <T extends never>(x?: T): never => x as never
-type Impossible = string & number
-never_<Impossible>() // ✓ - string & number is never`}</Code>
+                  <Code language="typescript">{`type Possibilities = '👍' | '👎'
+type Impossibility = '👍' & '👎'
+// @ts-expect-error ✓
+never_<Possibilities>()
+never_<Impossibility>() // ✓`}</Code>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -353,10 +358,12 @@ never_<Impossible>() // ✓ - string & number is never`}</Code>
                     Asserts positive verdicts from comparator types. Used to verify that type 
                     comparisons resolve to <code>$Yes</code>, indicating successful matches.
                   </p>
-                  <Code language="typescript">{`export const yes_ 
-  = <T extends $Yes>(t?:T) => true
-type AreEqual = $Equal<string, string>
-yes_<AreEqual>() // ✓ - strings are equal`}</Code>
+                  <Code language="typescript">{`yes_<$Equal<string, string>>() // ✓
+yes_<$Extends<'👍'|'👌', string>>() // ✓
+type Equivalence = $Equal<'😇', '👹'>
+// @ts-expect-error ✓
+yes_<Equivalence>()
+no_<Equivalence>()`}</Code>hello
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -367,10 +374,12 @@ yes_<AreEqual>() // ✓ - strings are equal`}</Code>
                     Asserts negative verdicts from comparator types. Used to verify that type 
                     comparisons correctly fail and produce <code>$No</code> verdicts.
                   </p>
-                  <Code language="typescript">{`export const no_ 
-  = <T extends $No<any, any>>(t?:T) => {}
-type AreNotEqual = $Equal<string, number>
-no_<AreNotEqual>() // ✓ - string ≠ number`}</Code>
+                  <Code language="typescript">{`no_<$Equal<'👍'|'👌', string>>() // ✓
+no_<$Extends<string, number>>() // ✓
+type Equivalence = $Equal<'🙂','🙂'>
+// @ts-expect-error ✓
+no_<Equivalence>()
+yes_<Equivalence>()`}</Code>
                 </div>
 
                 <div className="border border-gray-200 rounded-lg p-6">
@@ -381,10 +390,11 @@ no_<AreNotEqual>() // ✓ - string ≠ number`}</Code>
                     Asserts that a type comparison is decidable (either <code>$Yes</code> or <code>$No</code>). 
                     Used to verify that comparisons don't produce undefined or ambiguous results.
                   </p>
-                  <Code language="typescript">{`export const decidable_ 
-  = <T extends $Maybe>(t?:T) => {}
-type ComparisonResult = $Equal<string, string>
-decidable_<ComparisonResult>() // ✓ - $Yes or $No`}</Code>
+                  <Code language="typescript">{`type True = $Equal<'🎸','🎸'>
+type False = $Equal<'🎸','🪕'>
+decidable_<True>() // ✓
+decidable_<False>() // ✓
+`}</Code>
                 </div>
               </div>
             </section>
