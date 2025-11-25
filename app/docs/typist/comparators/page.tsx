@@ -3,7 +3,7 @@ import { getDocLibraryBySlug } from '@/lib/content/docs.registry.logic';
 import { buildDocNavigation } from '@/lib/content/doc.model';
 import { DocSidebar } from '@/lib/content/ui/doc/doc-sidebar.cmp.iso';
 import { Code } from '@/lib/content/ui/code.cmp.iso';
-import { ArrowLeft, Scale, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export async function generateMetadata() {
@@ -61,10 +61,30 @@ export default function ComparatorsApiPage() {
               </div>
               
               <p className="text-xl text-gray-600 mb-6">
-                Type-level comparison utilities for testing type relationships and producing 
-                decidable verdicts. Build complex type-level logic with zero runtime overhead.
+                Type-level comparison utilities that evaluate relationships between types and resolve to verdicts. 
+                Build sophisticated type-level logic with zero runtime overhead through structured comparison results.
               </p>
             </header>
+
+            <Code language="typescript">{`
+type StringsEqual = $Equal<string, string>
+yes_<StringsEqual>() // ✓
+
+type NumberExtendsAny = $Extends<number, any>  
+yes_<NumberExtendsAny>() // ✓ - number extends any
+
+type StringsNotEqual = $Equal<string, number>
+no_<StringsNotEqual>() // ✓ - string ≠ number
+`}</Code>
+
+            <div className="flex gap-4 mt-4 mb-6">
+              <Link 
+                href="/typescape/typist-intro"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                🔭 Explore in Typist Introduction Typescape
+              </Link>
+            </div>
 
             {/* Introductory Exposition */}
             <section className="mb-12">
@@ -80,42 +100,129 @@ export default function ComparatorsApiPage() {
                 <p>
                   Comparators work by using TypeScript's conditional type system to test relationships 
                   and return structured verdict types (<code>$Yes</code> or <code>$No</code>) that encode 
-                  both the result and debugging information for failed comparisons.
+                  both the result and debugging information. All comparators follow consistent design principles: 
+                  they use conditional type evaluation for reliable results, produce structured verdicts with 
+                  embedded error information, and integrate seamlessly with assertion functions for complete type-level testing.
+                </p>
+
+                <p>
+                  Whether you're building type-safe APIs, validating complex data structures, or creating 
+                  utility types that need relationship testing, comparators provide the foundation for 
+                  decidable type-level logic. Multiple comparisons can be composed together to build 
+                  complex validation chains and sophisticated type-level algorithms.
                 </p>
 
                 <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Verdict Resolution Pattern</h3>
 
                 <p>
-                  All comparators follow a consistent pattern of resolving to verdict types that 
-                  can be tested with assertion functions, creating a complete type-level testing ecosystem:
+                  All comparators resolve to verdict types that can be tested with assertion functions, 
+                  creating a complete type-level testing ecosystem. Successful comparisons return <code>$Yes</code>, 
+                  while failures return <code>$No</code> with structured error information including the reason 
+                  for failure and contextual type information for debugging.
                 </p>
 
-                <Code language="typescript">{`// Comparator resolves to verdict
-type IsEqual = $Equal<string, string>        // → $Yes
-type IsNotEqual = $Equal<string, number>     // → $No<'not-equal', [string, number]>
-
-// Test verdicts with assertions  
-yes_<IsEqual>()        // ✓ Compiles - equality confirmed
-no_<IsNotEqual>()      // ✓ Compiles - inequality confirmed
-
-// Chain with other type operations
-type StringOrNumber = string | number
-yes_<$Extends<string, StringOrNumber>>()    // ✓ string extends union`}</Code>
-
-                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Core Patterns</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Integration with Assertions</h3>
 
                 <p>
-                  All comparator functions follow consistent design principles for maximum reliability and debuggability:
+                  Comparators work hand-in-hand with assertion functions to provide complete validation coverage. 
+                  Use <code>yes_</code> to assert successful comparisons, <code>no_</code> to verify expected failures, 
+                  and <code>decidable_</code> to ensure comparisons produce definitive results. This enables both 
+                  positive and negative testing patterns for comprehensive type validation.
                 </p>
+              </div>
+            </section>
 
-                <ul className="list-disc list-inside space-y-2 ml-4">
-                  <li><strong>Conditional type evaluation</strong> using TypeScript's advanced type system features</li>
-                  <li><strong>Structured verdicts</strong> with <code>$Yes</code> for success and <code>$No&lt;reason, context&gt;</code> for failures</li>
-                  <li><strong>Error information</strong> embedded in verdict types for debugging type-level logic</li>
-                  <li><strong>Composable design</strong> allowing complex type-level algorithms and validations</li>
-                  <li><strong>Integration with assertions</strong> for complete type-level testing workflows</li>
-                  <li><strong>Zero runtime cost</strong> with all behavior happening at the type level</li>
-                </ul>
+            {/* Examples Section */}
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Examples</h2>
+              
+              <div className="space-y-10">
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Basic Type Equality Testing</h3>
+                  <p className="text-gray-600 mb-4">
+                    The foundation of type comparison - testing whether two types are structurally identical. 
+                    Use <code>$Equal</code> for strict bidirectional equality testing and leverage verdict assertions 
+                    to validate both successful matches and expected differences.
+                  </p>
+                  <Code language="typescript">{`type SameTypes = $Equal<string, string>
+yes_<SameTypes>() // ✓ - strings are equal
+
+type DifferentTypes = $Equal<string, number>
+no_<DifferentTypes>() // ✓ - string ≠ number
+
+type UnionEquality = $Equal<'a' | 'b', 'b' | 'a'>
+yes_<UnionEquality>() // ✓ - union order doesn't matter
+
+type StrictCheck = $Equal<string, string | number>
+no_<StrictCheck>() // ✓ - string ≠ union (strict equality)`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Subtype Relationship Testing</h3>
+                  <p className="text-gray-600 mb-4">
+                    Verify type hierarchies and assignability relationships using <code>$Extends</code>. 
+                    This is essential for testing that more specific types can be safely used where 
+                    broader types are expected, enabling polymorphism and type narrowing validation.
+                  </p>
+                  <Code language="typescript">{`type LiteralExtendsString = $Extends<'hello', string>
+yes_<LiteralExtendsString>() // ✓ - literal extends string
+
+type StringExtendsAny = $Extends<string, any>
+yes_<StringExtendsAny>() // ✓ - everything extends any
+
+type NumberExtendsString = $Extends<number, string>
+no_<NumberExtendsString>() // ✓ - number doesn't extend string
+
+type UnionSubset = $Extends<'red', 'red' | 'blue' | 'green'>
+yes_<UnionSubset>() // ✓ - member extends union`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Complex Type Validation Chains</h3>
+                  <p className="text-gray-600 mb-4">
+                    Build sophisticated validation logic by composing multiple comparators together. 
+                    This pattern enables complex type-level algorithms where multiple relationships 
+                    need to be verified simultaneously for complete validation coverage.
+                  </p>
+                  <Code language="typescript">{`// Multi-level validation
+type Animal = { name: string }
+type Dog = Animal & { breed: string }
+type Poodle = Dog & { size: 'standard' | 'miniature' | 'toy' }
+
+yes_<$Extends<Dog, Animal>>() // ✓ - hierarchy validation
+yes_<$Extends<Poodle, Dog>>() // ✓ - inheritance chain
+no_<$Equal<Dog, Animal>>() // ✓ - not the same despite extension
+
+// Union relationship testing
+type PrimaryColors = 'red' | 'blue' | 'yellow'
+type WarmColors = 'red' | 'orange' | 'yellow'
+no_<$Equal<PrimaryColors, WarmColors>>() // ✓ - different unions
+yes_<$Extends<'red', PrimaryColors>>() // ✓ - member validation`}</Code>
+                  <div className="mt-4">
+                    <Link 
+                      href="/typescape/typist-intro"
+                      className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      🔭 Explore in Typist Introduction Typescape
+                    </Link>
+                  </div>
+                </div>
               </div>
             </section>
 
@@ -123,283 +230,83 @@ yes_<$Extends<string, StringOrNumber>>()    // ✓ string extends union`}</Code>
             <section className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">API Reference</h2>
               
-              <div className="space-y-8">
-                {/* Equality Comparison */}
+              <div className="space-y-6">
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Scale className="h-6 w-6 text-blue-600" />
-                    Equality Comparison
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>$Equal&lt;T1, T2&gt;</code>
                   </h3>
+                  <p className="text-gray-600 mb-3">
+                    Tests bidirectional type equality by checking structural identity between types. 
+                    This is the strictest comparison, ensuring both types have identical structure.
+                  </p>
+                  <Code language="typescript">{`yes_<$Equal<string, string>>() // ✓ - identical types
+yes_<$Equal<'a' | 'b', 'b' | 'a'>>() // ✓ - union order irrelevant
+no_<$Equal<string, string | number>>() // ✓ - strict equality fails
+no_<$Equal<{ a: 1 }, { a: 1; b?: 2 }>>() // ✓ - different structures
 
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                      <code>$Equal&lt;T1, T2&gt;</code>
-                    </h4>
-                    <p className="text-gray-600 mb-3">
-                      Tests bidirectional type equality by checking that T1 extends T2 and T2 extends T1. 
-                      This ensures structural identity between types and is the strictest comparison available.
-                    </p>
-                    <Code language="typescript">{`export type $Equal<T1, T2> = 
-  (<T>() => T extends T1 ? 1 : 2) extends (<T>() => T extends T2 ? 1 : 2)
-    ? $Yes 
-    : $No<'not-equal', [T1, T2]>`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Returns:</strong> <code>$Yes</code> if types are structurally identical, <code>$No&lt;'not-equal', [T1, T2]&gt;</code> otherwise
-                      <br />
-                      <strong>Usage:</strong> Type identity verification, exact match testing, symmetrical comparison
-                      <br />
-                      <strong>Example:</strong> <code>$Equal&lt;string, string&gt;</code> resolves to <code>$Yes</code>
-                    </div>
-                  </div>
+type Check1 = $Equal<42, number>
+// @ts-expect-error ✓
+yes_<Check1>() // literal ≠ primitive type
+no_<Check1>() // ✓ - correctly identifies difference`}</Code>
                 </div>
 
-                {/* Extension Comparison */}
                 <div className="border border-gray-200 rounded-lg p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <CheckCircle className="h-6 w-6 text-green-600" />
-                    Extension Comparison
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    <code>$Extends&lt;T1, T2&gt;</code>
                   </h3>
-
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
-                      <code>$Extends&lt;L, R&gt;</code>
-                    </h4>
-                    <p className="text-gray-600 mb-3">
-                      Tests unidirectional subtype relationship by checking if L extends R. 
-                      Used for inheritance validation, assignability testing, and subtype verification.
-                      This is the fundamental building block for type hierarchy validation.
-                    </p>
-                    <Code language="typescript">{`export type $Extends<L, R> =
-  L extends R ? $Yes 
-  : $No<'does-not-extend', [L, R]>`}</Code>
-                    <div className="mt-2 text-sm text-gray-500">
-                      <strong>Parameters:</strong> <code>L</code> (left/sub type), <code>R</code> (right/super type)
-                      <br />
-                      <strong>Returns:</strong> <code>$Yes</code> if L extends R, <code>$No&lt;'does-not-extend', [L, R]&gt;</code> otherwise
-                      <br />
-                      <strong>Usage:</strong> Subtype testing, inheritance verification, assignability checking
-                      <br />
-                      <strong>Example:</strong> <code>$Extends&lt;'hello', string&gt;</code> resolves to <code>$Yes</code>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Key Patterns Section */}
-            <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Key Patterns</h2>
-              
-              <div className="space-y-10">
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Basic Type Identity Testing</h3>
-                  <p className="text-gray-600 mb-4">
-                    Use <code>$Equal</code> to verify that two types are structurally identical. This is essential 
-                    for validating API contracts, testing type-level algorithms, and ensuring exact type matches 
-                    where assignability isn't sufficient.
+                  <p className="text-gray-600 mb-3">
+                    Tests whether T1 extends T2 (T1 is assignable to T2). This is unidirectional 
+                    subtype testing that validates inheritance and assignability relationships.
                   </p>
-                  <Code language="typescript">{`// From typist-type-comparisons typescape - exact type matching
-type StringEqualsString = $Equal<string, string>        // → $Yes (identical types)
-type StringEqualsNumber = $Equal<string, number>        // → $No (different types)
-type UnionOrderMatters = $Equal<string | number, number | string>  // → $Yes (order irrelevant)
+                  <Code language="typescript">{`yes_<$Extends<'hello', string>>() // ✓ - literal extends primitive
+yes_<$Extends<number, any>>() // ✓ - everything extends any
+yes_<$Extends<never, string>>() // ✓ - never extends everything
+no_<$Extends<string, number>>() // ✓ - no relationship
 
-// Testing with assertions
-yes_<$Equal<string, string>>()                          // ✓ Pass - types are equal
-no_<$Equal<string, number>>()                           // ✓ Pass - types are different
-
-// API contract validation
-interface UserResponse { id: number; name: string; email: string }
-type ResponseIdType = UserResponse['id']
-yes_<$Equal<ResponseIdType, number>>()                  // ✓ Verify id is number type`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-type-comparisons"
-                      className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
-                    >
-                      ⚖️ Explore in Type Comparisons Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Subtype Relationship Validation</h3>
-                  <p className="text-gray-600 mb-4">
-                    Use <code>$Extends</code> to test inheritance hierarchies and assignability relationships. 
-                    This pattern is crucial for validating that more specific types correctly extend their 
-                    broader counterparts, enabling type-safe polymorphism and generic constraints.
-                  </p>
-                  <Code language="typescript">{`// From typist-type-comparisons typescape - hierarchy testing
-type StringExtendsAny = $Extends<string, any>           // → $Yes (string is assignable to any)
-type NumberExtendsString = $Extends<number, string>     // → $No (unrelated types)
-type LiteralExtendsBase = $Extends<'hello', string>     // → $Yes (literal extends base type)
-
-// Union and intersection testing
-type StringExtendsUnion = $Extends<string, string | number>     // → $Yes 
-type UnionExtendsString = $Extends<string | number, string>     // → $No
-
-// Object inheritance validation
-interface BaseEntity { id: string; createdAt: Date }
-interface User extends BaseEntity { name: string; email: string }
-yes_<$Extends<User, BaseEntity>>()                      // ✓ User properly extends BaseEntity`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-type-comparisons"
-                      className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
-                    >
-                      ⚖️ Explore in Type Comparisons Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Utility Type Transformation Validation</h3>
-                  <p className="text-gray-600 mb-4">
-                    Validate the behavior of utility types like <code>Partial</code>, <code>Pick</code>, 
-                    and <code>Omit</code> using comparators. This pattern ensures that type transformations 
-                    behave correctly and helps debug complex mapped type operations.
-                  </p>
-                  <Code language="typescript">{`// From typist-type-comparisons typescape - utility type validation
-interface UserBase { name: string; email: string; age?: number }
-type PartialUser = Partial<UserBase>
-type PickedUser = Pick<UserBase, 'name' | 'email'>
-
-// Test transformation relationships
-type UserExtendsPartial = $Extends<UserBase, PartialUser>       // → $No (original has required props)
-type PartialExtendsUser = $Extends<PartialUser, UserBase>       // → $No (partial has all optional)
-type UserExtendsPicked = $Extends<UserBase, PickedUser>         // → $Yes (has all picked properties)
-type PickedExtendsUser = $Extends<PickedUser, UserBase>         // → $No (missing properties)
-
-// Validate utility type correctness  
-yes_<$Extends<UserBase, PickedUser>>()                          // ✓ Original extends picked subset
-no_<$Extends<PickedUser, UserBase>>()                           // ✓ Subset doesn't extend original`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-type-comparisons"
-                      className="inline-flex items-center px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors"
-                    >
-                      ⚖️ Explore in Type Comparisons Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Tuple Algorithm Verification</h3>
-                  <p className="text-gray-600 mb-4">
-                    Validate complex type-level algorithms involving tuple manipulation, union distribution, 
-                    and recursive type operations. This advanced pattern ensures that sophisticated type 
-                    computations produce the expected results across different input scenarios.
-                  </p>
-                  <Code language="typescript">{`// From typist-tuple-manipulation typescape - algorithm validation
-type Join<T extends readonly any[], S extends string> = 
-  T extends readonly [infer First, ...infer Rest]
-    ? Rest extends readonly []
-      ? \`\${First & string}\`
-      : \`\${First & string}\${S}\${Join<Rest, S>}\`
-    : ''
-
-// Test tuple joining algorithm
-type JoinResult = Join<['a', 'b', 'c'], '-'>             // → 'a-b-c'
-yes_<$Equal<JoinResult, 'a-b-c'>>()                      // ✓ Algorithm works correctly
-
-// Test edge cases  
-yes_<$Equal<Join<[], '-'>, ''>>()                        // ✓ Empty tuple handling
-yes_<$Equal<Join<['single'], '|'>, 'single'>>()          // ✓ Single element handling
-
-// Validate union explosion algorithm
-type ExplodeUnion<U> = U extends any ? [U] : never
-type Exploded = ExplodeUnion<'a' | 'b' | 'c'>           // → ['a'] | ['b'] | ['c']
-yes_<$Extends<['a'], Exploded>>()                        // ✓ Each member properly exploded`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-tuple-manipulation"
-                      className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
-                    >
-                      🧮 Explore in Tuple Manipulation Typescape
-                    </Link>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3">Object Manipulation Result Testing</h3>
-                  <p className="text-gray-600 mb-4">
-                    Verify that object transformation functions like omit, pick, and merge produce objects 
-                    with the correct types. This pattern is essential for building type-safe utility 
-                    libraries that manipulate object shapes while preserving type information.
-                  </p>
-                  <Code language="typescript">{`// From typist-omit-utilities typescape - transformation testing
-const omit = <T, K extends keyof T>(obj: T, keys: K[]): Omit<T, K> => {
-  const result = { ...obj }
-  keys.forEach(key => delete result[key])
-  return result
-}
-
-// Test omit function type behavior
-const original = { a: 1, b: 2, c: 3 }
-const result = omit(original, ['a', 'c'])
-
-// Verify result type is correct
-yes_<$Equal<typeof result, { b: 2 }>>()                 // ✓ Correct omitted type
-yes_<$Extends<typeof result, { b: number }>>()          // ✓ Has required properties
-no_<$Extends<typeof result, { a: any }>>()              // ✓ Omitted properties absent
-
-// Test with complex objects
-interface UserProfile { id: string; name: string; email: string; lastLogin: Date }
-const profile: UserProfile = { id: '1', name: 'Alice', email: 'alice@example.com', lastLogin: new Date() }
-const publicProfile = omit(profile, ['email', 'lastLogin'])
-yes_<$Equal<typeof publicProfile, Pick<UserProfile, 'id' | 'name'>>>()  // ✓ Correct public interface`}</Code>
-                  <div className="mt-4">
-                    <Link 
-                      href="/typescape/typist-omit-utilities"
-                      className="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-                    >
-                      🔧 Explore in Omit Utilities Typescape
-                    </Link>
-                  </div>
+type Dog = { name: string; breed: string }
+type Animal = { name: string }
+yes_<$Extends<Dog, Animal>>() // ✓ - more specific extends general
+// @ts-expect-error ✓
+yes_<$Extends<Animal, Dog>>() // would fail - missing properties
+no_<$Extends<Animal, Dog>>() // ✓ - correctly identifies non-extension`}</Code>
                 </div>
               </div>
             </section>
 
             {/* Related Functional Groups */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Related Functional Groups</h2>
               <p className="text-lg text-gray-600 mb-6">
-                Explore other typist functional groups that work together with comparators to build comprehensive type-safe applications.
+                Explore other typist functional groups that complement comparators in building comprehensive type-safe applications.
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Link href="/docs/typist/assertions" className="group">
-                  <div className="border border-gray-200 rounded-lg p-6 hover:border-purple-300 hover:bg-purple-50 transition-colors">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-green-300 hover:bg-green-50 transition-colors">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
-                        <span className="text-purple-600 text-xl">✅</span>
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                        <span className="text-green-600 text-xl">✅</span>
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900">Assertions</h3>
                     </div>
                     <p className="text-gray-600">
-                      Test comparator results with <code>yes_</code>, <code>no_</code>, and other assertion functions for complete type-level validation workflows.
+                      Type assertion utilities like <code>is_</code> and <code>yes_</code> that test comparator results and validate type relationships.
                     </p>
                   </div>
                 </Link>
 
                 <Link href="/docs/typist/verdicts" className="group">
-                  <div className="border border-gray-200 rounded-lg p-6 hover:border-green-300 hover:bg-green-50 transition-colors">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:bg-blue-50 transition-colors">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                        <span className="text-green-600 text-xl">🎯</span>
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <span className="text-blue-600 text-xl">⚖️</span>
                       </div>
                       <h3 className="text-xl font-semibold text-gray-900">Verdicts</h3>
                     </div>
                     <p className="text-gray-600">
-                      Understand the <code>$Yes</code> and <code>$No</code> verdict types that comparators produce and how to work with structured error information.
+                      Boolean-like types (<code>$Yes</code>, <code>$No</code>) that represent the results of comparator evaluations.
                     </p>
                   </div>
                 </Link>
-              </div>
-              
-              <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  💡 <strong>Workflow:</strong> Use comparators like <code>$Equal</code> and <code>$Extends</code> to generate verdicts, then validate those verdicts with assertion functions like <code>yes_</code> and <code>no_</code> for comprehensive type testing.
-                </p>
               </div>
             </section>
           </div>
