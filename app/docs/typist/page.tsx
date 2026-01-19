@@ -140,28 +140,28 @@ export default function TypistOverviewPage() {
             <section className="mb-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <Link 
-                  href="/docs/typist/installation"
+                  href="/docs/typist/guide"
                   className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Installation</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Interactive Guide</h3>
                     <ArrowRight className="h-5 w-5 text-gray-400" />
                   </div>
                   <p className="text-gray-600">
-                    Install and configure typist in your TypeScript project with our step-by-step guide.
+                    Comprehensive step-by-step guide to mastering typist through practical examples.
                   </p>
                 </Link>
                 
                 <Link 
-                  href="/docs/typist/quick-start"
+                  href="/docs/typist/phantoms"
                   className="block p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h3 className="text-lg font-semibold text-gray-900">Quick Start</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Phantom Types</h3>
                     <ArrowRight className="h-5 w-5 text-gray-400" />
                   </div>
                   <p className="text-gray-600">
-                    Jump into typist with practical examples and learn the core concepts through hands-on coding.
+                    Create nominal types without runtime overhead using phantom type patterns.
                   </p>
                 </Link>
               </div>
@@ -214,36 +214,67 @@ is_<Positive>('👎') `}</Code>
 
             {/* Core Concepts */}
             <section className="mb-12">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Core Functions</h2>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">Functional Groups</h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Typist is organized into functional groups - collections of related utilities that work together to provide complete type-level programming capabilities.
+              </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">is_&lt;T&gt;(value)</h3>
-                  <p className="text-gray-600">
-                    Assert that a value is assignable to type T. Works with both runtime values and phantom types.
-                  </p>
-                </div>
+                <Link href="/docs/typist/assertions" className="group">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-green-300 hover:bg-green-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                        <span className="text-green-600 text-xl">✅</span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Assertions</h3>
+                    </div>
+                    <p className="text-gray-600">
+                      Compile-time type assertion utilities like <code>is_</code>, <code>extends_</code>, and <code>has_</code> for static validation and testing.
+                    </p>
+                  </div>
+                </Link>
                 
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">extends_&lt;A, B&gt;()</h3>
-                  <p className="text-gray-600">
-                    Prove that type A extends type B. Essential for type relationship validation.
-                  </p>
-                </div>
+                <Link href="/docs/typist/comparators" className="group">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <span className="text-blue-600 text-xl">⚖️</span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Comparators</h3>
+                    </div>
+                    <p className="text-gray-600">
+                      Type-level comparison utilities like <code>$Equal</code> and <code>$Extends</code> that resolve to verdicts for decidable type evaluations.
+                    </p>
+                  </div>
+                </Link>
                 
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">has_&lt;K, T&gt;(obj)</h3>
-                  <p className="text-gray-600">
-                    Test that an object has property K of type T. Works with complex nested structures.
-                  </p>
-                </div>
+                <Link href="/docs/typist/operators" className="group">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-purple-300 hover:bg-purple-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                        <span className="text-purple-600 text-xl">🔧</span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Operators</h3>
+                    </div>
+                    <p className="text-gray-600">
+                      Core phantom value operators like <code>t_</code>, <code>assign_</code>, and <code>widen_</code> for type manipulation with zero runtime overhead.
+                    </p>
+                  </div>
+                </Link>
                 
-                <div className="block p-6 bg-white border border-gray-200 rounded-lg">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">t_&lt;T&gt;()</h3>
-                  <p className="text-gray-600">
-                    Create phantom values for pure type-level operations without runtime overhead.
-                  </p>
-                </div>
+                <Link href="/docs/typist/verdicts" className="group">
+                  <div className="border border-gray-200 rounded-lg p-6 hover:border-yellow-300 hover:bg-yellow-50 transition-colors">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center group-hover:bg-yellow-200 transition-colors">
+                        <span className="text-yellow-600 text-xl">📋</span>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Verdicts</h3>
+                    </div>
+                    <p className="text-gray-600">
+                      Boolean-like types <code>$Yes</code> and <code>$No</code> that represent the results of type-level computations and comparisons.
+                    </p>
+                  </div>
+                </Link>
               </div>
             </section>
 

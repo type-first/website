@@ -21,7 +21,12 @@ interface DocNavItemProps {
 
 function DocNavItem({ page, librarySlug, currentPath, level = 0 }: DocNavItemProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const href = `/docs/${librarySlug}/${page.path.join('/')}`;
+  
+  // Special handling for introduction - link to library home
+  const href = page.slug === 'introduction' 
+    ? `/docs/${librarySlug}` 
+    : `/docs/${librarySlug}/${page.path.join('/')}`;
+  
   const isActive = currentPath === href;
   const hasChildren = page.children && page.children.length > 0;
   

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import AuthProvider, { useSessionSafe } from '@/modules/auth/components/auth-provider';
 import { signOut } from 'next-auth/react';
-import { FlaskConical, Newspaper, BookOpen, MessageCircle, Github, LogIn } from 'lucide-react';
+import { FlaskConical, Newspaper, BookOpen, MessageCircle, Github, LogIn, Code2 } from 'lucide-react';
 import { openAuthPopup } from '@/modules/auth/utils/popup';
 
 const AUTO_COLLAPSE_MS = 1_000; // 1 second
@@ -147,6 +147,23 @@ export default function NavSidebar() {
                 {!collapsed && (
                   <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
                     community
+                  </div>
+                )}
+              </Link>
+            </li>
+
+            <li>
+              <Link
+                href="/typescape"
+                className={LINK_ROW}
+                aria-label="Typescape"
+              >
+                <div className="w-16 h-14 flex items-center justify-center flex-none">
+                  <Code2 className="h-6 w-6 text-current" strokeWidth={1.8} />
+                </div>
+                {!collapsed && (
+                  <div className={`flex-1 h-14 flex items-center ${labelTransition} ${labelOpacity} ${labelVisibility}`}>
+                    typescape
                   </div>
                 )}
               </Link>
