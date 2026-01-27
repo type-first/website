@@ -107,7 +107,7 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
         });
       }
     };
-  }, [files]);
+  }, []); // Only run on component unmount, not when files change
 
   // Diagnostics across all models
   const [markers, setMarkers] = React.useState<(Marker & { resource: string })[]>([]);

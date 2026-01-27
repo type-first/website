@@ -20,4 +20,4 @@ export const typistIntroScenario = createScenario({
     'Create feedback systems with exclusive reactions',
     'Practice positive and negative testing patterns'
   ] as const
-});
+})
