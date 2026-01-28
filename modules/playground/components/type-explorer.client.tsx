@@ -64,7 +64,8 @@ export default function TypeExplorer({ initialFiles }: TypeExplorerProps) {
   React.useEffect(() => {
     // Check if we navigated from the typescape browse page
     const fromBrowse = window.history?.state?.from === 'typescape-browse';
-    const isRefresh = performance.getEntriesByType('navigation')[0]?.type === 'reload';
+    const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+    const isRefresh = navigationEntry?.type === 'reload';
     const currentPath = window.location.pathname;
     
     console.log('[TypeExplorer] Navigation check:', { 

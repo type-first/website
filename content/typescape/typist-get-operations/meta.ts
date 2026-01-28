@@ -18,6 +18,5 @@ export const typistGetOperationsScenario = createScenario({
     'Create recursive type utilities for deep object traversal', 
     'Implement safe property access with graceful fallbacks',
     'Design flexible APIs with strong type inference'
-  ] as const,
-  introduction: `Create powerful property access utilities that validate object paths at compile time while providing runtime safety. This scenario demonstrates building a sophisticated \`get\` function that uses TypeScript's template literal types to validate property paths, ensuring you can only access properties that actually exist. You'll learn advanced type programming techniques including recursive conditional types, path parsing, and type inference patterns that make complex object traversal both safe and ergonomic.`
+  ] as const
 });

@@ -18,6 +18,5 @@ export const typistRegistryPatternsScenario = createScenario({
     'Create flexible lookup patterns with strong inference',
     'Build modular registry systems for large codebases',
     'Master registry composition and extension patterns'
-  ] as const,
-  introduction: `Build sophisticated registry systems that provide compile-time safety and runtime flexibility. This scenario demonstrates creating type-safe registries where keys are validated at compile time, values maintain full type information, and lookup operations are both fast and type-preserving. You'll learn advanced patterns for registry composition, modular design, and building systems that scale gracefully while maintaining TypeScript's type safety guarantees throughout the application lifecycle.`
+  ] as const
 });

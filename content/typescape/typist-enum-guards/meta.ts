@@ -18,6 +18,5 @@ export const typistEnumGuardsScenario = createScenario({
     'Master enum patterns for safe runtime checking',
     'Bridge compile-time types with runtime validation',
     'Implement robust unknown data handling patterns'
-  ] as const,
-  introduction: `Bridge the gap between compile-time types and runtime validation with custom enum patterns. This scenario shows how to build a robust \`Enum\` class that provides both type safety and runtime checking through methods like \`is()\` and \`is_()\`. You'll learn to create type guards that work seamlessly with TypeScript's control flow analysis, enabling safe handling of unknown data while maintaining full type information in different execution contexts.`
+  ] as const
 });

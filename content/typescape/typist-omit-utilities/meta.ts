@@ -18,6 +18,5 @@ export const typistOmitUtilitiesScenario = createScenario({
     'Master recursive type patterns for object transformation',
     'Implement flexible key filtering with pattern matching',
     'Design type-preserving object manipulation utilities'
-  ] as const,
-  introduction: `Go beyond TypeScript's built-in \`Omit\` utility to create sophisticated object transformation patterns. This scenario explores advanced techniques for omitting keys from nested objects, implementing pattern-based key filtering, and building flexible utilities that preserve type relationships while enabling complex object manipulation. You'll learn to handle deep object structures, create recursive omit patterns, and build utilities that work seamlessly with TypeScript's type inference system.`
+  ] as const
 });
