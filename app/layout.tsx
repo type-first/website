@@ -169,7 +169,7 @@ export default function RootLayout({
               </div>
               
               <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-500">
-                <p>&copy; 2024 Our Blog. Built with Next.js and Islands Architecture.</p>
+                <p>&copy; {new Date().getFullYear()} typefirst - Built with Next.js and Islands Architecture.</p>
               </div>
               </div>
             </footer>
