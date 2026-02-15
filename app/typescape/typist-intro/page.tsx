@@ -1,4 +1,4 @@
-import { TypescapePlayground } from "@/modules/playground/typescape-playground"
+import { TypescapePlayground } from "@/modules/playground/typescape-playground.cmp.srv"
 import { typistIntroScenario } from '@/content/typescape/typist-intro/meta';
 
 export const metadata = {
