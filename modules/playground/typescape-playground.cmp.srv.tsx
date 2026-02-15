@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import TypeExplorer, { type ExplorerFile } from '@/modules/playground/components/type-explorer.client';
-import { importScenarioMeta } from '../typescape/scenario.model';
+import { importScenarioMeta } from '../typescape/scenario.model.iso';
 
 interface TypescapePlaygroundProps {
   scenarioId: string;

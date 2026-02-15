@@ -4,7 +4,7 @@
  */
 
 import { createScenario } from '@/lib/content/scenario.model';
-import { scenario } from '../../scenario.model';
+import { scenario } from '../../scenario.model.iso';
 
 export const typistEnumGuardsScenario = scenario({
   slug: 'typist-enum-guards',

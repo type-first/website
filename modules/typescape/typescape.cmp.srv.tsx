@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import TypeExplorer, { type ExplorerFile } from '@/modules/typescape/editor.cmp.cli'
-import { importScenarioMeta } from './scenario.model';
+import { importScenarioMeta } from './scenario.model.iso';
 
 interface TypescapeProps {
   scenarioId: string;
