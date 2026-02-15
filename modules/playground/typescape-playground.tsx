@@ -120,7 +120,7 @@ export async function TypescapePlayground({ scenarioId }: TypescapePlaygroundPro
         </div>
       )}
       
-      <TypeExplorer initialFiles={files} />
+      <TypeExplorer initialFiles={files} scenarioId={scenarioId} />
     </div>
   );
 }
