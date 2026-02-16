@@ -1,10 +1,4 @@
-/**
- * Typist Enum Guards Scenario - Meta Definition
- * Enum patterns, runtime type guards, and compile-time validation integration
- */
-
-import { createScenario } from '@/lib/content/scenario.model';
-import { scenario } from '../../scenario.model.iso';
+import { scenario } from '@/modules/typescape/scenario.model.iso';
 
 export const typistEnumGuardsScenario = scenario({
   slug: 'typist-enum-guards',
