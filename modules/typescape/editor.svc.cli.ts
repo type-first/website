@@ -1,5 +1,19 @@
 import type * as MonacoNS from "monaco-editor";
-import { type ExplorerFile } from "./monaco.service";
+import { loader, type BeforeMount } from "@monaco-editor/react";
+import { getMonacoTheme } from "@/modules/code-theme/v0/code-theme";
+import { 
+  findMarkerAtPosition,
+  flattenDiagnosticMessage, 
+  groupMarkersByResource, 
+  generateUniqueFileName, 
+  pathUtils,
+  calculateTooltipPosition 
+} from "./editor.logic";
+
+export type ExplorerFile = { 
+  path: string; 
+  content: string; 
+};
 
 export type Marker = {
   message: string;
@@ -56,48 +70,19 @@ const DEFAULT_MULTI_FILES: ExplorerFile[] = [
   },
 ];
 
-// Utilities
-const toRel = (p: string) => p.replace(/^file:\/\/\/src\/?/, "");
-const toAbs = (rel: string) => {
-  const cleaned = rel.replace(/^\/?/, "");
-  return `file:///src/${cleaned}`;
-};
-
-const flattenMessage = (msg: any): string => {
-  if (!msg) return "";
-  if (typeof msg === "string") return msg;
-  const parts: string[] = [];
-  let cur: any = msg;
-  while (cur) {
-    parts.push(String(cur.messageText ?? ""));
-    cur = cur.next && cur.next[0];
-  }
-  return parts.filter(Boolean).join("\n");
-};
-
-const groupByResource = (markers: MarkerWithResource[]) => {
-  const out: Record<string, MarkerWithResource[]> = Object.create(null);
-  for (const m of markers) {
-    (out[m.resource] ||= []).push(m);
-  }
-  return out;
-};
-
-const uniqueRel = (existingRels: Set<string>, baseRel: string) => {
-  const base = baseRel.trim() || "new-file.ts";
-  const hasExt = /\.[a-zA-Z]+$/.test(base);
-  const stem = hasExt ? base.replace(/\.[^.]+$/, "") : base;
-  const ext = hasExt ? base.slice(base.lastIndexOf(".")) : ".ts";
-  let i = 1;
-  let rel = `${stem}${ext}`;
-  while (existingRels.has(rel)) rel = `${stem}-${i++}${ext}`;
-  return rel;
-};
+// Monaco loader configuration
+loader.config({
+  paths: {
+    vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs",
+  },
+});
 
 interface ExternalStore<S> {
   getSnapshot(): S;
   subscribe(listener: () => void): () => void;
 }
+
+type Disposable = { dispose: () => void };
 
 export class TypeExplorerService implements ExternalStore<Snapshot> {
   private snapshot: Snapshot;
@@ -106,10 +91,11 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
   private monaco: typeof MonacoNS | null = null;
   private quickInfoTimer: number | null = null;
   private recomputeTimer: number | null = null;
+  private hoverProvider: Disposable | null = null;
+  private hoverHideTimer: number | null = null;
 
   constructor(initialFiles?: ExplorerFile[]) {
-    const files =
-      initialFiles && initialFiles.length ? initialFiles : DEFAULT_MULTI_FILES;
+    const files = initialFiles && initialFiles.length ? initialFiles : DEFAULT_MULTI_FILES;
     const activePath = (initialFiles && initialFiles[0]?.path) || files[0]!.path;
 
     this.snapshot = {
@@ -142,19 +128,86 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
     this.emit();
   }
 
-  setHoverTip(hoverTip: HoverTip) {
-    this.setSnapshot({ hoverTip });
-  }
-
   private setMarkers(markers: MarkerWithResource[]) {
-    const markersByResource = groupByResource(markers);
+    const markersByResource = groupMarkersByResource(markers);
     this.setSnapshot({ markers, markersByResource });
   }
 
-  setEditorAndMonaco(editor: MonacoNS.editor.IStandaloneCodeEditor, monaco: typeof MonacoNS) {
+  // Monaco setup methods
+  beforeMount: BeforeMount = (monaco) => {
+    this.monaco = monaco as unknown as typeof MonacoNS;
+    this.configureMonaco(monaco);
+    this.createModelsForFiles(this.snapshot.files);
+  };
+
+  private configureMonaco(monaco: any) {
+    // compiler options
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      module: monaco.languages.typescript.ModuleKind.ESNext,
+      moduleResolution: (monaco.languages.typescript as any).ModuleResolutionKind?.NodeJs ?? 2,
+      strict: false,
+      noImplicitAny: true,
+      noImplicitThis: true,
+      noImplicitReturns: true,
+      noFallthroughCasesInSwitch: true,
+      noUncheckedIndexedAccess: false,
+      strictNullChecks: true,
+      strictFunctionTypes: true,
+      strictPropertyInitialization: false,
+      useDefineForClassFields: false,
+      noEmit: true,
+      allowNonTsExtensions: true,
+      lib: ["es2020", "dom"],
+      baseUrl: "file:///src",
+      rootDir: "file:///src",
+    });
+
+    if (typeof (monaco.languages.typescript.typescriptDefaults as any).setEagerModelSync === "function") {
+      (monaco.languages.typescript.typescriptDefaults as any).setEagerModelSync(true);
+    }
+
+    // manage diagnostics manually
+    monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+      noSemanticValidation: true,
+      noSyntaxValidation: true,
+    });
+  }
+
+  private createModelsForFiles(files: ExplorerFile[]) {
+    const monaco = this.monaco;
+    if (!monaco) return;
+
+    for (const f of files) {
+      const uri = monaco.Uri.parse(f.path);
+      const existing = monaco.editor.getModel(uri);
+      if (!existing) monaco.editor.createModel(f.content, "typescript", uri);
+    }
+  }
+
+  onMount = async (editor: MonacoNS.editor.IStandaloneCodeEditor, monaco: typeof MonacoNS) => {
     this.editor = editor;
     this.monaco = monaco;
+    
+    this.applyTheme("light");
     this.setupEditorListeners();
+    this.setupHoverHandling();
+    
+    // ensure active model in editor
+    const activeModel = monaco.editor.getModel(monaco.Uri.parse(this.snapshot.activePath));
+    if (activeModel) editor.setModel(activeModel);
+
+    // initial diagnostics
+    await this.kickDiagnostics();
+    await this.kickDiagnostics();
+  };
+
+  private applyTheme(mode: "light" | "dark") {
+    const monaco = this.monaco;
+    if (!monaco) return;
+    
+    const monacoTheme = getMonacoTheme(mode);
+    monaco.editor.setTheme(monacoTheme);
   }
 
   private setupEditorListeners() {
@@ -208,6 +261,124 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
     });
   }
 
+  // Hover handling methods
+  private setupHoverHandling() {
+    const editor = this.editor;
+    if (!editor) return;
+
+    editor.onMouseMove((e) => this.onMouseMove(e));
+    editor.onMouseLeave(() => this.onMouseLeave());
+    this.registerHoverProvider();
+  }
+
+  private onMouseMove(e: any) {
+    const editor = this.editor;
+    const monaco = this.monaco;
+    if (!editor || !monaco) return;
+
+    const pos = e.target.position;
+    if (!pos) return;
+
+    const model = editor.getModel();
+    if (!model) return;
+
+    const markers = monaco.editor.getModelMarkers({ resource: model.uri });
+    const hit = findMarkerAtPosition(markers, pos);
+
+    if (!hit) {
+      if (this.hoverHideTimer) window.clearTimeout(this.hoverHideTimer);
+      this.hoverHideTimer = window.setTimeout(() => {
+        this.setSnapshot({
+          hoverTip: { visible: false, message: "", x: 0, y: 0 },
+        });
+        this.hoverHideTimer = null;
+      }, 200);
+      return;
+    }
+
+    if (this.hoverHideTimer) {
+      window.clearTimeout(this.hoverHideTimer);
+      this.hoverHideTimer = null;
+    }
+
+    const newKey = `${hit.startLineNumber}:${hit.startColumn}-${hit.endLineNumber}:${hit.endColumn}`;
+    if (this.snapshot.hoverTip.visible && this.snapshot.hoverTip.key === newKey) return;
+
+    const { x, y } = calculateTooltipPosition(editor, monaco, hit.startLineNumber, hit.startColumn);
+
+    this.setSnapshot({
+      hoverTip: {
+        visible: true,
+        message: hit.message,
+        code: typeof hit.code === "object" ? (hit.code as any).value : (hit.code as any),
+        x,
+        y,
+        key: newKey,
+      },
+    });
+  }
+
+  private onMouseLeave() {
+    if (this.hoverHideTimer) window.clearTimeout(this.hoverHideTimer);
+    this.hoverHideTimer = window.setTimeout(() => {
+      this.setSnapshot({
+        hoverTip: { visible: false, message: "", x: 0, y: 0 },
+      });
+      this.hoverHideTimer = null;
+    }, 600);
+  }
+
+  private registerHoverProvider() {
+    const monaco = this.monaco;
+    if (!monaco) return;
+
+    try {
+      this.hoverProvider?.dispose?.();
+    } catch {}
+    this.hoverProvider = null;
+
+    try {
+      const register = (lang: string) =>
+        monaco.languages.registerHoverProvider(lang, {
+          provideHover(model, position) {
+            const markers = monaco.editor.getModelMarkers({ resource: model.uri });
+            const hit = findMarkerAtPosition(markers, position);
+            if (!hit) return undefined as any;
+            
+            const code = (typeof hit.code === "object" ? (hit.code as any).value : hit.code) as string | undefined;
+
+            const contents: any[] = [];
+            contents.push({ value: hit.message || "Error" });
+            if (code) contents.push({ value: `Code: ${code}` });
+
+            return {
+              contents,
+              range: {
+                startLineNumber: hit.startLineNumber,
+                startColumn: hit.startColumn,
+                endLineNumber: hit.endLineNumber,
+                endColumn: hit.endColumn,
+              },
+            } as any;
+          },
+        });
+
+      const d1 = register("typescript");
+      const d2 = register("tsx");
+
+      this.hoverProvider = {
+        dispose: () => {
+          try {
+            d1.dispose();
+          } catch {}
+          try {
+            d2.dispose();
+          } catch {}
+        },
+      };
+    } catch {}
+  }
+
   // File operations
   setActivePath(path: string) {
     const monaco = this.monaco;
@@ -243,9 +414,9 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
     const monaco = this.monaco;
     const editor = this.editor;
 
-    const existing = new Set(this.snapshot.files.map((f) => toRel(f.path)));
-    const rel = uniqueRel(existing, "new-file.ts");
-    const path = toAbs(rel);
+    const existing = new Set(this.snapshot.files.map((f) => pathUtils.toRelative(f.path)));
+    const rel = generateUniqueFileName(existing, "new-file.ts");
+    const path = pathUtils.toAbsolute(rel);
     const content = "export {}\n";
 
     const nextFiles = [...this.snapshot.files, { path, content }];
@@ -267,19 +438,18 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
     const cleanedRel = nextRelInput.trim().replace(/^\/?/, "");
     if (!cleanedRel) return;
 
-    let targetRel =
-      cleanedRel.endsWith(".ts") || cleanedRel.endsWith(".tsx")
-        ? cleanedRel
-        : `${cleanedRel}.ts`;
+    let targetRel = cleanedRel.endsWith(".ts") || cleanedRel.endsWith(".tsx")
+      ? cleanedRel
+      : `${cleanedRel}.ts`;
 
     const existingRel = new Set(
       this.snapshot.files
-        .map((f) => toRel(f.path))
-        .filter((r) => toAbs(r) !== oldPath)
+        .map((f) => pathUtils.toRelative(f.path))
+        .filter((r) => pathUtils.toAbsolute(r) !== oldPath)
     );
-    if (existingRel.has(targetRel)) targetRel = uniqueRel(existingRel, targetRel);
+    if (existingRel.has(targetRel)) targetRel = generateUniqueFileName(existingRel, targetRel);
 
-    const newPath = toAbs(targetRel);
+    const newPath = pathUtils.toAbsolute(targetRel);
 
     const oldUri = monaco.Uri.parse(oldPath);
     const oldModel = monaco.editor.getModel(oldUri);
@@ -301,8 +471,7 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
       f.path === oldPath ? { path: newPath, content } : f
     );
 
-    const nextActive =
-      this.snapshot.activePath === oldPath ? newPath : this.snapshot.activePath;
+    const nextActive = this.snapshot.activePath === oldPath ? newPath : this.snapshot.activePath;
 
     this.setSnapshot({ files: nextFiles, activePath: nextActive });
 
@@ -317,7 +486,6 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
     if (this.snapshot.files.length <= 1) return;
 
     const nextFiles = this.snapshot.files.filter((f) => f.path !== path);
-
     let nextActive = this.snapshot.activePath;
     if (nextActive === path) nextActive = nextFiles[0]!.path;
 
@@ -368,7 +536,7 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
   // TypeScript diagnostics and type info
   private async updateQuickInfo() {
     const editor = this.editor;
-    const monaco = this.monaco as typeof MonacoNS | null;
+    const monaco = this.monaco;
     if (!editor || !monaco) return;
 
     const model = editor.getModel();
@@ -423,7 +591,7 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
   }
 
   async kickDiagnostics() {
-    const monaco = this.monaco as typeof MonacoNS | null;
+    const monaco = this.monaco;
     if (!monaco) return;
 
     try {
@@ -473,7 +641,7 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
               startColumn: startPos.column,
               endLineNumber: endPos.lineNumber,
               endColumn: endPos.column,
-              message: flattenMessage(d.messageText ?? d.message ?? ""),
+              message: flattenDiagnosticMessage(d.messageText ?? d.message ?? ""),
               severity,
               code,
             };
@@ -499,12 +667,34 @@ export class TypeExplorerService implements ExternalStore<Snapshot> {
     } catch {}
   }
 
+  private disposeProjectModels() {
+    const monaco = this.monaco;
+    if (!monaco) return;
+
+    const allModels = monaco.editor.getModels();
+    for (const model of allModels) {
+      const uri = model.uri.toString();
+      if (uri.startsWith("file:///src/")) {
+        try {
+          model.dispose();
+        } catch {}
+      }
+    }
+  }
+
   dispose() {
     try {
       if (this.quickInfoTimer) window.clearTimeout(this.quickInfoTimer);
       if (this.recomputeTimer) window.clearTimeout(this.recomputeTimer);
+      if (this.hoverHideTimer) window.clearTimeout(this.hoverHideTimer);
     } catch {}
 
+    try {
+      this.hoverProvider?.dispose?.();
+    } catch {}
+    this.hoverProvider = null;
+
+    this.disposeProjectModels();
     this.editor = null;
     this.monaco = null;
   }

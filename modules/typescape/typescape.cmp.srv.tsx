@@ -1,6 +1,5 @@
 import TypeExplorer, { type ExplorerFile } from '@/modules/typescape/editor.cmp.cli'
-import { importScenarioMeta } from './scenario.model.iso';
-import { loadScenarioFiles } from './loader.srv';
+import { loadScenarioFiles, importScenarioMeta } from './loader.srv';
 
 interface TypescapeProps {
   scenarioId: string;

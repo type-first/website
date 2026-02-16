@@ -1,10 +1,19 @@
 import fs from 'fs/promises';
 import path from 'path';
+import { isScenario, ScenarioMeta } from './scenario.model.iso';
 
 export type ScenarioFile = {
   path: string;
   content: string;
 };
+
+export const importScenarioMeta 
+  = async (slug:ScenarioMeta['slug']):Promise<ScenarioMeta> => 
+  { const metaModule = await import(`./examples/${slug}/meta.ts`)
+    const scenario:ScenarioMeta = metaModule.default
+    if (!isScenario(scenario)) 
+      throw 'no-scenario-default-export'
+    return scenario }
 
 /**
  * Load all TypeScript files from a scenario's src directory

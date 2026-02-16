@@ -2,19 +2,17 @@
 
 import React from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
-import type * as MonacoNS from "monaco-editor";
 import { getMonacoTheme } from "@/modules/code-theme/v0/code-theme";
 import { Pencil, Trash } from "lucide-react";
 import { useSyncExternalStore } from "react";
 
-import { MonacoService, type ExplorerFile } from "./monaco.service";
-import { HoverService } from "./hover.service";
 import { 
   TypeExplorerService, 
   type Snapshot, 
-  type MarkerWithResource, 
-  type HoverTip 
+  type MarkerWithResource,
+  type ExplorerFile
 } from "./type-explorer.service";
+import { pathUtils } from "./editor.logic";
 
 export type { ExplorerFile };
 
@@ -24,7 +22,7 @@ export type TypeExplorerProps = {
 };
 
 // Utilities
-const toRel = (p: string) => p.replace(/^file:\/\/\/src\/?/, "");
+const { toRelative } = pathUtils;
 
 // Context and hooks
 const ServiceContext = React.createContext<TypeExplorerService | null>(null);
@@ -64,50 +62,23 @@ function TypeExplorerView() {
   const hoverTip = useServiceSelector((s) => s.hoverTip);
   const editorHeight = useServiceSelector((s) => s.editorHeight);
 
-  // Services for Monaco integration
-  const monacoService = React.useRef(new MonacoService());
-  const hoverService = React.useRef(new HoverService((hoverTip: HoverTip) => svc.setHoverTip(hoverTip)));
-
   // UI-only rename state: ephemeral input state, not domain state
   const [renaming, setRenaming] = React.useState<{ oldPath: string; value: string } | null>(null);
 
   const mode: "light" | "dark" = "light";
 
   const beforeMount = React.useCallback((monaco: any) => {
-    monacoService.current.beforeMount(monaco);
-    monacoService.current.createModelsForFiles(files);
-  }, [files]);
+    svc.beforeMount(monaco);
+  }, [svc]);
 
   const onMount: OnMount = React.useCallback(async (editor, monaco) => {
-    const monacoSvc = monacoService.current;
-    const hoverSvc = hoverService.current;
-    
-    monacoSvc.applyTheme(mode);
-    
-    // Set up services with editor and monaco instances
-    svc.setEditorAndMonaco(editor as unknown as MonacoNS.editor.IStandaloneCodeEditor, monaco as unknown as typeof MonacoNS);
-    hoverSvc.setEditorAndMonaco(editor as unknown as MonacoNS.editor.IStandaloneCodeEditor, monaco as unknown as typeof MonacoNS);
-
-    // ensure active model in editor
-    const activeModel = monaco.editor.getModel(monaco.Uri.parse(activePath));
-    if (activeModel) editor.setModel(activeModel);
-
-    // initial diagnostics
-    await svc.kickDiagnostics();
-    await svc.kickDiagnostics();
-  }, [svc, activePath, mode]);
+    await svc.onMount(editor as any, monaco as any);
+  }, [svc]);
 
   const onChangeContent = (next: string | undefined) => {
     const content = next ?? "";
     svc.setFileContent(activePath, content);
   };
-
-  React.useEffect(() => {
-    return () => {
-      monacoService.current.dispose();
-      hoverService.current.dispose();
-    };
-  }, []);
 
   // Handle Cmd+S / Ctrl+S to prevent browser save dialog
   React.useEffect(() => {
@@ -137,7 +108,7 @@ function TypeExplorerView() {
                 svc.addNewFile();
                 // rename UX: set after add; pick newest file
                 const newest = svc.getSnapshot().files.at(-1);
-                if (newest) setRenaming({ oldPath: newest.path, value: toRel(newest.path) });
+                if (newest) setRenaming({ oldPath: newest.path, value: toRelative(newest.path) });
               }}
               title="Create new file"
               className="px-2 py-1 text-xs rounded bg-blue-600 text-white hover:bg-blue-700"
@@ -149,7 +120,7 @@ function TypeExplorerView() {
           <ul className="overflow-auto divide-y divide-gray-100">
             {files.map((f) => {
               const isActive = activePath === f.path;
-              const rel = toRel(f.path);
+              const rel = toRelative(f.path);
               const fileMarkers = markersByResource[f.path] || [];
               const hasError = fileMarkers.some((m) => m.severity >= 8);
               const hasAny = fileMarkers.length > 0;
