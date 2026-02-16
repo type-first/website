@@ -11,7 +11,7 @@ import {
   type Snapshot, 
   type MarkerWithResource,
   type ExplorerFile
-} from "./type-explorer.service";
+} from "./editor.svc.cli";
 import { pathUtils } from "./editor.logic";
 
 export type { ExplorerFile };
