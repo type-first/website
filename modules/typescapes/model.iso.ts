@@ -6,7 +6,10 @@ export const SCENARIO_KIND
 export type ScenarioMeta
   = ContentMeta<typeof SCENARIO_KIND> 
   & { difficulty:'beginner'|'intermediate'|'advanced'
-      explanation:string }
+      explanation:string 
+      files:
+      { path:`@/${string}` 
+        alias:string }[] }
 
 export const scenario
   = (data:Omit<ScenarioMeta,'kind'>):ScenarioMeta => 

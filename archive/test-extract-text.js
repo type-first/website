@@ -4,7 +4,7 @@
  * Test script to see what text extractPlainText generates
  */
 
-import { extractPlainText } from './lib/content/rich-text/extract-text';
+import { extractPlainText } from '../lib/content/rich-text/extract-text';
 import React from 'react';
 
 async function main() {
@@ -15,7 +15,7 @@ async function main() {
   // Now let's check what's in the chunks
   console.log('\nChecking chunks registry...');
   try {
-    const { chunks } = await import('./content/articles/advanced-typescript-patterns-react/chunks');
+    const { chunks } = await import('../content/articles/advanced-typescript-patterns-react/chunks');
     
     console.log('Testing text extraction for chunks...\n');
     

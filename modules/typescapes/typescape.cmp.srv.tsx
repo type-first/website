@@ -1,16 +1,10 @@
-import TypeExplorer, { type ExplorerFile } from '@/modules/typescape/editor.cmp.cli'
+import TypeExplorer, { type ExplorerFile } from '@/modules/typescapes/editor.cmp.cli'
 import { loadScenarioFiles, importScenarioMeta } from './loader.srv';
 
-interface TypescapeProps 
-  { scenarioId: string }
-
 export async function Typescape
-  ({ scenarioId }: TypescapeProps) 
-  { const [files, scenario] = await Promise.all([
-      loadScenarioFiles(scenarioId),
-      importScenarioMeta(scenarioId)
-    ]);
-    
+  ( props:{ slug:string } ) 
+  { const scenario = await importScenarioMeta(props.slug)
+    const files = await loadScenarioFiles(scenario)
     return (
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         {/* Typescape Header */}
@@ -50,7 +44,7 @@ export async function Typescape
           </div>
         )}
         
-        <TypeExplorer initialFiles={files} scenarioId={scenarioId} />
+        <TypeExplorer initialFiles={files} slug={scenario.slug} />
       </div>
     );
   }

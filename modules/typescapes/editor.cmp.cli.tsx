@@ -13,12 +13,13 @@ import {
   type ExplorerFile
 } from "./editor.svc.cli";
 import { pathUtils } from "./editor.logic";
+import { ScenarioMeta } from "./model.iso";
 
 export type { ExplorerFile };
 
 export type TypeExplorerProps = {
   initialFiles?: ExplorerFile[];
-  scenarioId?: string;
+  slug?: ScenarioMeta['slug'];
 };
 
 // Utilities
@@ -39,9 +40,9 @@ function useServiceSelector<T>(selector: (s: Snapshot) => T): T {
   return useSyncExternalStore(svc.subscribe, getSelected, getSelected);
 }
 
-export default function TypeExplorer({ initialFiles, scenarioId }: TypeExplorerProps) {
+export default function TypeExplorer({ initialFiles, slug }: TypeExplorerProps) {
   // service instance is stable for the "scenario"; new scenario => new instance
-  const svc = React.useMemo(() => new TypeExplorerService(initialFiles), [scenarioId]); // scenarioId gates the lifecycle
+  const svc = React.useMemo(() => new TypeExplorerService(initialFiles), [slug]); // scenarioId gates the lifecycle
   React.useEffect(() => () => svc.dispose(), [svc]);
 
   return (

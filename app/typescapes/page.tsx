@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, ArrowRight } from 'lucide-react'
-import { typescapeRegistry } from '@/content/typescape/registry'
+import { typescapeRegistry } from '@/content/typescapes/reg'
 import type { ScenarioMeta } from '@/lib/content/scenario.model'
 
 function getDifficultyColor(difficulty: string) {
