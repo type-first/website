@@ -1,4 +1,4 @@
-import { scenario } from '@/modules/typescape/scenario.model.iso';
+import { scenario } from '@/modules/typescape/model.iso';
 
 export const typistEnumGuardsScenario = scenario({
   slug: 'typist-enum-guards',

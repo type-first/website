@@ -65,12 +65,12 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <div className="min-h-screen bg-gray-50 flex">
           {/* Sidebar (left) for md+ screens */}
-          <NavSidebar />
+          {/* <NavSidebar /> */}
 
           {/* Main column */}
-          <div className="flex-1 flex flex-col min-w-0">
+          {/* <div className="flex-1 flex flex-col min-w-0"> */}
             {/* Mobile top bar (md-) */}
-            <MobileTopBar 
+            {/* <MobileTopBar 
               menu={
                 <nav className="space-y-1">
                   <Link href="/docs" className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-blue-700 hover:bg-blue-50 rounded-md">
@@ -91,10 +91,10 @@ export default function RootLayout({
                   </Link>
                 </nav>
               }
-            />
+            /> */}
 
             {/* Secondary topbar: breadcrumbs + search */}
-            <SearchBarLauncher />
+            {/* <SearchBarLauncher /> */}
 
             <main className="flex-1">
               <Suspense fallback={
@@ -114,7 +114,7 @@ export default function RootLayout({
             </Suspense>
             </main>
 
-            <footer className="bg-white border-t border-gray-200 mt-20">
+            {/* <footer className="bg-white border-t border-gray-200 mt-20">
               <div className="max-w-6xl mx-auto px-6 py-12">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
@@ -173,10 +173,10 @@ export default function RootLayout({
               </div>
               </div>
             </footer>
-          </div>
+          </div> */}
 
           {/* Chat Sidebar (right) for md+ screens */}
-          <ChatSidebar />
+          {/* <ChatSidebar /> */}
         </div>
       </body>
     </html>

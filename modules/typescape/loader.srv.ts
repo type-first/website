@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { isScenario, ScenarioMeta } from './scenario.model.iso';
+import { isScenario, ScenarioMeta } from './model.iso';
 
 export type ScenarioFile 
   = { path: string
