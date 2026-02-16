@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, ArrowRight } from 'lucide-react'
-import { typescapeRegistry } from '@/content/typescapes/reg'
-import type { ScenarioMeta } from '@/lib/content/scenario.model'
+import scenarios from '@/content/typescapes/scenarios.reg'
+import type { ScenarioMeta } from '@/modules/typescapes/model.iso'
 
 function getDifficultyColor(difficulty: string) {
   switch (difficulty) {
@@ -32,7 +32,7 @@ function TypescapeCard({ scenario }: { scenario: ScenarioMeta }) {
   
   return (
     <Link 
-      href={`/typescape/${scenario.slug}`}
+      href={`/typescapes/${scenario.slug}`}
       onClick={handleNavigation}
       className="group flex items-center justify-between p-6 bg-white border border-gray-200 rounded-lg hover:shadow-md hover:border-blue-200 transition-all duration-200"
     >
@@ -68,7 +68,7 @@ function TypescapeCard({ scenario }: { scenario: ScenarioMeta }) {
 
 export default function TypescapeBrowsePage() {
   // Filter valid scenarios
-  const validScenarios = typescapeRegistry.filter(
+  const validScenarios = scenarios.filter(
     (scenario) => scenario?.name && scenario?.slug && scenario?.difficulty && scenario?.tags
   )
   const allTags = Array.from(

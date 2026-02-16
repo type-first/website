@@ -2,10 +2,10 @@ import { scenario } from '@/modules/typescapes/model.iso'
 
 export default scenario
  ({ slug: 'nested-props',
-    name: 'Path-Based Property Access',
-    blurb: 'Build type-safe object property accessors with compile-time path validation and runtime safeguards for deep object traversal.',
+    name: 'path-based property access',
+    blurb: 'type-safe object property accessors with compile-time path validation and runtime safeguards for deep immutable object traversal.',
     tags: ['typist', 'immutable', 'utility', 'primitive'] as const,
-    difficulty: 'advanced',
+    difficulty: 'intermediate',
     explanation: 'compile-time validated path access utilities',
     files: 
       [ { alias:'main.ts',
