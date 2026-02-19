@@ -1,13 +1,11 @@
+import type { ContentMeta } from '@/lib/content/content.model'
+
 export const SCENARIO_KIND 
   = 'typescape-scenario' as const
 
 export type ScenarioMeta
-  = { kind:typeof SCENARIO_KIND
-      slug:string
-      name:string
-      tags:string[]
-      blurb:string
-      difficulty:'beginner'|'intermediate'|'advanced'
+  = ContentMeta<typeof SCENARIO_KIND> 
+  & { difficulty:'beginner'|'intermediate'|'advanced'
       explanation:string 
       files:
       { path:`@/${string}` 

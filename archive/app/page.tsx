@@ -5,11 +5,11 @@ import { listLabs, type LegacyLabData } from '@/modules/labs/registry.logic';
 import { Beaker, BookOpen, Target, Code2 } from 'lucide-react';
 
 // Import our new components
-import { HeroSection } from '../archive/app/components/hero-section';
-import { SectionCard } from '../archive/app/components/section-card';
-import { HomeLabCard } from '../archive/app/components/home-lab-card';
-import { HomeArticleCard } from '../archive/app/components/home-article-card';
-import { SectionHeader, EmptyState, TechBadge } from '../archive/app/components/ui-elements-clean';
+import { HeroSection } from './components/hero-section';
+import { SectionCard } from './components/section-card';
+import { HomeLabCard } from './components/home-lab-card';
+import { HomeArticleCard } from './components/home-article-card';
+import { SectionHeader, EmptyState, TechBadge } from './components/ui-elements-clean';
 
 export default async function Home() {
   let articles: ArticleMeta[] = [];

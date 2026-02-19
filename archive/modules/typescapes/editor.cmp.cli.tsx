@@ -2,9 +2,9 @@
 
 import React from "react";
 import Editor, { type OnMount } from "@monaco-editor/react";
+import { getMonacoTheme } from "@/modules/typescapes/code-theme";
 import { Pencil, Trash } from "lucide-react";
 import { useSyncExternalStore } from "react";
-import { getMonacoTheme } from "./code-theme";
 
 import { 
   TypeExplorerService, 
