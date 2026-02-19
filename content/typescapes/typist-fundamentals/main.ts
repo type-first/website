@@ -1,21 +1,4 @@
-import { is_, extends_, has_, t_ } from './typist'
-
-/* 
-# typist
-
-show what your types are made of.
-
-## overview
-
-typist is a minimal suite for compilable static proofs at the type level. 
-we can encode static assertions and build compile-time validations with zero runtime overhead.
-
-whether you're building type-safe APIs, enforcing domain constraints, or creating 
-self-documenting interfaces, typist gives you the tools to **prove your types work** 
-before your code ever runs.
-*/
-
-// ## introduction
+import { is_, extends_, has_, t_ } from './typist.lib'
 
 // here's a basic type assertion
 // we can use is_ to assert that values belong to a given type, invalid assertions will produce TypeScript errors. We can leverage @ts-expect-error to write negative tests that ensure certain values do not conform to expected types.

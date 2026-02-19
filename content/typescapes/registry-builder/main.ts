@@ -1,4 +1,4 @@
-import { __, example_, is_, t_ } from './typist'
+import { t_, is_, test_ } from './typist.lib'
 
 export const join  
   = < const A extends readonly any[], 
@@ -40,7 +40,7 @@ export type REntry
     ? REntry<Tail, Key> 
       : never : never : never
 
-example_(() => 
+test_(async () => 
 { type Person = 
     { key:string, age:number, active:boolean }
   const people = 
@@ -81,7 +81,7 @@ export class Registry
     has(k:typeof this.key_):boolean
       { return k in this.index } }
 
-example_(() => 
+test_(async () => 
 { type Person = 
     { key:string, age:number, active:boolean }
   const registry = new Registry({
